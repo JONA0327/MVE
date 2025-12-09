@@ -5,7 +5,7 @@
     <title>Acuse de Recibo - Manifestación de Valor</title>
     <style>
         @page {
-            margin: 100px 25px 60px 25px; /* Margen superior amplio para header */
+            margin: 100px 25px 60px 25px;
         }
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
@@ -13,17 +13,17 @@
             color: #333;
             line-height: 1.4;
         }
-        /* Header fijo en cada página */
+        /* Header fijo */
         header {
             position: fixed;
             top: -70px;
             left: 0px;
             right: 0px;
             height: 60px;
-            border-bottom: 2px solid #555;
+            border-bottom: 2px solid #1E40AF; /* Azul E&I */
             padding-bottom: 5px;
         }
-        /* Footer fijo con paginación */
+        /* Footer fijo */
         footer {
             position: fixed;
             bottom: -40px;
@@ -32,69 +32,72 @@
             height: 30px;
             text-align: center;
             font-size: 8pt;
-            color: #777;
-            border-top: 1px solid #ddd;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
             padding-top: 5px;
         }
         .header-logo {
             float: left;
-            font-size: 14pt;
+            width: 150px;
+        }
+        /* Logo simulado con texto si no carga la imagen, o imagen real */
+        .logo-text {
+            font-size: 16pt;
             font-weight: bold;
-            color: #444;
-            text-transform: uppercase;
-            line-height: 1.2;
+            color: #0F172A; /* Slate 900 */
+            letter-spacing: -1px;
         }
         .header-info {
             float: right;
             text-align: right;
             font-size: 9pt;
-            color: #555;
+            color: #475569;
         }
         .doc-title {
             text-align: center;
-            font-size: 16pt;
+            font-size: 18pt;
             font-weight: bold;
-            color: #1a202c;
+            color: #0F172A; /* Slate 900 */
             margin-top: 20px;
             margin-bottom: 5px;
             text-transform: uppercase;
         }
         .doc-subtitle {
             text-align: center;
-            font-size: 10pt;
-            color: #718096;
-            margin-bottom: 25px;
+            font-size: 11pt;
+            color: #1E40AF; /* Azul Acento */
+            margin-bottom: 30px;
+            font-weight: bold;
         }
         
-        /* Estilos de Secciones */
+        /* Secciones */
         .section-header {
-            background-color: #f1f5f9;
-            color: #1e293b;
+            background-color: #f8fafc;
+            color: #0F172A;
             padding: 6px 10px;
             font-weight: bold;
             font-size: 10pt;
-            border-left: 4px solid #3b82f6; /* Borde azul oficial */
+            border-left: 5px solid #1E40AF; /* Borde Azul Corporativo */
             margin-top: 15px;
             margin-bottom: 8px;
             text-transform: uppercase;
-            page-break-after: avoid;
         }
 
-        /* Tablas de Datos */
+        /* Tablas */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px;
         }
         td {
-            padding: 5px 8px;
+            padding: 6px 8px;
             vertical-align: top;
             font-size: 9pt;
             border-bottom: 1px solid #e2e8f0;
         }
         .label {
             font-weight: bold;
-            color: #64748b;
+            color: #475569;
             width: 25%;
             background-color: #f8fafc;
         }
@@ -106,65 +109,67 @@
             width: 75%;
         }
 
-        /* Cajas de Texto Técnico (Cadenas y Sellos) */
+        /* Cajas Técnicas */
         .technical-box {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 7pt;
-            background-color: #f8fafc;
+            font-size: 8pt;
+            background-color: #f1f5f9;
             border: 1px solid #cbd5e1;
-            padding: 8px;
+            padding: 10px;
             word-wrap: break-word;
             text-align: justify;
             color: #334155;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
         }
         
-        /* Área de QR */
         .qr-area {
             float: right;
-            width: 110px;
-            height: 110px;
-            border: 1px dashed #cbd5e1;
+            width: 120px;
+            height: 120px;
+            border: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             color: #94a3b8;
             font-size: 8pt;
-            margin-left: 15px;
-            background-color: #fdfdfd;
+            margin-left: 20px;
+            background-color: #fff;
         }
-        .qr-content {
-            padding-top: 40px; /* Simula centrado vertical básico para PDF */
+        .qr-placeholder {
+            padding-top: 45px;
+            color: #cbd5e1;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="header-logo">
-            HACIENDA <br> <span style="font-size: 10pt; font-weight: normal;">Secretaría de Hacienda y Crédito Público</span>
+            <!-- Si tienes la imagen en base64 o ruta absoluta del servidor, úsala aquí. -->
+            <!-- Por compatibilidad simple en PDF, usamos texto estilizado -->
+            <div class="logo-text">E&I <span style="font-size: 10pt; color: #1E40AF;">Comercio Exterior</span></div>
         </div>
         <div class="header-info">
-            <strong>Folio UUID:</strong> {{ $m->uuid }}<br>
-            <strong>Fecha de Emisión:</strong> {{ $fecha_impresion }}
+            <strong>Folio UUID:</strong> {{ substr($m->uuid, 0, 8) }}...<br>
+            <strong>Emisión:</strong> {{ $fecha_impresion }}
         </div>
     </header>
 
     <footer>
-        <p>Este documento es una representación impresa de un trámite digital realizado ante el SAT. <br> 
-           La autenticidad de este documento puede ser verificada en el portal del SAT.</p>
+        <p>E&I Comercio Exterior, Logística y Tecnología - Documento generado electrónicamente.<br> 
+           Este acuse es comprobante de la transmisión de información al sistema.</p>
     </footer>
 
-    <!-- Título Principal -->
     <div class="doc-title">Acuse de Recibo</div>
     <div class="doc-subtitle">Manifestación de Valor Electrónica</div>
 
-    <!-- Sección 1: Datos Generales -->
-    <div class="section-header">1. Información del Contribuyente y Solicitante</div>
+    <!-- Sección 1 -->
+    <div class="section-header">1. Información del Contribuyente</div>
     <table>
         <tr>
             <td class="label">RFC Importador:</td>
-            <td class="value">{{ $m->rfc_importador }}</td>
+            <td class="value"><strong>{{ $m->rfc_importador }}</strong></td>
             <td class="label">RFC Solicitante:</td>
             <td class="value">{{ $m->rfc_solicitante }}</td>
         </tr>
@@ -173,25 +178,21 @@
             <td class="value value-wide" colspan="3">{{ $m->razon_social_importador }}</td>
         </tr>
          <tr>
-            <td class="label">Nombre Solicitante:</td>
+            <td class="label">Solicitante:</td>
             <td class="value value-wide" colspan="3">
                 {{ $m->nombre }} {{ $m->apellido_paterno }} {{ $m->apellido_materno }}
             </td>
         </tr>
-         <tr>
-            <td class="label">CURP Solicitante:</td>
-            <td class="value value-wide" colspan="3">{{ $m->curp_solicitante }}</td>
-        </tr>
     </table>
 
-    <!-- Sección 2: Resumen de Operación -->
-    <div class="section-header">2. Resumen de Valores Declarados</div>
+    <!-- Sección 2 -->
+    <div class="section-header">2. Valores Declarados (MXN)</div>
     <table>
         <tr>
-            <td class="label">Valor en Aduana Total:</td>
-            <td class="value"><strong>${{ number_format($m->total_valor_aduana, 2) }}</strong></td>
-            <td class="label">Moneda:</td>
-            <td class="value">MXN (Pesos Mexicanos)</td>
+            <td class="label" style="background-color: #eff6ff; color: #1e40af;">Valor en Aduana:</td>
+            <td class="value" style="background-color: #eff6ff; font-size: 11pt;"><strong>${{ number_format($m->total_valor_aduana, 2) }}</strong></td>
+            <td class="label">INCOTERM:</td>
+            <td class="value">{{ $m->incoterm ?? 'N/A' }}</td>
         </tr>
         <tr>
             <td class="label">Precio Pagado:</td>
@@ -200,35 +201,30 @@
             <td class="value">${{ number_format($m->total_precio_por_pagar, 2) }}</td>
         </tr>
         <tr>
-            <td class="label">Total Incrementables:</td>
+            <td class="label">Incrementables:</td>
             <td class="value">${{ number_format($m->total_incrementables, 2) }}</td>
-            <td class="label">Total Decrementables:</td>
+            <td class="label">Decrementables:</td>
             <td class="value">${{ number_format($m->total_decrementables, 2) }}</td>
         </tr>
     </table>
 
-    <!-- Sección 3: Datos Técnicos y Sellos -->
-    <div style="margin-top: 25px;">
-        <!-- Placeholder para QR -->
+    <!-- Sección 3 -->
+    <div style="margin-top: 30px;">
         <div class="qr-area">
-            <div class="qr-content">Espacio para<br>Código QR</div>
+            <div class="qr-placeholder">QR CODE</div>
         </div>
         
-        <!-- Cadenas Digitales -->
-        <div style="margin-right: 130px;">
-            <div class="section-header" style="margin-top: 0;">3. Cadena Original del Documento</div>
+        <div style="margin-right: 140px;">
+            <div class="section-header" style="margin-top: 0;">3. Cadena Original</div>
             <div class="technical-box">
-                {{ $m->cadena_original }}
+                {{ $m->cadena_original ?? '|| Sin cadena generada ||' }}
             </div>
 
-            <div class="section-header">4. Sello Digital (Firma Electrónica)</div>
+            <div class="section-header">4. Sello Digital</div>
             <div class="technical-box">
-                {{ $m->sello_digital }}
+                {{ $m->sello_digital ?? 'Firma pendiente' }}
             </div>
         </div>
     </div>
-    
-    <div style="clear: both;"></div>
-
 </body>
 </html>
