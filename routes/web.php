@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ManifestationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminUserController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Manifestation;
 use Illuminate\Support\Facades\Auth;
@@ -10,9 +11,8 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// --- DASHBOARD: LISTADO DE MANIFESTACIONES ---
+// --- DASHBOARD ---
 Route::get('/dashboard', function () {
-    // Obtener manifestaciones del usuario actual
     $userRfc = Auth::user()->rfc; 
     
     $manifestations = Manifestation::where('rfc_solicitante', $userRfc)
@@ -30,29 +30,30 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // --- MANIFESTACIÓN DE VALOR (CRUD) ---
+    // --- PANEL ADMINISTRATIVO (Protegido con Gate 'admin') ---
+    // SOLUCIÓN SENCILLA: Usamos 'can:admin' que definimos en AppServiceProvider
+    Route::middleware('can:admin')->prefix('admin')->name('admin.')->group(function () {
+        
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+        Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+    });
 
-    // 1. Crear / Paso 1
+    // --- MANIFESTACIÓN DE VALOR ---
     Route::get('/manifestacion/nueva', [ManifestationController::class, 'createStep1'])->name('manifestations.create');
     Route::post('/manifestacion/nueva', [ManifestationController::class, 'storeStep1'])->name('manifestations.store');
 
-    // 2. Paso 2 (Valores)
     Route::get('/manifestacion/{uuid}/paso-2', [ManifestationController::class, 'editStep2'])->name('manifestations.step2');
     Route::put('/manifestacion/{uuid}/paso-2', [ManifestationController::class, 'updateStep2'])->name('manifestations.updateStep2');
 
-    // 3. Paso 3 (Detalles)
     Route::get('/manifestacion/{uuid}/paso-3', [ManifestationController::class, 'editStep3'])->name('manifestations.step3');
     Route::put('/manifestacion/{uuid}/paso-3', [ManifestationController::class, 'updateStep3'])->name('manifestations.updateStep3');
 
-    // 4. Paso 4 (Archivos y Firma)
     Route::get('/manifestacion/{uuid}/paso-4', [ManifestationController::class, 'editStep4'])->name('manifestations.step4');
     Route::post('/manifestacion/{uuid}/upload', [ManifestationController::class, 'uploadFile'])->name('manifestations.upload');
     Route::post('/manifestacion/{uuid}/firmar', [ManifestationController::class, 'signManifestation'])->name('manifestations.sign');
     
-    // Descargas
     Route::get('/manifestacion/{uuid}/acuse', [ManifestationController::class, 'downloadAcuse'])->name('manifestations.downloadAcuse');
-
-    // Eliminar
     Route::delete('/manifestacion/{uuid}', [ManifestationController::class, 'destroy'])->name('manifestations.destroy');
 });
 

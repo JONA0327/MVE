@@ -3,24 +3,38 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        \App\Models\User::factory()->create([
-            'name' => 'Admin Sistema',
-            'email' => 'admin@test.com',
-            'rfc' => 'XAXX010101000', // RFC Genérico
-            'username' => 'admin1',
-            'password' => bcrypt('password'), // O Hash::make('password')
-        ]);
+        // 1. Usuario Administrador (Evita duplicados si ya existe)
+        User::firstOrCreate(
+            ['email' => 'admin@ei-comercio.com'], // Busca por email
+            [
+                'name' => 'Admin Sistema',
+                'rfc' => 'XAXX010101000', 
+                'username' => 'admin',
+                'password' => Hash::make('password'),
+                'is_admin' => true,
+            ]
+        );
+
+        // 2. Usuario Operador Demo (Evita duplicados)
+        User::firstOrCreate(
+            ['email' => 'operador@ei-comercio.com'],
+            [
+                'name' => 'Operador Demo',
+                'rfc' => 'XAXX010101001',
+                'username' => 'operador',
+                'password' => Hash::make('password'),
+                'is_admin' => false,
+            ]
+        );
     }
 }

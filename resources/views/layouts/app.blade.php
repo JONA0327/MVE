@@ -17,7 +17,7 @@
     <body class="font-sans antialiased h-full text-slate-800">
         <div class="min-h-screen bg-gray-50">
             
-            <!-- Barra de Navegación (Blanca para resaltar el logo) -->
+            <!-- Barra de Navegación -->
             <nav x-data="{ open: false }" class="bg-white border-b border-gray-200 shadow-sm fixed w-full z-30 top-0">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-20">
@@ -31,10 +31,16 @@
 
                             <!-- Links de Navegación -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <a href="{{ route('dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-900 text-sm font-bold text-slate-900 leading-5 focus:outline-none transition duration-150 ease-in-out">
+                                <a href="{{ route('dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('dashboard') ? 'border-blue-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }} text-sm font-bold leading-5 focus:outline-none transition duration-150 ease-in-out">
                                     Dashboard
                                 </a>
-                                <!-- Otros menús -->
+                                
+                                <!-- BOTÓN PANEL ADMIN (Solo visible para Administradores) -->
+                                @if(Auth::user()->is_admin)
+                                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.*') ? 'border-blue-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }} text-sm font-bold leading-5 focus:outline-none transition duration-150 ease-in-out">
+                                        Usuarios / Admin
+                                    </a>
+                                @endif
                             </div>
                         </div>
 
@@ -90,6 +96,13 @@
                         <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             Dashboard
                         </x-responsive-nav-link>
+                        
+                        <!-- Enlace Admin Móvil -->
+                        @if(Auth::user()->is_admin)
+                            <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')">
+                                Panel Administrativo
+                            </x-responsive-nav-link>
+                        @endif
                     </div>
                     <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="px-4">
@@ -97,6 +110,9 @@
                             <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                         </div>
                         <div class="mt-3 space-y-1">
+                            <x-responsive-nav-link :href="route('profile.edit')">
+                                Mi Perfil
+                            </x-responsive-nav-link>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
@@ -108,7 +124,6 @@
                 </div>
             </nav>
 
-            <!-- Padding top para compensar el navbar fixed -->
             <div class="pt-20">
                 @if (isset($header))
                     <header class="bg-white shadow-sm border-b border-gray-200">
