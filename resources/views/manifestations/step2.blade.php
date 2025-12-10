@@ -15,21 +15,15 @@
                         <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 text-white font-bold text-sm shadow-sm">✓</div>
                         <div class="text-xs font-medium mt-2 text-blue-900 uppercase">Generales</div>
                     </div>
-                    <div class="flex-auto border-t-4 border-blue-900 transition duration-500 ease-in-out"></div>
+                    <div class="flex-auto border-t-4 border-blue-900"></div>
                     <div class="flex flex-col items-center w-1/4">
                         <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-900 text-white font-bold shadow-lg ring-4 ring-blue-50 z-10 transform scale-110">2</div>
                         <div class="text-xs font-bold mt-2 text-blue-900 uppercase tracking-wide">Valores</div>
                     </div>
-                    <div class="flex-auto border-t-4 border-gray-200 transition duration-500 ease-in-out"></div>
-                    <div class="flex flex-col items-center w-1/4 opacity-40 grayscale">
-                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold z-10">3</div>
-                        <div class="text-xs font-medium mt-2 text-gray-500">Detalles</div>
-                    </div>
-                    <div class="flex-auto border-t-4 border-gray-200 transition duration-500 ease-in-out"></div>
-                    <div class="flex flex-col items-center w-1/4 opacity-40 grayscale">
-                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold z-10">4</div>
-                        <div class="text-xs font-medium mt-2 text-gray-500">Firma</div>
-                    </div>
+                    <div class="flex-auto border-t-4 border-gray-200"></div>
+                    <div class="flex flex-col items-center w-1/4 opacity-40 grayscale"><div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold z-10">3</div></div>
+                    <div class="flex-auto border-t-4 border-gray-200"></div>
+                    <div class="flex flex-col items-center w-1/4 opacity-40 grayscale"><div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold z-10">4</div></div>
                 </div>
             </div>
 
@@ -39,6 +33,12 @@
                     <form method="POST" action="{{ route('manifestations.updateStep2', $manifestation->uuid) }}">
                         @csrf
                         @method('PUT')
+
+                        @if ($errors->any())
+                            <div class="mb-4 bg-red-50 p-4 rounded border-l-4 border-red-500 text-red-700 text-sm font-bold">
+                                Por favor corrija los errores marcados antes de continuar.
+                            </div>
+                        @endif
 
                         <!-- SECCIÓN COVES -->
                         <div class="flex justify-between items-end mb-6 border-b border-slate-100 pb-4">
@@ -55,12 +55,12 @@
                         </div>
                         
                         <!-- Tabla Data Grid -->
-                        <div class="overflow-visible mb-10 shadow-sm rounded-lg border border-slate-200">
+                        <div class="overflow-visible mb-2 shadow-sm rounded-lg border border-slate-200">
                             <table class="min-w-full divide-y divide-slate-200">
                                 <thead class="bg-slate-50">
                                     <tr>
-                                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider w-1/4">Acuse (eDocument)</th>
-                                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Método Val.</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider w-1/4">Acuse (eDocument) <span class="text-red-500">*</span></th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Método Val. <span class="text-red-500">*</span></th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider"># Factura</th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha Exp.</th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Emisor</th>
@@ -70,7 +70,6 @@
                                 <tbody class="bg-white divide-y divide-slate-100">
                                     <template x-for="(cove, index) in coves" :key="index">
                                         <tr class="hover:bg-slate-50 transition">
-                                            <!-- Columna eDocument con Botón de Búsqueda -->
                                             <td class="p-3 align-top">
                                                 <div class="flex rounded-md shadow-sm">
                                                     <input type="text" 
@@ -91,7 +90,7 @@
                                             </td>
                                             
                                             <td class="p-3 align-top">
-                                                 <select :name="`coves[${index}][metodo_valoracion]`" x-model="cove.metodo_valoracion" class="w-full text-xs border-slate-300 rounded focus:ring-blue-900 focus:border-blue-900">
+                                                 <select :name="`coves[${index}][metodo_valoracion]`" x-model="cove.metodo_valoracion" required class="w-full text-xs border-slate-300 rounded focus:ring-blue-900 focus:border-blue-900">
                                                     <option value="1">Valor de Transacción</option>
                                                     <option value="2">Idénticas</option>
                                                     <option value="3">Similares</option>
@@ -117,13 +116,14 @@
                                         <td colspan="6" class="text-center py-10 text-slate-400 bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg m-4">
                                             <div class="flex flex-col items-center">
                                                 <svg class="h-10 w-10 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                                <span class="text-sm font-medium">Agregue un COVE para comenzar la importación.</span>
+                                                <span class="text-sm font-medium">Agregue al menos un COVE para continuar.</span>
                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
+                        <x-input-error :messages="$errors->get('coves')" class="mb-6 ml-2" />
 
                         <!-- TOTALES -->
                         <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
@@ -133,45 +133,77 @@
                             </h3>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- Precio Pagado -->
                                 <div>
-                                    <x-input-label value="Precio Pagado" class="text-xs uppercase text-slate-500 font-bold" />
-                                    <div class="relative mt-1">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">$</span>
-                                        <input name="total_precio_pagado" x-model="totales.precio_pagado" type="number" step="0.01" class="pl-7 block w-full border-slate-300 rounded-md shadow-sm focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
+                                    <x-input-label value="Precio Pagado" class="text-xs uppercase text-slate-500 font-bold required" />
+                                    <div class="relative mt-1 flex rounded-md shadow-sm">
+                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-100 text-gray-500 text-sm">$</span>
+                                        <!-- Agregamos @input para recalcular -->
+                                        <input name="total_precio_pagado" x-model="totales.precio_pagado" @input="calculateTotals()" required type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
+                                        <select name="moneda_precio_pagado" x-model="totales.moneda_precio_pagado" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-md focus:ring-blue-900 focus:border-blue-900">
+                                            <option value="MXN">MXN</option>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                        </select>
                                     </div>
+                                    <x-input-error :messages="$errors->get('total_precio_pagado')" />
                                 </div>
                                 
+                                <!-- Incrementables -->
                                 <div>
                                     <x-input-label value="(+) Incrementables" class="text-xs uppercase text-slate-500 font-bold" />
-                                    <div class="relative mt-1">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">$</span>
-                                        <input name="total_incrementables" x-model="totales.incrementables" type="number" step="0.01" class="pl-7 block w-full border-slate-300 rounded-md shadow-sm focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
+                                    <div class="relative mt-1 flex rounded-md shadow-sm">
+                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-100 text-gray-500 text-sm">$</span>
+                                        <input name="total_incrementables" x-model="totales.incrementables" @input="calculateTotals()" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
+                                        <select name="moneda_incrementables" x-model="totales.moneda_incrementables" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-md focus:ring-blue-900 focus:border-blue-900">
+                                            <option value="MXN">MXN</option>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                        </select>
                                     </div>
                                 </div>
 
+                                <!-- Decrementables -->
                                 <div>
                                     <x-input-label value="(-) Decrementables" class="text-xs uppercase text-slate-500 font-bold" />
-                                    <div class="relative mt-1">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">$</span>
-                                        <input name="total_decrementables" x-model="totales.decrementables" type="number" step="0.01" class="pl-7 block w-full border-slate-300 rounded-md shadow-sm focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
+                                    <div class="relative mt-1 flex rounded-md shadow-sm">
+                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-100 text-gray-500 text-sm">$</span>
+                                        <input name="total_decrementables" x-model="totales.decrementables" @input="calculateTotals()" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
+                                        <select name="moneda_decrementables" x-model="totales.moneda_decrementables" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-md focus:ring-blue-900 focus:border-blue-900">
+                                            <option value="MXN">MXN</option>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                        </select>
                                     </div>
                                 </div>
 
-                                <div class="md:col-span-2 lg:col-span-1 bg-blue-50 p-2 rounded-lg border border-blue-100">
-                                    <x-input-label value="= VALOR EN ADUANA" class="text-xs font-bold text-blue-900" />
-                                    <div class="relative mt-1">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-blue-800 font-bold">$</span>
+                                <!-- Valor en Aduana (EDITABLE) -->
+                                <div class="md:col-span-2 lg:col-span-1 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                    <x-input-label value="= VALOR EN ADUANA" class="text-xs font-bold text-blue-900 required" />
+                                    <div class="relative mt-1 flex rounded-md shadow-inner">
+                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-blue-200 bg-blue-100 text-blue-800 text-sm font-bold">$</span>
+                                        <!-- Eliminamos el readonly y el binding :value directo para usar x-model puro -->
                                         <input name="total_valor_aduana" 
-                                              :value="(parseFloat(totales.precio_pagado || 0) + parseFloat(totales.incrementables || 0) - parseFloat(totales.decrementables || 0)).toFixed(2)"
-                                              class="pl-7 block w-full bg-white border-blue-200 rounded-md shadow-inner text-blue-900 font-bold text-lg" readonly />
+                                              x-model="totales.valor_aduana"
+                                              type="number" step="0.01"
+                                              class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-blue-200 bg-white text-blue-900 font-bold text-lg focus:ring-blue-900 focus:border-blue-900" 
+                                              required />
+                                        <span class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-blue-200 bg-blue-100 text-blue-900 text-xs font-bold">MXN</span>
                                     </div>
+                                    <x-input-error :messages="$errors->get('total_valor_aduana')" />
                                 </div>
                                 
+                                <!-- Precio por Pagar -->
                                 <div>
                                     <x-input-label value="Precio por Pagar" class="text-xs uppercase text-slate-500 font-bold" />
-                                    <div class="relative mt-1">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">$</span>
-                                        <input name="total_precio_por_pagar" x-model="totales.precio_por_pagar" type="number" step="0.01" class="pl-7 block w-full border-slate-300 rounded-md shadow-sm focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
+                                    <div class="relative mt-1 flex rounded-md shadow-sm">
+                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-100 text-gray-500 text-sm">$</span>
+                                        <input name="total_precio_por_pagar" x-model="totales.precio_por_pagar" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
+                                        <select name="moneda_precio_por_pagar" x-model="totales.moneda_precio_por_pagar" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-md focus:ring-blue-900 focus:border-blue-900">
+                                            <option value="MXN">MXN</option>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -179,7 +211,8 @@
 
                         <div class="mt-8 flex justify-between pt-6 border-t border-slate-100">
                             <a href="{{ route('dashboard') }}" class="text-slate-500 hover:text-slate-800 font-medium px-4 py-2">Cancelar</a>
-                            <button type="submit" class="inline-flex items-center px-6 py-3 bg-slate-900 border border-transparent rounded-md font-bold text-sm text-white uppercase tracking-widest hover:bg-blue-900 shadow-lg transform hover:-translate-y-0.5 transition">
+                            <button type="submit" class="inline-flex items-center px-6 py-3 bg-slate-900 border border-transparent rounded-md font-bold text-sm text-white uppercase tracking-widest hover:bg-blue-900 shadow-lg transform hover:-translate-y-0.5 transition"
+                                :disabled="coves.length === 0">
                                 Guardar y Siguiente &rarr;
                             </button>
                         </div>
@@ -189,7 +222,7 @@
         </div>
     </div>
 
-    <!-- Script de Alpine (Sin cambios lógicos) -->
+    <!-- Script de Alpine -->
     <script>
         function covesHandler() {
             return {
@@ -198,9 +231,33 @@
                     precio_pagado: '{{ $manifestation->total_precio_pagado ?? 0 }}',
                     incrementables: '{{ $manifestation->total_incrementables ?? 0 }}',
                     decrementables: '{{ $manifestation->total_decrementables ?? 0 }}',
+                    // Inicializamos valor_aduana con dato de BD o cálculo inicial
+                    valor_aduana: '{{ $manifestation->total_valor_aduana ?? 0 }}',
                     precio_por_pagar: '{{ $manifestation->total_precio_por_pagar ?? 0 }}',
+                    moneda_precio_pagado: 'MXN',
+                    moneda_incrementables: 'MXN',
+                    moneda_decrementables: 'MXN',
+                    moneda_precio_por_pagar: 'MXN',
                 },
+                
+                // Función para recalcular automáticamente
+                calculateTotals() {
+                    const pagado = parseFloat(this.totales.precio_pagado) || 0;
+                    const incrementables = parseFloat(this.totales.incrementables) || 0;
+                    const decrementables = parseFloat(this.totales.decrementables) || 0;
+                    
+                    // Actualizamos valor aduana, permitiendo que el usuario lo sobrescriba luego si lo edita manualmente
+                    // (el binding x-model mostrará este valor nuevo)
+                    this.totales.valor_aduana = (pagado + incrementables - decrementables).toFixed(2);
+                },
+
                 addCove() {
+                    if (this.coves.length > 0) {
+                        const last = this.coves[this.coves.length - 1];
+                        if (!last.edocument || last.edocument.trim() === '') {
+                            return alert('Por favor complete el eDocument del renglón actual antes de agregar otro.');
+                        }
+                    }
                     this.coves.push({ edocument: '', metodo_valoracion: '1', numero_factura: '', fecha_expedicion: '', emisor: '', loading: false });
                 },
                 removeCove(index) {
@@ -215,7 +272,6 @@
                         cove.fecha_expedicion = new Date().toISOString().split('T')[0];
                         cove.emisor = 'PROVEEDOR IMPORTADO S.A. DE C.V.';
                         cove.loading = false;
-                        // this.totales.precio_pagado = (parseFloat(this.totales.precio_pagado) + 1000).toFixed(2);
                     }, 800);
                 }
             }

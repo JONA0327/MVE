@@ -21,6 +21,7 @@ class ManifestationController extends Controller
 
     /**
      * PASO 1: GUARDAR
+     * CORRECCIÓN: Todos los campos ahora son 'required' para evitar error de SQL Integrity.
      */
     public function storeStep1(Request $request)
     {
@@ -29,10 +30,13 @@ class ManifestationController extends Controller
             'rfc_solicitante' => 'required|string|size:13',
             'nombre' => 'required|string|max:255',
             'apellido_paterno' => 'required|string|max:255',
-            'apellido_materno' => 'nullable|string|max:255',
+            // AHORA OBLIGATORIO
+            'apellido_materno' => 'required|string|max:255', 
+            
             'rfc_importador' => 'required|string|size:13',
             'razon_social_importador' => 'required|string',
-            'registro_nacional_contribuyentes' => 'nullable|string',
+            // AHORA OBLIGATORIO
+            'registro_nacional_contribuyentes' => 'required|string', 
         ]);
 
         $manifestation = Manifestation::create($validated);
@@ -71,8 +75,14 @@ class ManifestationController extends Controller
 
             if ($request->has('coves')) {
                 $manifestation->coves()->delete();
-                $coves = collect($request->input('coves'))->filter(fn($c) => !empty($c['edocument']));
-                $manifestation->coves()->createMany($coves);
+                // Filtramos filas vacías
+                $coves = collect($request->input('coves'))
+                    ->filter(fn($c) => !empty($c['edocument']))
+                    ->values();
+                
+                if($coves->isNotEmpty()) {
+                    $manifestation->coves()->createMany($coves);
+                }
             }
         });
 
@@ -110,28 +120,47 @@ class ManifestationController extends Controller
             
             $manifestation->update($request->only(['metodo_valoracion_global', 'incoterm', 'existe_vinculacion']));
 
+            // Pedimentos
             if ($request->has('pedimentos')) {
                 $manifestation->pedimentos()->delete();
-                $manifestation->pedimentos()->createMany($request->input('pedimentos'));
+                $peds = collect($request->input('pedimentos'))
+                    ->filter(fn($p) => !empty($p['numero_pedimento']))
+                    ->values()
+                    ->toArray();
+                if(count($peds) > 0) $manifestation->pedimentos()->createMany($peds);
             }
 
+            // Ajustes
             $manifestation->adjustments()->delete();
             $adjustments = [];
             
             foreach ($request->input('incrementables', []) as $inc) {
-                if(!empty($inc['concepto'])) { $inc['type'] = 'incrementable'; $adjustments[] = $inc; }
+                if(!empty($inc['concepto']) && !empty($inc['importe'])) { 
+                    $inc['type'] = 'incrementable'; 
+                    $adjustments[] = $inc; 
+                }
             }
             foreach ($request->input('decrementables', []) as $dec) {
-                if(!empty($dec['concepto'])) { $dec['type'] = 'decrementable'; $adjustments[] = $dec; }
+                if(!empty($dec['concepto']) && !empty($dec['importe'])) { 
+                    $dec['type'] = 'decrementable'; 
+                    $adjustments[] = $dec; 
+                }
             }
             if (count($adjustments) > 0) {
                 $manifestation->adjustments()->createMany($adjustments);
             }
 
+            // Pagos
             if ($request->has('pagos')) {
                 $manifestation->payments()->delete();
-                $manifestation->payments()->createMany($request->input('pagos'));
+                $pagos = collect($request->input('pagos'))
+                    ->filter(fn($p) => !empty($p['importe']))
+                    ->values()
+                    ->toArray();
+                if(count($pagos) > 0) $manifestation->payments()->createMany($pagos);
             }
+            
+            // Compensaciones (si aplica)
             if ($request->has('compensaciones')) {
                 $manifestation->compensations()->delete();
                 $manifestation->compensations()->createMany($request->input('compensaciones'));
@@ -187,11 +216,10 @@ class ManifestationController extends Controller
         ]);
 
         try {
-            // Simulamos respuesta del SAT (Acuses PDF)
+            // Simulación SAT
             $pathAcuse = 'manifestations/' . $uuid . '/SAT_ACUSE_' . time() . '.pdf';
             $pathDetalle = 'manifestations/' . $uuid . '/SAT_DETALLE_' . time() . '.pdf';
 
-            // Guardar contenido dummy para que la descarga funcione
             Storage::put($pathAcuse, '%PDF-1.4 ... (Contenido Simulado Acuse) ...');
             Storage::put($pathDetalle, '%PDF-1.4 ... (Contenido Simulado Detalle) ...');
 
@@ -206,7 +234,7 @@ class ManifestationController extends Controller
             return redirect()->route('dashboard')
                 ->with('status', 'Manifestación enviada y firmada correctamente. Acuses recibidos.');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->withErrors(['password' => 'Error: ' . $e->getMessage()]);
         }
     }
@@ -219,7 +247,6 @@ class ManifestationController extends Controller
         $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
 
         if (!$manifestation->path_acuse_manifestacion || !Storage::exists($manifestation->path_acuse_manifestacion)) {
-            // Si no existe archivo físico, generamos uno al vuelo (Fallback)
              $data = [
                 'm' => $manifestation,
                 'fecha_impresion' => now()->format('d/m/Y H:i:s'),

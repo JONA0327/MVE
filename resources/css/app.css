@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* FORZAR MAYÚSCULAS VISUALMENTE */
+/* Excluimos password y email para no confundir al usuario */
+input[type="text"], 
+textarea, 
+select {
+    text-transform: uppercase;
+}
+
+/* Excepciones específicas */
+input[type="email"],
+input[type="password"] {
+    text-transform: none;
+}
+
+/* Placeholder también en mayúsculas para consistencia */
+::placeholder {
+    text-transform: uppercase;
+}
+
+/* CLASE PARA CAMPOS OBLIGATORIOS */
+/* Agrega un asterisco rojo después del texto de la etiqueta */
+label.required::after {
+    content: " *";
+    color: #ef4444; /* red-500 de Tailwind */
+    font-weight: bold;
+    margin-left: 2px;
+}
