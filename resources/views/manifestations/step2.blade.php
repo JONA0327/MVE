@@ -6,56 +6,51 @@
     </x-slot>
 
     <div class="py-12" x-data="covesHandler()">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- STEPPER E&I -->
+            <!-- STEPPER VISUAL -->
             <div class="mb-10">
-                 <div class="flex items-center justify-between w-full">
-                    <div class="flex flex-col items-center w-1/4">
-                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 text-white font-bold text-sm shadow-sm">✓</div>
-                        <div class="text-xs font-medium mt-2 text-blue-900 uppercase">Generales</div>
-                    </div>
-                    <div class="flex-auto border-t-4 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/4">
-                        <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-900 text-white font-bold shadow-lg ring-4 ring-blue-50 z-10 transform scale-110">2</div>
-                        <div class="text-xs font-bold mt-2 text-blue-900 uppercase tracking-wide">Valores</div>
-                    </div>
-                    <div class="flex-auto border-t-4 border-gray-200"></div>
-                    <div class="flex flex-col items-center w-1/4 opacity-40 grayscale"><div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold z-10">3</div></div>
-                    <div class="flex-auto border-t-4 border-gray-200"></div>
-                    <div class="flex flex-col items-center w-1/4 opacity-40 grayscale"><div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold z-10">4</div></div>
+                 <div class="flex items-center justify-between w-full opacity-90">
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Generales</div></div>
+                    <div class="flex-auto border-t-2 border-blue-900"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">Valores</div></div>
+                    <div class="flex-auto border-t-2 border-slate-200"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Detalles</div></div>
+                    <div class="flex-auto border-t-2 border-slate-200"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Archivos</div></div>
+                    <div class="flex-auto border-t-2 border-slate-200"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
                 </div>
             </div>
 
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg border-t-4 border-blue-900">
-                <div class="p-8">
+            <div class="bg-white shadow-2xl rounded-sm overflow-hidden mb-10 border border-slate-300">
+                
+                <!-- ENCABEZADO DE TARJETA -->
+                <div class="bg-slate-100 px-8 py-6 border-b border-slate-300 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-lg font-bold text-slate-900 uppercase">2. Valores Declarados</h1>
+                        <p class="text-xs text-slate-500">Capture los acuses de valor (COVEs) para calcular el valor en aduana.</p>
+                    </div>
+                    <button type="button" @click="addCove()" class="bg-white border border-slate-300 text-slate-700 text-xs px-4 py-2 rounded-sm font-bold shadow-sm hover:bg-slate-50 hover:text-blue-900 transition flex items-center uppercase">
+                        <span class="text-lg mr-1 leading-none text-blue-600">+</span>
+                        Agregar COVE
+                    </button>
+                </div>
+
+                <div class="p-10">
 
                     <form method="POST" action="{{ route('manifestations.updateStep2', $manifestation->uuid) }}">
                         @csrf
                         @method('PUT')
 
                         @if ($errors->any())
-                            <div class="mb-4 bg-red-50 p-4 rounded border-l-4 border-red-500 text-red-700 text-sm font-bold">
+                            <div class="mb-6 bg-red-50 p-4 rounded border-l-4 border-red-500 text-red-700 text-sm font-bold">
                                 Por favor corrija los errores marcados antes de continuar.
                             </div>
                         @endif
 
                         <!-- SECCIÓN COVES -->
-                        <div class="flex justify-between items-end mb-6 border-b border-slate-100 pb-4">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-800">Acuses de Valor (COVE)</h3>
-                                <p class="text-sm text-slate-500">Ingrese el eDocument para importar los datos oficiales.</p>
-                            </div>
-                            <div>
-                                <button type="button" @click="addCove()" class="bg-white border border-slate-300 text-slate-700 text-xs px-4 py-2 rounded-md font-bold shadow-sm hover:bg-slate-50 hover:text-blue-900 transition flex items-center">
-                                    <span class="text-xl mr-1 leading-none text-blue-600">+</span>
-                                    Agregar Renglón
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Tabla Data Grid -->
-                        <div class="overflow-visible mb-2 shadow-sm rounded-lg border border-slate-200">
+                        <div class="overflow-x-auto mb-8 shadow-sm rounded border border-slate-200">
                             <table class="min-w-full divide-y divide-slate-200">
                                 <thead class="bg-slate-50">
                                     <tr>
@@ -71,76 +66,71 @@
                                     <template x-for="(cove, index) in coves" :key="index">
                                         <tr class="hover:bg-slate-50 transition">
                                             <td class="p-3 align-top">
-                                                <div class="flex rounded-md shadow-sm">
+                                                <div class="flex rounded-sm shadow-sm">
                                                     <input type="text" 
                                                            :name="`coves[${index}][edocument]`" 
                                                            x-model="cove.edocument" 
-                                                           class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md text-xs border-slate-300 focus:ring-blue-900 focus:border-blue-900 font-mono uppercase text-slate-800" 
+                                                           class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-sm text-xs border-slate-300 focus:ring-blue-900 focus:border-blue-900 font-mono uppercase text-slate-800" 
                                                            required 
                                                            placeholder="COVE..."
                                                            @keydown.enter.prevent="fetchCoveData(index)">
                                                     <button type="button" 
                                                             @click="fetchCoveData(index)"
-                                                            class="inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-600 text-xs rounded-r-md hover:bg-slate-200 hover:text-blue-900 transition"
-                                                            title="Consultar en SAT">
+                                                            class="inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-600 text-xs rounded-r-sm hover:bg-slate-200 hover:text-blue-900 transition"
+                                                            title="Consultar">
                                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                                     </button>
                                                 </div>
-                                                <p x-show="cove.loading" class="text-xs text-blue-600 mt-1 animate-pulse font-medium">Conectando con VUCEM...</p>
+                                                <p x-show="cove.loading" class="text-xs text-blue-600 mt-1 animate-pulse font-medium">Buscando...</p>
                                             </td>
                                             
                                             <td class="p-3 align-top">
-                                                 <select :name="`coves[${index}][metodo_valoracion]`" x-model="cove.metodo_valoracion" required class="w-full text-xs border-slate-300 rounded focus:ring-blue-900 focus:border-blue-900">
-                                                    <option value="1">Valor de Transacción</option>
-                                                    <option value="2">Idénticas</option>
-                                                    <option value="3">Similares</option>
+                                                 <select :name="`coves[${index}][metodo_valoracion]`" x-model="cove.metodo_valoracion" required class="w-full text-xs border-slate-300 rounded-sm focus:ring-blue-900 focus:border-blue-900">
+                                                    <option value="1">1. Valor de Transacción</option>
+                                                    <option value="2">2. Identicos</option>
+                                                    <option value="3">3. Similares</option>
+                                                    <option value="4">4. Precio Unitario</option>
+                                                    <option value="5">5. Reconstruido</option>
+                                                    <option value="6">6. Último Recurso</option>
                                                  </select>
                                             </td>
                                             <td class="p-3 align-top">
-                                                <input type="text" :name="`coves[${index}][numero_factura]`" x-model="cove.numero_factura" class="w-full text-xs border-slate-300 bg-slate-50 rounded text-slate-500" required readonly>
+                                                <input type="text" :name="`coves[${index}][numero_factura]`" x-model="cove.numero_factura" class="w-full text-xs border-slate-300 bg-slate-50 rounded-sm text-slate-500" required readonly>
                                             </td>
                                             <td class="p-3 align-top">
-                                                <input type="date" :name="`coves[${index}][fecha_expedicion]`" x-model="cove.fecha_expedicion" class="w-full text-xs border-slate-300 bg-slate-50 rounded text-slate-500" readonly>
+                                                <input type="date" :name="`coves[${index}][fecha_expedicion]`" x-model="cove.fecha_expedicion" class="w-full text-xs border-slate-300 bg-slate-50 rounded-sm text-slate-500" readonly>
                                             </td>
                                             <td class="p-3 align-top">
-                                                <input type="text" :name="`coves[${index}][emisor]`" x-model="cove.emisor" class="w-full text-xs border-slate-300 bg-slate-50 rounded text-slate-500" readonly>
+                                                <input type="text" :name="`coves[${index}][emisor]`" x-model="cove.emisor" class="w-full text-xs border-slate-300 bg-slate-50 rounded-sm text-slate-500" readonly>
                                             </td>
                                             <td class="p-3 text-center align-top">
-                                                <button type="button" @click="removeCove(index)" class="text-red-400 hover:text-red-600 p-2 transition">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                <button type="button" @click="removeCove(index)" class="text-slate-400 hover:text-red-600 p-2 transition">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 </button>
                                             </td>
                                         </tr>
                                     </template>
                                     <tr x-show="coves.length === 0">
-                                        <td colspan="6" class="text-center py-10 text-slate-400 bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg m-4">
-                                            <div class="flex flex-col items-center">
-                                                <svg class="h-10 w-10 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                                <span class="text-sm font-medium">Agregue al menos un COVE para continuar.</span>
-                                            </div>
+                                        <td colspan="6" class="text-center py-8 text-slate-400">
+                                            <span class="text-xs italic">No hay COVEs registrados. Agregue uno para continuar.</span>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <x-input-error :messages="$errors->get('coves')" class="mb-6 ml-2" />
 
                         <!-- TOTALES -->
-                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                Resumen de Valores
-                            </h3>
+                        <div class="bg-slate-50 p-8 rounded border border-slate-200">
+                            <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Resumen de Valores</h3>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 <!-- Precio Pagado -->
                                 <div>
-                                    <x-input-label value="Precio Pagado" class="text-xs uppercase text-slate-500 font-bold required" />
-                                    <div class="relative mt-1 flex rounded-md shadow-sm">
-                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-100 text-gray-500 text-sm">$</span>
-                                        <!-- Agregamos @input para recalcular -->
-                                        <input name="total_precio_pagado" x-model="totales.precio_pagado" @input="calculateTotals()" required type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
-                                        <select name="moneda_precio_pagado" x-model="totales.moneda_precio_pagado" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-md focus:ring-blue-900 focus:border-blue-900">
+                                    <x-input-label value="Precio Pagado" class="text-xs font-bold text-slate-500 uppercase mb-1 required" />
+                                    <div class="relative flex rounded-sm shadow-sm">
+                                        <span class="inline-flex items-center px-3 rounded-l-sm border border-r-0 border-slate-300 bg-white text-slate-500 text-sm">$</span>
+                                        <input name="total_precio_pagado" x-model="totales.precio_pagado" @input="calculateTotals()" required type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800 text-sm font-bold" />
+                                        <select name="moneda_precio_pagado" x-model="totales.moneda_precio_pagado" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-sm">
                                             <option value="MXN">MXN</option>
                                             <option value="USD">USD</option>
                                             <option value="EUR">EUR</option>
@@ -151,11 +141,11 @@
                                 
                                 <!-- Incrementables -->
                                 <div>
-                                    <x-input-label value="(+) Incrementables" class="text-xs uppercase text-slate-500 font-bold" />
-                                    <div class="relative mt-1 flex rounded-md shadow-sm">
-                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-100 text-gray-500 text-sm">$</span>
-                                        <input name="total_incrementables" x-model="totales.incrementables" @input="calculateTotals()" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
-                                        <select name="moneda_incrementables" x-model="totales.moneda_incrementables" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-md focus:ring-blue-900 focus:border-blue-900">
+                                    <x-input-label value="(+) Incrementables" class="text-xs font-bold text-slate-500 uppercase mb-1" />
+                                    <div class="relative flex rounded-sm shadow-sm">
+                                        <span class="inline-flex items-center px-3 rounded-l-sm border border-r-0 border-slate-300 bg-white text-slate-500 text-sm">$</span>
+                                        <input name="total_incrementables" x-model="totales.incrementables" @input="calculateTotals()" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800 text-sm font-bold" />
+                                        <select name="moneda_incrementables" x-model="totales.moneda_incrementables" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-sm">
                                             <option value="MXN">MXN</option>
                                             <option value="USD">USD</option>
                                             <option value="EUR">EUR</option>
@@ -165,11 +155,11 @@
 
                                 <!-- Decrementables -->
                                 <div>
-                                    <x-input-label value="(-) Decrementables" class="text-xs uppercase text-slate-500 font-bold" />
-                                    <div class="relative mt-1 flex rounded-md shadow-sm">
-                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-100 text-gray-500 text-sm">$</span>
-                                        <input name="total_decrementables" x-model="totales.decrementables" @input="calculateTotals()" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
-                                        <select name="moneda_decrementables" x-model="totales.moneda_decrementables" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-md focus:ring-blue-900 focus:border-blue-900">
+                                    <x-input-label value="(-) Decrementables" class="text-xs font-bold text-slate-500 uppercase mb-1" />
+                                    <div class="relative flex rounded-sm shadow-sm">
+                                        <span class="inline-flex items-center px-3 rounded-l-sm border border-r-0 border-slate-300 bg-white text-slate-500 text-sm">$</span>
+                                        <input name="total_decrementables" x-model="totales.decrementables" @input="calculateTotals()" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800 text-sm font-bold" />
+                                        <select name="moneda_decrementables" x-model="totales.moneda_decrementables" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-sm">
                                             <option value="MXN">MXN</option>
                                             <option value="USD">USD</option>
                                             <option value="EUR">EUR</option>
@@ -177,29 +167,28 @@
                                     </div>
                                 </div>
 
-                                <!-- Valor en Aduana (EDITABLE) -->
-                                <div class="md:col-span-2 lg:col-span-1 bg-blue-50 p-3 rounded-lg border border-blue-100">
-                                    <x-input-label value="= VALOR EN ADUANA" class="text-xs font-bold text-blue-900 required" />
-                                    <div class="relative mt-1 flex rounded-md shadow-inner">
-                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-blue-200 bg-blue-100 text-blue-800 text-sm font-bold">$</span>
-                                        <!-- Eliminamos el readonly y el binding :value directo para usar x-model puro -->
+                                <!-- Valor en Aduana -->
+                                <div class="md:col-span-2 lg:col-span-1 bg-blue-100 p-4 rounded border border-blue-200">
+                                    <x-input-label value="= VALOR EN ADUANA" class="text-xs font-black text-blue-900 uppercase mb-1 required" />
+                                    <div class="relative flex rounded-sm shadow-inner bg-white">
+                                        <span class="inline-flex items-center px-3 rounded-l-sm border border-r-0 border-blue-300 bg-blue-50 text-blue-800 text-sm font-bold">$</span>
                                         <input name="total_valor_aduana" 
                                               x-model="totales.valor_aduana"
                                               type="number" step="0.01"
-                                              class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-blue-200 bg-white text-blue-900 font-bold text-lg focus:ring-blue-900 focus:border-blue-900" 
+                                              class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-blue-300 bg-white text-blue-900 font-black text-xl focus:ring-blue-900 focus:border-blue-900" 
                                               required />
-                                        <span class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-blue-200 bg-blue-100 text-blue-900 text-xs font-bold">MXN</span>
+                                        <span class="inline-flex items-center px-3 rounded-r-sm border border-l-0 border-blue-300 bg-blue-50 text-blue-900 text-xs font-bold">MXN</span>
                                     </div>
                                     <x-input-error :messages="$errors->get('total_valor_aduana')" />
                                 </div>
                                 
                                 <!-- Precio por Pagar -->
                                 <div>
-                                    <x-input-label value="Precio por Pagar" class="text-xs uppercase text-slate-500 font-bold" />
-                                    <div class="relative mt-1 flex rounded-md shadow-sm">
-                                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-100 text-gray-500 text-sm">$</span>
-                                        <input name="total_precio_por_pagar" x-model="totales.precio_por_pagar" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800" />
-                                        <select name="moneda_precio_por_pagar" x-model="totales.moneda_precio_por_pagar" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-md focus:ring-blue-900 focus:border-blue-900">
+                                    <x-input-label value="Precio por Pagar" class="text-xs font-bold text-slate-500 uppercase mb-1" />
+                                    <div class="relative flex rounded-sm shadow-sm">
+                                        <span class="inline-flex items-center px-3 rounded-l-sm border border-r-0 border-slate-300 bg-white text-slate-500 text-sm">$</span>
+                                        <input name="total_precio_por_pagar" x-model="totales.precio_por_pagar" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800 text-sm font-bold" />
+                                        <select name="moneda_precio_por_pagar" x-model="totales.moneda_precio_por_pagar" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-sm">
                                             <option value="MXN">MXN</option>
                                             <option value="USD">USD</option>
                                             <option value="EUR">EUR</option>
@@ -209,9 +198,16 @@
                             </div>
                         </div>
 
-                        <div class="mt-8 flex justify-between pt-6 border-t border-slate-100">
-                            <a href="{{ route('dashboard') }}" class="text-slate-500 hover:text-slate-800 font-medium px-4 py-2">Cancelar</a>
-                            <button type="submit" class="inline-flex items-center px-6 py-3 bg-slate-900 border border-transparent rounded-md font-bold text-sm text-white uppercase tracking-widest hover:bg-blue-900 shadow-lg transform hover:-translate-y-0.5 transition"
+                        <div class="mt-10 flex justify-between items-center pt-6 border-t border-slate-200">
+                             <div class="flex items-center">
+                                <a href="{{ route('dashboard') }}" class="text-slate-500 hover:text-red-700 font-bold text-sm px-4 py-2 mr-4 transition uppercase tracking-wider">Cancelar</a>
+                                
+                                <a href="{{ route('manifestations.step1', $manifestation->uuid) }}" class="inline-flex items-center px-6 py-3 bg-white border border-slate-300 rounded-sm font-bold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50 hover:text-slate-900 transition">
+                                    &larr; Anterior
+                                </a>
+                            </div>
+
+                            <button type="submit" class="inline-flex items-center px-8 py-3 bg-slate-900 border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-900 shadow-md transform hover:-translate-y-0.5 transition"
                                 :disabled="coves.length === 0">
                                 Guardar y Siguiente &rarr;
                             </button>
@@ -231,7 +227,6 @@
                     precio_pagado: '{{ $manifestation->total_precio_pagado ?? 0 }}',
                     incrementables: '{{ $manifestation->total_incrementables ?? 0 }}',
                     decrementables: '{{ $manifestation->total_decrementables ?? 0 }}',
-                    // Inicializamos valor_aduana con dato de BD o cálculo inicial
                     valor_aduana: '{{ $manifestation->total_valor_aduana ?? 0 }}',
                     precio_por_pagar: '{{ $manifestation->total_precio_por_pagar ?? 0 }}',
                     moneda_precio_pagado: 'MXN',
@@ -239,18 +234,12 @@
                     moneda_decrementables: 'MXN',
                     moneda_precio_por_pagar: 'MXN',
                 },
-                
-                // Función para recalcular automáticamente
                 calculateTotals() {
                     const pagado = parseFloat(this.totales.precio_pagado) || 0;
                     const incrementables = parseFloat(this.totales.incrementables) || 0;
                     const decrementables = parseFloat(this.totales.decrementables) || 0;
-                    
-                    // Actualizamos valor aduana, permitiendo que el usuario lo sobrescriba luego si lo edita manualmente
-                    // (el binding x-model mostrará este valor nuevo)
                     this.totales.valor_aduana = (pagado + incrementables - decrementables).toFixed(2);
                 },
-
                 addCove() {
                     if (this.coves.length > 0) {
                         const last = this.coves[this.coves.length - 1];

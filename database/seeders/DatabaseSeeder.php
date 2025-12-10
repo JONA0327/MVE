@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Admin Sistema',
                 'rfc' => 'XAXX010101000', 
-                'username' => 'admin',
+                'username' => 'ADMIN',
                 'password' => Hash::make('password'),
                 'is_admin' => true,
             ]

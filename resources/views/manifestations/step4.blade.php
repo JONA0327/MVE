@@ -1,71 +1,73 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl text-slate-800 leading-tight">
-            Expediente Digital y Firma
+            Expediente Digital
         </h2>
     </x-slot>
 
     <div class="py-12" x-data="filesHandler()">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- STEPPER E&I -->
+            <!-- STEPPER VISUAL -->
             <div class="mb-10">
-                <div class="flex items-center justify-between w-full">
-                    <div class="flex flex-col items-center w-1/4">
-                         <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 text-white font-bold text-sm shadow-sm">✓</div>
-                        <div class="text-xs font-medium mt-2 text-blue-900 uppercase">Generales</div>
-                    </div>
-                    <div class="flex-auto border-t-4 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/4">
-                         <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 text-white font-bold text-sm shadow-sm">✓</div>
-                        <div class="text-xs font-medium mt-2 text-blue-900 uppercase">Valores</div>
-                    </div>
-                    <div class="flex-auto border-t-4 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/4">
-                         <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 text-white font-bold text-sm shadow-sm">✓</div>
-                        <div class="text-xs font-medium mt-2 text-blue-900 uppercase">Detalles</div>
-                    </div>
-                    <div class="flex-auto border-t-4 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/4">
-                         <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-900 text-white font-bold shadow-lg ring-4 ring-blue-50 z-10 transform scale-110">4</div>
-                        <div class="text-xs font-bold mt-2 text-blue-900 uppercase tracking-wide">Firma</div>
-                    </div>
+                <div class="flex items-center justify-between w-full opacity-90">
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Generales</div></div>
+                    <div class="flex-auto border-t-2 border-blue-900"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Valores</div></div>
+                    <div class="flex-auto border-t-2 border-blue-900"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Detalles</div></div>
+                    <div class="flex-auto border-t-2 border-blue-900"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">Archivos</div></div>
+                    <div class="flex-auto border-t-2 border-slate-200"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
                 </div>
             </div>
 
-            <!-- 1. ANEXOS -->
-            <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg mb-8 border-t-4 border-slate-600">
-                <div class="p-6">
-                    <div class="bg-white rounded-lg border border-dashed border-slate-300 p-5 mb-6">
-                        <!-- Selectores de archivo con validación JS en el botón -->
+            <div class="bg-white shadow-2xl rounded-sm overflow-hidden mb-10 border border-slate-300">
+                
+                <!-- ENCABEZADO DE TARJETA -->
+                <div class="bg-slate-100 px-8 py-6 border-b border-slate-300">
+                    <h1 class="text-lg font-bold text-slate-900 uppercase">4. Adjuntar Documentación</h1>
+                    <p class="text-xs text-slate-500">Suba los archivos soporte en formato PDF o Imagen.</p>
+                </div>
+
+                <div class="p-10">
+                    
+                    <!-- FORMULARIO DE CARGA -->
+                    <div class="bg-slate-50 rounded border border-dashed border-slate-300 p-6 mb-8">
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                             <div class="md:col-span-4">
                                 <template x-if="uploadForm.categoria === 'Principal'">
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1 required">Tipo de Documento</label>
-                                        <select x-model="uploadForm.tipo_documento" class="w-full text-sm border-slate-300 rounded-md focus:ring-blue-900 focus:border-blue-900">
+                                        <select x-model="uploadForm.tipo_documento" class="w-full text-sm border-slate-300 rounded-sm focus:ring-blue-900 focus:border-blue-900">
                                             <option value="">Seleccione el tipo...</option>
                                             <option value="Factura Comercial">Factura Comercial</option>
-                                            <option value="Conocimiento de Embarque">Conocimiento de Embarque</option>
+                                            <option value="Conocimiento de Embarque">Conocimiento de Embarque / Guía</option>
+                                            <option value="Documento de Transporte">Documento de Transporte</option>
+                                            <option value="Pruebas de Valor">Pruebas de Valor</option>
+                                            <option value="Contratos Relacionados">Contratos Relacionados</option>
+                                            <option value="Comprobante de Incrementables">Comprobante de Incrementables</option>
+                                            <option value="Otros">Otros Documentos</option>
                                         </select>
                                     </div>
                                 </template>
                                 <template x-if="uploadForm.categoria === 'Complementario'">
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1 required">Descripción</label>
-                                        <input type="text" x-model="uploadForm.descripcion" class="w-full text-sm border-slate-300 rounded-md focus:ring-blue-900 focus:border-blue-900" placeholder="Ej: Carta aclaratoria...">
+                                        <input type="text" x-model="uploadForm.descripcion" class="w-full text-sm border-slate-300 rounded-sm focus:ring-blue-900 focus:border-blue-900" placeholder="Ej: Carta aclaratoria...">
                                     </div>
                                 </template>
                             </div>
                             
                             <div class="md:col-span-5">
                                  <label class="block text-xs font-bold text-slate-500 uppercase mb-1 required">Archivo</label>
-                                <input type="file" x-ref="fileInput" class="block w-full text-xs border border-slate-300 rounded-md p-2 bg-slate-50 text-slate-600" accept=".pdf,.jpg,.jpeg">
+                                <input type="file" x-ref="fileInput" class="block w-full text-xs border border-slate-300 rounded-sm p-2 bg-white text-slate-600" accept=".pdf,.jpg,.jpeg">
                             </div>
 
                             <div class="md:col-span-3">
                                  <button type="button" @click="uploadFile()" 
-                                    class="w-full inline-flex justify-center items-center bg-slate-800 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-slate-900 disabled:opacity-50 transition shadow-md"
+                                    class="w-full inline-flex justify-center items-center bg-blue-900 text-white px-4 py-2 rounded-sm text-sm font-bold hover:bg-blue-800 disabled:opacity-50 transition shadow-sm uppercase tracking-wider"
                                     :disabled="uploading">
                                     <span x-show="!uploading">Adjuntar</span>
                                     <span x-show="uploading">Subiendo...</span>
@@ -73,55 +75,39 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- 2. FIRMA -->
-            <div class="bg-white overflow-hidden shadow-2xl sm:rounded-lg border-t-8 border-blue-900 mb-12">
-                <div class="p-8">
-                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center pb-4 border-b border-slate-100">
-                        2. Firmado Electrónico (e.firma)
-                    </h3>
-                    
-                    <form action="{{ route('manifestations.sign', $manifestation->uuid) }}" method="POST" enctype="multipart/form-data">
-                        @csrf
+                    <!-- LISTA DE ARCHIVOS -->
+                    <div x-show="files.length > 0">
+                        <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-4 pb-1">Documentos en el Expediente</h3>
+                        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <template x-for="file in files" :key="file.id">
+                                <li class="bg-white border border-slate-200 rounded p-3 flex items-center shadow-sm">
+                                    <div class="bg-red-50 p-2 rounded mr-3">
+                                        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-bold text-slate-800 truncate" x-text="file.tipo_documento"></p>
+                                        <p class="text-xs text-slate-500 truncate" x-text="file.file_name"></p>
+                                    </div>
+                                    <span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded ml-2">OK</span>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                    <div x-show="files.length === 0" class="text-center py-10 text-slate-400 italic">
+                        No hay documentos adjuntos.
+                    </div>
+
+                    <!-- BOTONES DE NAVEGACIÓN -->
+                    <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-200">
+                        <a href="{{ route('manifestations.step3', $manifestation->uuid) }}" class="inline-flex items-center px-6 py-3 bg-white border border-slate-300 rounded-sm font-bold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50 hover:text-slate-900 transition">
+                            &larr; Anterior
+                        </a>
                         
-                        <!-- Mensaje General de Error -->
-                        @if ($errors->any())
-                            <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded text-red-700 font-bold text-sm">
-                                <p class="mb-1">No fue posible firmar el documento:</p>
-                                <ul class="list-disc list-inside font-normal">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2 required">Certificado (.cer)</label>
-                                <input type="file" name="cer_file" accept=".cer" required class="block w-full text-sm border border-slate-300 p-2 rounded bg-slate-50 focus:ring-blue-900 focus:border-blue-900">
-                                <x-input-error :messages="$errors->get('cer_file')" class="mt-2" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2 required">Clave Privada (.key)</label>
-                                <input type="file" name="key_file" accept=".key" required class="block w-full text-sm border border-slate-300 p-2 rounded bg-slate-50 focus:ring-blue-900 focus:border-blue-900">
-                                <x-input-error :messages="$errors->get('key_file')" class="mt-2" />
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-bold text-slate-700 mb-2 required">Contraseña de Clave Privada</label>
-                                <input type="password" name="password" required class="block w-full border-slate-300 rounded-md p-3 focus:ring-blue-900 focus:border-blue-900 shadow-sm" placeholder="••••••••">
-                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end pt-6 border-t border-slate-100">
-                            <button type="submit" class="inline-flex items-center px-8 py-4 bg-green-700 border border-transparent rounded-md font-bold text-white text-lg uppercase tracking-widest hover:bg-green-800 active:bg-green-900 shadow-xl transition transform hover:-translate-y-0.5">
-                                Firmar y Enviar al SAT
-                            </button>
-                        </div>
-                    </form>
+                        <a href="{{ route('manifestations.summary', $manifestation->uuid) }}" class="inline-flex items-center px-8 py-3 bg-slate-900 border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-900 shadow-md transform hover:-translate-y-0.5 transition">
+                            Ver Vista Preliminar y Firmar &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -137,8 +123,6 @@
                 async uploadFile() {
                     const fileInput = this.$refs.fileInput;
                     if (fileInput.files.length === 0) return alert('Por favor, seleccione un archivo para adjuntar.');
-                    
-                    // Validación simple del lado del cliente
                     if (this.uploadForm.categoria === 'Principal' && !this.uploadForm.tipo_documento) {
                         return alert('Debe seleccionar un tipo de documento.');
                     }

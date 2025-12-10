@@ -38,7 +38,7 @@
                                 <!-- BOTÓN PANEL ADMIN (Solo visible para Administradores) -->
                                 @if(Auth::user()->is_admin)
                                     <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.*') ? 'border-blue-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }} text-sm font-bold leading-5 focus:outline-none transition duration-150 ease-in-out">
-                                        Usuarios / Admin
+                                            Usuarios / Admin
                                     </a>
                                 @endif
                             </div>
@@ -125,6 +125,21 @@
             </nav>
 
             <div class="pt-20">
+                <!-- ALERTA DE VUCEM CAÍDO (Integrada en tu diseño) -->
+                @if(isset($isVucemDown) && $isVucemDown)
+                    <div class="bg-orange-600 text-white px-4 py-3 shadow-md relative print:hidden mb-4">
+                        <div class="max-w-7xl mx-auto flex items-center justify-center sm:px-6 lg:px-8">
+                            <div class="flex items-center">
+                                <svg class="h-6 w-6 text-white mr-2 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <span class="font-bold mr-1">AVISO IMPORTANTE:</span> 
+                                <span class="text-sm">Detectamos posibles intermitencias o mantenimiento en el portal de VUCEM. El envío de manifestaciones podría fallar o demorar.</span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 @if (isset($header))
                     <header class="bg-white shadow-sm border-b border-gray-200">
                         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

@@ -12,7 +12,7 @@ use Exception;
 class ManifestationController extends Controller
 {
     /**
-     * PASO 1: VISTA
+     * PASO 1: VISTA (CREAR)
      */
     public function createStep1()
     {
@@ -21,7 +21,6 @@ class ManifestationController extends Controller
 
     /**
      * PASO 1: GUARDAR
-     * CORRECCIÓN: Todos los campos ahora son 'required' para evitar error de SQL Integrity.
      */
     public function storeStep1(Request $request)
     {
@@ -30,12 +29,10 @@ class ManifestationController extends Controller
             'rfc_solicitante' => 'required|string|size:13',
             'nombre' => 'required|string|max:255',
             'apellido_paterno' => 'required|string|max:255',
-            // AHORA OBLIGATORIO
             'apellido_materno' => 'required|string|max:255', 
             
             'rfc_importador' => 'required|string|size:13',
             'razon_social_importador' => 'required|string',
-            // AHORA OBLIGATORIO
             'registro_nacional_contribuyentes' => 'required|string', 
         ]);
 
@@ -43,6 +40,39 @@ class ManifestationController extends Controller
 
         return redirect()->route('manifestations.step2', $manifestation->uuid)
             ->with('status', 'Borrador iniciado. Continúe con los valores.');
+    }
+
+    /**
+     * PASO 1: EDITAR
+     */
+    public function editStep1($uuid)
+    {
+        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
+        return view('manifestations.step1', compact('manifestation'));
+    }
+
+    /**
+     * PASO 1: ACTUALIZAR
+     */
+    public function updateStep1(Request $request, $uuid)
+    {
+        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
+
+        $validated = $request->validate([
+            'curp_solicitante' => 'required|string|size:18',
+            'rfc_solicitante' => 'required|string|size:13',
+            'nombre' => 'required|string|max:255',
+            'apellido_paterno' => 'required|string|max:255',
+            'apellido_materno' => 'required|string|max:255',
+            'rfc_importador' => 'required|string|size:13',
+            'razon_social_importador' => 'required|string',
+            'registro_nacional_contribuyentes' => 'required|string', 
+        ]);
+
+        $manifestation->update($validated);
+
+        return redirect()->route('manifestations.step2', $manifestation->uuid)
+            ->with('status', 'Datos generales actualizados.');
     }
 
     /**
@@ -75,7 +105,6 @@ class ManifestationController extends Controller
 
             if ($request->has('coves')) {
                 $manifestation->coves()->delete();
-                // Filtramos filas vacías
                 $coves = collect($request->input('coves'))
                     ->filter(fn($c) => !empty($c['edocument']))
                     ->values();
@@ -171,7 +200,7 @@ class ManifestationController extends Controller
     }
 
     /**
-     * PASO 4: VISTA
+     * PASO 4: VISTA (Archivos)
      */
     public function editStep4($uuid)
     {
@@ -203,6 +232,18 @@ class ManifestationController extends Controller
     }
 
     /**
+     * PASO 5: RESUMEN Y FIRMA (NUEVO MÉTODO)
+     */
+    public function summary($uuid)
+    {
+        $manifestation = Manifestation::where('uuid', $uuid)
+            ->with(['coves', 'pedimentos', 'adjustments', 'payments', 'compensations', 'attachments'])
+            ->firstOrFail();
+
+        return view('manifestations.summary', compact('manifestation'));
+    }
+
+    /**
      * FIRMA (Simulación SAT)
      */
     public function signManifestation(Request $request, $uuid)
@@ -220,6 +261,7 @@ class ManifestationController extends Controller
             $pathAcuse = 'manifestations/' . $uuid . '/SAT_ACUSE_' . time() . '.pdf';
             $pathDetalle = 'manifestations/' . $uuid . '/SAT_DETALLE_' . time() . '.pdf';
 
+            // En producción: Generar PDFs reales aquí
             Storage::put($pathAcuse, '%PDF-1.4 ... (Contenido Simulado Acuse) ...');
             Storage::put($pathDetalle, '%PDF-1.4 ... (Contenido Simulado Detalle) ...');
 

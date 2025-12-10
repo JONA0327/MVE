@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Gate; // Importante
-use App\Models\User;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Gate; // <--- AGREGAR ESTO
+use App\Models\User; // <--- AGREGAR ESTO
+use App\Services\VucemStatusService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,10 +23,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Definimos la puerta 'admin'
-        // Simplemente verifica si el usuario tiene la bandera is_admin en true
+        // 1. Definir el Gate 'admin' para proteger las rutas
         Gate::define('admin', function (User $user) {
-            return $user->is_admin;
+            return $user->is_admin; // Retorna true si es admin, false si no
+        });
+
+        // 2. Compartir el estado de VUCEM con el layout principal
+        View::composer('layouts.app', function ($view) {
+            $service = new VucemStatusService();
+            $view->with('isVucemDown', $service->isDown());
         });
     }
 }

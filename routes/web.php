@@ -42,7 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/manifestacion/nueva', [ManifestationController::class, 'createStep1'])->name('manifestations.create');
     Route::post('/manifestacion/nueva', [ManifestationController::class, 'storeStep1'])->name('manifestations.store');
 
-    // Paso 1: Editar (Regresar desde el paso 2)
+    // Paso 1: Editar
     Route::get('/manifestacion/{uuid}/paso-1', [ManifestationController::class, 'editStep1'])->name('manifestations.step1');
     Route::put('/manifestacion/{uuid}/paso-1', [ManifestationController::class, 'updateStep1'])->name('manifestations.updateStep1');
 
@@ -54,9 +54,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/manifestacion/{uuid}/paso-3', [ManifestationController::class, 'editStep3'])->name('manifestations.step3');
     Route::put('/manifestacion/{uuid}/paso-3', [ManifestationController::class, 'updateStep3'])->name('manifestations.updateStep3');
 
-    // Paso 4
+    // Paso 4: Solo Archivos
     Route::get('/manifestacion/{uuid}/paso-4', [ManifestationController::class, 'editStep4'])->name('manifestations.step4');
     Route::post('/manifestacion/{uuid}/upload', [ManifestationController::class, 'uploadFile'])->name('manifestations.upload');
+    
+    // Paso 5: Resumen y Firma (NUEVO)
+    Route::get('/manifestacion/{uuid}/resumen', [ManifestationController::class, 'summary'])->name('manifestations.summary');
     Route::post('/manifestacion/{uuid}/firmar', [ManifestationController::class, 'signManifestation'])->name('manifestations.sign');
     
     // Finales
