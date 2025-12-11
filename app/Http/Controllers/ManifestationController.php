@@ -12,16 +12,39 @@ use Exception;
 class ManifestationController extends Controller
 {
     /**
-     * PASO 1: VISTA (CREAR)
+     * Helper para cargar catálogos desde JSON
      */
+    private function getCurrencies()
+    {
+        $path = resource_path('data/currencies.json');
+        if (file_exists($path)) {
+            return json_decode(file_get_contents($path), true);
+        }
+        // Fallback por si el archivo no existe
+        return [
+            ['code' => 'MXN', 'name' => 'Peso Mexicano'],
+            ['code' => 'USD', 'name' => 'Dólar Americano'],
+            ['code' => 'EUR', 'name' => 'Euro'],
+        ];
+    }
+
+    /**
+     * Helper para cargar catálogos generales (Formas pago, Incoterms, etc.)
+     */
+    private function getCatalogs()
+    {
+        $path = resource_path('data/catalogs.json');
+        if (file_exists($path)) {
+            return json_decode(file_get_contents($path), true);
+        }
+        return [];
+    }
+
     public function createStep1()
     {
         return view('manifestations.step1');
     }
 
-    /**
-     * PASO 1: GUARDAR
-     */
     public function storeStep1(Request $request)
     {
         $validated = $request->validate([
@@ -30,7 +53,6 @@ class ManifestationController extends Controller
             'nombre' => 'required|string|max:255',
             'apellido_paterno' => 'required|string|max:255',
             'apellido_materno' => 'required|string|max:255', 
-            
             'rfc_importador' => 'required|string|size:13',
             'razon_social_importador' => 'required|string',
             'registro_nacional_contribuyentes' => 'required|string', 
@@ -42,22 +64,15 @@ class ManifestationController extends Controller
             ->with('status', 'Borrador iniciado. Continúe con los valores.');
     }
 
-    /**
-     * PASO 1: EDITAR
-     */
     public function editStep1($uuid)
     {
         $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
         return view('manifestations.step1', compact('manifestation'));
     }
 
-    /**
-     * PASO 1: ACTUALIZAR
-     */
     public function updateStep1(Request $request, $uuid)
     {
         $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
-
         $validated = $request->validate([
             'curp_solicitante' => 'required|string|size:18',
             'rfc_solicitante' => 'required|string|size:13',
@@ -68,25 +83,22 @@ class ManifestationController extends Controller
             'razon_social_importador' => 'required|string',
             'registro_nacional_contribuyentes' => 'required|string', 
         ]);
-
         $manifestation->update($validated);
-
         return redirect()->route('manifestations.step2', $manifestation->uuid)
             ->with('status', 'Datos generales actualizados.');
     }
 
     /**
-     * PASO 2: VISTA
+     * PASO 2: VISTA (Con Monedas y Catálogos)
      */
     public function editStep2($uuid)
     {
         $manifestation = Manifestation::where('uuid', $uuid)->with('coves')->firstOrFail();
-        return view('manifestations.step2', compact('manifestation'));
+        $currencies = $this->getCurrencies(); // Cargar catálogo monedas
+        $catalogs = $this->getCatalogs();     // Cargar resto de catálogos
+        return view('manifestations.step2', compact('manifestation', 'currencies', 'catalogs'));
     }
 
-    /**
-     * PASO 2: GUARDAR
-     */
     public function updateStep2(Request $request, $uuid)
     {
         $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
@@ -119,23 +131,23 @@ class ManifestationController extends Controller
     }
 
     /**
-     * PASO 3: VISTA
+     * PASO 3: VISTA (Con Monedas y Catálogos Completos)
      */
     public function editStep3($uuid)
     {
         $manifestation = Manifestation::where('uuid', $uuid)
-            ->with(['pedimentos', 'payments', 'compensations'])
+            ->with(['pedimentos', 'payments', 'compensations', 'consultationRfcs'])
             ->firstOrFail();
         
         $incrementables = $manifestation->adjustments()->where('type', 'incrementable')->get();
         $decrementables = $manifestation->adjustments()->where('type', 'decrementable')->get();
+        
+        $currencies = $this->getCurrencies(); // Cargar catálogo monedas
+        $catalogs = $this->getCatalogs();     // Cargar resto de catálogos
 
-        return view('manifestations.step3', compact('manifestation', 'incrementables', 'decrementables'));
+        return view('manifestations.step3', compact('manifestation', 'incrementables', 'decrementables', 'currencies', 'catalogs'));
     }
 
-    /**
-     * PASO 3: GUARDAR
-     */
     public function updateStep3(Request $request, $uuid)
     {
         $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
@@ -162,7 +174,6 @@ class ManifestationController extends Controller
             // Ajustes
             $manifestation->adjustments()->delete();
             $adjustments = [];
-            
             foreach ($request->input('incrementables', []) as $inc) {
                 if(!empty($inc['concepto']) && !empty($inc['importe'])) { 
                     $inc['type'] = 'incrementable'; 
@@ -189,133 +200,37 @@ class ManifestationController extends Controller
                 if(count($pagos) > 0) $manifestation->payments()->createMany($pagos);
             }
             
-            // Compensaciones (si aplica)
+            // Compensaciones
             if ($request->has('compensaciones')) {
                 $manifestation->compensations()->delete();
-                $manifestation->compensations()->createMany($request->input('compensaciones'));
+                $compensaciones = collect($request->input('compensaciones'))
+                    ->filter(fn($c) => !empty($c['fecha']) && !empty($c['motivo']))
+                    ->values()
+                    ->toArray();
+                if(count($compensaciones) > 0) $manifestation->compensations()->createMany($compensaciones);
+            }
+
+            // RFCs de Consulta
+            if ($request->has('consultation_rfcs')) {
+                $manifestation->consultationRfcs()->delete();
+                $rfcs = collect($request->input('consultation_rfcs'))
+                    ->filter(fn($r) => !empty($r['rfc_consulta']))
+                    ->map(function ($r) {
+                        return ['rfc_consulta' => strtoupper($r['rfc_consulta'])];
+                    })
+                    ->values()
+                    ->toArray();
+                if(count($rfcs) > 0) $manifestation->consultationRfcs()->createMany($rfcs);
             }
         });
 
         return redirect()->route('manifestations.step4', $uuid);
     }
 
-    /**
-     * PASO 4: VISTA (Archivos)
-     */
-    public function editStep4($uuid)
-    {
-        $manifestation = Manifestation::where('uuid', $uuid)->with('attachments')->firstOrFail();
-        return view('manifestations.step4', compact('manifestation'));
-    }
-
-    /**
-     * SUBIR ARCHIVO (AJAX)
-     */
-    public function uploadFile(Request $request, $uuid)
-    {
-        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
-        $request->validate(['file' => 'required|file|max:3072']);
-
-        $file = $request->file('file');
-        $path = $file->storeAs('manifestations/' . $uuid, 'anexo_' . time() . '.' . $file->getClientOriginalExtension());
-
-        $att = $manifestation->attachments()->create([
-            'tipo_documento' => $request->tipo_documento,
-            'descripcion_complementaria' => $request->descripcion_complementaria,
-            'file_path' => $path,
-            'file_name' => $file->getClientOriginalName(),
-            'file_size' => $file->getSize(),
-            'mime_type' => $file->getMimeType(),
-        ]);
-
-        return response()->json(['success' => true, 'id' => $att->id]);
-    }
-
-    /**
-     * PASO 5: RESUMEN Y FIRMA (NUEVO MÉTODO)
-     */
-    public function summary($uuid)
-    {
-        $manifestation = Manifestation::where('uuid', $uuid)
-            ->with(['coves', 'pedimentos', 'adjustments', 'payments', 'compensations', 'attachments'])
-            ->firstOrFail();
-
-        return view('manifestations.summary', compact('manifestation'));
-    }
-
-    /**
-     * FIRMA (Simulación SAT)
-     */
-    public function signManifestation(Request $request, $uuid)
-    {
-        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
-        
-        $request->validate([
-            'cer_file' => 'required|file',
-            'key_file' => 'required|file',
-            'password' => 'required|string',
-        ]);
-
-        try {
-            // Simulación SAT
-            $pathAcuse = 'manifestations/' . $uuid . '/SAT_ACUSE_' . time() . '.pdf';
-            $pathDetalle = 'manifestations/' . $uuid . '/SAT_DETALLE_' . time() . '.pdf';
-
-            // En producción: Generar PDFs reales aquí
-            Storage::put($pathAcuse, '%PDF-1.4 ... (Contenido Simulado Acuse) ...');
-            Storage::put($pathDetalle, '%PDF-1.4 ... (Contenido Simulado Detalle) ...');
-
-            $manifestation->update([
-                'status' => 'signed',
-                'sello_digital' => 'SELLO_SAT_SIMULADO_XYZ_' . time(),
-                'cadena_original' => '||CADENA|ORIGINAL|SAT||',
-                'path_acuse_manifestacion' => $pathAcuse,
-                'path_detalle_manifestacion' => $pathDetalle,
-            ]);
-
-            return redirect()->route('dashboard')
-                ->with('status', 'Manifestación enviada y firmada correctamente. Acuses recibidos.');
-
-        } catch (Exception $e) {
-            return back()->withErrors(['password' => 'Error: ' . $e->getMessage()]);
-        }
-    }
-
-    /**
-     * DESCARGAR ACUSE
-     */
-    public function downloadAcuse($uuid)
-    {
-        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
-
-        if (!$manifestation->path_acuse_manifestacion || !Storage::exists($manifestation->path_acuse_manifestacion)) {
-             $data = [
-                'm' => $manifestation,
-                'fecha_impresion' => now()->format('d/m/Y H:i:s'),
-                'folio_sat' => 'M-' . substr($manifestation->uuid, 0, 8),
-            ];
-            $pdf = Pdf::loadView('manifestations.pdf.acuse', $data);
-            return $pdf->download('Acuse_' . $manifestation->uuid . '.pdf');
-        }
-
-        return Storage::download($manifestation->path_acuse_manifestacion, 'Acuse_SAT_' . $manifestation->uuid . '.pdf');
-    }
-
-    /**
-     * ELIMINAR BORRADOR
-     */
-    public function destroy($uuid)
-    {
-        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
-
-        if ($manifestation->status === 'signed') {
-            return back()->with('error', 'No es posible eliminar una manifestación firmada.');
-        }
-
-        Storage::deleteDirectory('manifestations/' . $uuid);
-        $manifestation->delete();
-
-        return redirect()->route('dashboard')
-            ->with('status', 'Borrador eliminado correctamente.');
-    }
+    public function editStep4($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->with('attachments')->firstOrFail(); return view('manifestations.step4', compact('manifestation')); }
+    public function uploadFile(Request $request, $uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); $request->validate(['file' => 'required|file|max:3072']); $file = $request->file('file'); $path = $file->storeAs('manifestations/' . $uuid, 'anexo_' . time() . '.' . $file->getClientOriginalExtension()); $att = $manifestation->attachments()->create([ 'tipo_documento' => $request->tipo_documento, 'descripcion_complementaria' => $request->descripcion_complementaria, 'file_path' => $path, 'file_name' => $file->getClientOriginalName(), 'file_size' => $file->getSize(), 'mime_type' => $file->getMimeType(), ]); return response()->json(['success' => true, 'id' => $att->id]); }
+    public function summary($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->with(['coves', 'pedimentos', 'adjustments', 'payments', 'compensations', 'attachments', 'consultationRfcs'])->firstOrFail(); return view('manifestations.summary', compact('manifestation')); }
+    public function signManifestation(Request $request, $uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); $request->validate([ 'cer_file' => 'required|file', 'key_file' => 'required|file', 'password' => 'required|string', ]); try { $pathAcuse = 'manifestations/' . $uuid . '/SAT_ACUSE_' . time() . '.pdf'; $pathDetalle = 'manifestations/' . $uuid . '/SAT_DETALLE_' . time() . '.pdf'; Storage::put($pathAcuse, '%PDF-1.4 ... (Contenido Simulado Acuse) ...'); Storage::put($pathDetalle, '%PDF-1.4 ... (Contenido Simulado Detalle) ...'); $manifestation->update([ 'status' => 'signed', 'sello_digital' => 'SELLO_SAT_SIMULADO_XYZ_' . time(), 'cadena_original' => '||CADENA|ORIGINAL|SAT||', 'path_acuse_manifestacion' => $pathAcuse, 'path_detalle_manifestacion' => $pathDetalle, ]); return redirect()->route('dashboard')->with('status', 'Manifestación enviada y firmada correctamente. Acuses recibidos.'); } catch (Exception $e) { return back()->withErrors(['password' => 'Error: ' . $e->getMessage()]); } }
+    public function downloadAcuse($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); if (!$manifestation->path_acuse_manifestacion || !Storage::exists($manifestation->path_acuse_manifestacion)) { $data = [ 'm' => $manifestation, 'fecha_impresion' => now()->format('d/m/Y H:i:s'), 'folio_sat' => 'M-' . substr($manifestation->uuid, 0, 8), ]; $pdf = Pdf::loadView('manifestations.pdf.acuse', $data); return $pdf->download('Acuse_' . $manifestation->uuid . '.pdf'); } return Storage::download($manifestation->path_acuse_manifestacion, 'Acuse_SAT_' . $manifestation->uuid . '.pdf'); }
+    public function destroy($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); if ($manifestation->status === 'signed') { return back()->with('error', 'No es posible eliminar una manifestación firmada.'); } Storage::deleteDirectory('manifestations/' . $uuid); $manifestation->delete(); return redirect()->route('dashboard')->with('status', 'Borrador eliminado correctamente.'); }
 }

@@ -139,17 +139,29 @@
                         </div>
                     </section>
 
-                    <!-- 4. AGENTE O APODERADO ADUANAL -->
+                    <!-- 4. AGENTE O APODERADO ADUANAL Y RFCs -->
                     <section class="break-inside-avoid">
-                        <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-4 pb-1 print:text-black print:border-black">4. Agente o Apoderado Aduanal</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded print:bg-white print:border print:border-slate-300">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 print:text-black">Nombre Completo</label>
-                                <p class="uppercase">JUAN PÉREZ LÓPEZ</p>
+                        <div class="flex justify-between items-end border-b-2 border-blue-900 mb-4 pb-1 print:border-black">
+                            <h3 class="text-xs font-bold text-blue-900 uppercase print:text-black">4. Agente Aduanal / RFCs Consulta</h3>
+                            <a href="{{ route('manifestations.step3', $manifestation->uuid) }}" class="text-xs text-blue-600 hover:underline print:hidden flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                Editar
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 p-4 rounded print:bg-white print:border print:border-slate-300">
+                                <label class="block text-xs font-bold text-slate-400 print:text-black">Agente Aduanal Principal</label>
+                                <p class="uppercase font-bold text-slate-700 print:text-black">JUAN PÉREZ LÓPEZ (Patente 1624)</p>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 print:text-black">Número de Patente o Autorización</label>
-                                <p class="font-mono">1624</p>
+                            <div class="bg-slate-50 p-4 rounded print:bg-white print:border print:border-slate-300">
+                                <label class="block text-xs font-bold text-slate-400 print:text-black">Otros RFCs Autorizados</label>
+                                <ul class="list-disc list-inside">
+                                    @forelse($manifestation->consultationRfcs as $rfc)
+                                        <li class="uppercase font-mono text-sm">{{ $rfc->rfc_consulta }}</li>
+                                    @empty
+                                        <li class="italic text-xs text-slate-400">Ninguno adicional.</li>
+                                    @endforelse
+                                </ul>
                             </div>
                         </div>
                     </section>
@@ -316,9 +328,9 @@
 
                         <!-- Checkbox Legal -->
                         <div class="mb-6 p-4 bg-slate-800 rounded border border-slate-700">
-                            <label class="flex items-start">
+                            <label class="flex items-start cursor-pointer">
                                 <input type="checkbox" x-model="acceptedTerms" class="mt-1 rounded bg-slate-700 border-slate-600 text-green-500 shadow-sm focus:ring-green-500 focus:ring-offset-slate-900">
-                                <span class="ml-3 text-sm text-slate-300">
+                                <span class="ml-3 text-sm text-slate-300 select-none">
                                     Declaro bajo protesta de decir verdad que los datos asentados en la presente manifestación de valor son ciertos y coinciden con la documentación soporte.
                                 </span>
                             </label>

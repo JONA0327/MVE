@@ -4,31 +4,27 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Gate; // <--- AGREGAR ESTO
-use App\Models\User; // <--- AGREGAR ESTO
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 use App\Services\VucemStatusService;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        // 1. Definir el Gate 'admin' para proteger las rutas
+        // Gate: Admin (Acceso al panel general)
+        // Permite entrar si es Super Admin O Admin
         Gate::define('admin', function (User $user) {
-            return $user->is_admin; // Retorna true si es admin, false si no
+            return in_array($user->role, ['super_admin', 'admin']);
         });
 
-        // 2. Compartir el estado de VUCEM con el layout principal
+        // Gate: Super Admin (Para cosas exclusivas como configs globales)
+        Gate::define('super_admin', function (User $user) {
+            return $user->role === 'super_admin';
+        });
+
         View::composer('layouts.app', function ($view) {
             $service = new VucemStatusService();
             $view->with('isVucemDown', $service->isDown());

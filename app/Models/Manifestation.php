@@ -14,11 +14,9 @@ class Manifestation extends Model
         'uuid',
         'curp_solicitante',
         'rfc_solicitante',
-        // CORRECCIÓN: Nombres separados
         'nombre',
         'apellido_paterno',
         'apellido_materno',
-        
         'rfc_importador',
         'razon_social_importador',
         'registro_nacional_contribuyentes',
@@ -63,4 +61,7 @@ class Manifestation extends Model
     public function payments() { return $this->hasMany(ManifestationPayment::class); }
     public function compensations() { return $this->hasMany(ManifestationCompensation::class); }
     public function attachments() { return $this->hasMany(ManifestationAttachment::class); }
+    
+    // NUEVA RELACIÓN
+    public function consultationRfcs() { return $this->hasMany(ConsultationRfc::class); }
 }

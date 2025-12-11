@@ -1,0 +1,186 @@
+{
+  "formas_de_pago": [
+    {
+      "clave": "FORPAG.EF",
+      "descripcion": "Efectivo"
+    },
+    {
+      "clave": "FORPAG.TE",
+      "descripcion": "Transferencia electrónica"
+    },
+    {
+      "clave": "FORPAG.LC",
+      "descripcion": "Letra de cambio"
+    },
+    {
+      "clave": "FORPAG.CC",
+      "descripcion": "Carta de crédito"
+    },
+    {
+      "clave": "FORPAG.CH",
+      "descripcion": "Cheque"
+    },
+    {
+      "clave": "FORPAG.OT",
+      "descripcion": "Otro tipo de pago"
+    }
+  ],
+  "metodos_de_valoracion": [
+    {
+      "clave": "VALADU.VTM",
+      "descripcion": "Valor de transacción"
+    },
+    {
+      "clave": "VALADU.VMI",
+      "descripcion": "Valor de transacción de las mercancías idénticas"
+    },
+    {
+      "clave": "VALADU.VMS",
+      "descripcion": "Valor de transacción de las mercancías similares"
+    },
+    {
+      "clave": "VALADU.VPU",
+      "descripcion": "Valor de precio unitario de venta"
+    },
+    {
+      "clave": "VALADU.VR",
+      "descripcion": "Valor reconstruido de las mercancías importadas"
+    },
+    {
+      "clave": "VALADU.A78",
+      "descripcion": "Valor determinado conforme a lo establecido en el artículo 78"
+    }
+  ],
+  "incrementables": [
+    {
+      "clave": "INCRE.CG",
+      "descripcion": "Comisiones y gastos de corretaje, excepto comisiones de compra."
+    },
+    {
+      "clave": "INCRE.CE",
+      "descripcion": "Costo de los envases o embalajes que formen un todo con las mercancías."
+    },
+    {
+      "clave": "INCRE.GT",
+      "descripcion": "Gastos de embalaje (mano de obra y/o materiales)."
+    },
+    {
+      "clave": "INCRE.GS",
+      "descripcion": "Gastos de transporte, seguros y conexos."
+    },
+    {
+      "clave": "INCRE.MP",
+      "descripcion": "Materiales, piezas y elementos incorporados."
+    },
+    {
+      "clave": "INCRE.HM",
+      "descripcion": "Herramientas, matrices, moldes utilizados."
+    },
+    {
+      "clave": "INCRE.MC",
+      "descripcion": "Materiales consumidos en la producción."
+    },
+    {
+      "clave": "INCRE.TI",
+      "descripcion": "Trabajos de ingeniería, creación y perfeccionamiento."
+    },
+    {
+      "clave": "INCRE.RD",
+      "descripcion": "Regalías y derechos de licencia."
+    },
+    {
+      "clave": "INCRE.VC",
+      "descripcion": "Valor de cualquier parte del producto que revierta al vendedor."
+    }
+  ],
+  "decrementables": [
+    {
+      "clave": "DECRE.GR",
+      "descripcion": "Gastos realizados por cuenta del importador"
+    },
+    {
+      "clave": "DECRE.RP",
+      "descripcion": "Gastos posteriores a la importación (construcción, instalación, etc.)"
+    },
+    {
+      "clave": "DECRE.GT",
+      "descripcion": "Gastos de transporte, seguros y conexos posteriores."
+    },
+    {
+      "clave": "DECRE.RC",
+      "descripcion": "Contribuciones y cuotas compensatorias en territorio nacional."
+    },
+    {
+      "clave": "DECRE.PI",
+      "descripcion": "Pagos por dividendos."
+    },
+    {
+      "clave": "DECRE.ID",
+      "descripcion": "Descuentos especiales."
+    }
+  ],
+  "tipo_de_figura": [
+    {
+      "clave": "TIPFIG.AGE",
+      "descripcion": "Agente Aduanal"
+    },
+    {
+      "clave": "TIPFIG.AAD",
+      "descripcion": "Agencia Aduanal"
+    },
+    {
+      "clave": "TIPFIG.REP",
+      "descripcion": "Representante Legal"
+    },
+    {
+      "clave": "TIPFIG.OTR",
+      "descripcion": "Otro"
+    }
+  ],
+  "incoterms": [
+    {
+      "clave": "TIPINC.CFR",
+      "descripcion": "CFR- COSTE Y FLETE"
+    },
+    {
+      "clave": "TIPINC.CIF",
+      "descripcion": "CIF - COSTE, SEGURO Y FLETE"
+    },
+    {
+      "clave": "TIPINC.CPT",
+      "descripcion": "CPT - TRANSPORTE PAGADO HASTA"
+    },
+    {
+      "clave": "TIPINC.CIP",
+      "descripcion": "CIP - TRANSPORTE Y SEGURO PAGADOS HASTA"
+    },
+    {
+      "clave": "TIPINC.DAP",
+      "descripcion": "DAP - ENTREGADA EN LUGAR"
+    },
+    {
+      "clave": "TIPINC.DDP",
+      "descripcion": "DDP - ENTREGADA DERECHOS PAGADOS"
+    },
+    {
+      "clave": "TIPINC.DPU",
+      "descripcion": "DPU - ENTREGADA Y DESCARGADA"
+    },
+    {
+      "clave": "TIPINC.EXW",
+      "descripcion": "EXW - EN FABRICA"
+    },
+    {
+      "clave": "TIPINC.FCA",
+      "descripcion": "FCA - FRANCO TRANSPORTISTA"
+    },
+    {
+      "clave": "TIPINC.FAS",
+      "descripcion": "FAS - FRANCO AL COSTADO DEL BUQUE"
+    },
+    {
+      "clave": "TIPINC.FOB",
+      "descripcion": "FOB - FRANCO A BORDO"
+    }
+  ]
+}

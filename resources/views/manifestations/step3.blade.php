@@ -8,7 +8,7 @@
     <div class="py-12" x-data="detalleHandler()">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             
-             <!-- STEPPER VISUAL -->
+            <!-- STEPPER ... (mismo stepper) ... -->
              <div class="mb-10">
                  <div class="flex items-center justify-between w-full opacity-90">
                     <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Generales</div></div>
@@ -22,36 +22,28 @@
                     <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
                 </div>
             </div>
-
-            <div class="bg-white shadow-2xl rounded-sm overflow-hidden mb-10 border border-slate-300">
-                
-                <!-- ENCABEZADO DE TARJETA -->
-                <div class="bg-slate-100 px-8 py-6 border-b border-slate-300">
-                    <h1 class="text-lg font-bold text-slate-900 uppercase">3. Detalles y Ajustes</h1>
-                    <p class="text-xs text-slate-500">Especifique método de valoración, incrementables y pagos.</p>
-                </div>
-
-                <div class="p-10">
-                    <form method="POST" action="{{ route('manifestations.updateStep3', $manifestation->uuid) }}">
-                        @csrf
-                        @method('PUT')
-
-                        @if ($errors->any())
-                            <div class="mb-6 bg-red-50 p-4 rounded border-l-4 border-red-500 text-red-700 text-sm font-bold">
-                                Por favor revise los campos obligatorios marcados.
-                            </div>
-                        @endif
-
                         <!-- 1. GENERALES DEL TRÁMITE -->
                         <div class="mb-10">
                             <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Método e Incoterm</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
                                     <x-input-label value="Método de Valoración" class="font-bold text-slate-500 text-xs uppercase mb-1 required" />
+                                    <!-- CATÁLOGO: Métodos de Valoración -->
                                     <select name="metodo_valoracion_global" required class="w-full mt-1 border-slate-300 rounded-sm shadow-sm focus:border-blue-900 focus:ring-blue-900 text-slate-700 text-sm" x-model="general.metodo">
-                                        <option value="1">1. Valor de Transacción</option>
-                                        <option value="2">2. Idénticos</option>
-                                        <option value="3">3. Similares</option>
+                                        <option value="">Seleccione...</option>
+                                        @foreach($catalogs['metodos_de_valoracion'] ?? [] as $m)
+                                            <option value="{{ $m['clave'] }}">{{ $m['descripcion'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <x-input-label value="INCOTERM" class="font-bold text-slate-500 text-xs uppercase mb-1 required" />
+                                    <!-- CATÁLOGO: Incoterms -->
+                                    <select name="incoterm" required class="w-full mt-1 border-slate-300 rounded-sm shadow-sm focus:border-blue-900 focus:ring-blue-900 text-slate-700 text-sm" x-model="general.incoterm">
+                                        <option value="">Seleccione...</option>
+                                        @foreach($catalogs['incoterms'] ?? [] as $inc)
+                                            <option value="{{ $inc['clave'] }}">{{ $inc['clave'] }} - {{ $inc['descripcion'] }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div>
@@ -79,8 +71,8 @@
                             </div>
                         </div>
 
-                        <!-- 2. PEDIMENTOS -->
-                        <div class="mb-10">
+                        <!-- 2. PEDIMENTOS ... (igual) ... -->
+                         <div class="mb-10">
                             <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Pedimento Asociado</h3>
                             <div class="overflow-x-auto border border-slate-200 rounded">
                                 <table class="w-full text-sm">
@@ -124,26 +116,15 @@
                                     <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end bg-slate-50 p-4 rounded border border-slate-200 shadow-sm relative">
                                         <div class="md:col-span-3">
                                             <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Concepto</label>
+                                            <!-- CATÁLOGO: Incrementables -->
                                             <select :name="`incrementables[${i}][concepto]`" x-model="inc.concepto" required class="w-full text-xs rounded-sm border-slate-300">
                                                 <option value="">Seleccione...</option>
-                                                <option value="Fletes">Fletes</option>
-                                                <option value="Seguros">Seguros</option>
-                                                <option value="Embalajes">Embalajes</option>
-                                                <option value="Otros Incrementables">Otros</option>
+                                                @foreach($catalogs['incrementables'] ?? [] as $inc)
+                                                    <option value="{{ $inc['clave'] }}" title="{{ $inc['descripcion'] }}">{{ Str::limit($inc['descripcion'], 40) }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
-                                        <div class="md:col-span-2">
-                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
-                                            <input type="date" :name="`incrementables[${i}][fecha_erogacion]`" x-model="inc.fecha_erogacion" @change="updateTC(inc)" required class="w-full text-xs rounded-sm border-slate-300">
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Moneda</label>
-                                            <select :name="`incrementables[${i}][moneda]`" x-model="inc.moneda" @change="updateTC(inc)" required class="w-full text-xs rounded-sm border-slate-300">
-                                                <option value="MXN">MXN</option>
-                                                <option value="USD">USD</option>
-                                                <option value="EUR">EUR</option>
-                                            </select>
-                                        </div>
+                                        
                                         <div class="md:col-span-2">
                                             <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Importe</label>
                                             <input type="number" step="0.01" :name="`incrementables[${i}][importe]`" x-model="inc.importe" required class="w-full text-xs rounded-sm border-slate-300">
@@ -157,7 +138,6 @@
                                             <button type="button" @click="incrementables.splice(i,1)" class="text-slate-400 hover:text-red-600 p-2">✕</button>
                                         </div>
                                         
-                                        <!-- Aviso de Gasto a Cargo -->
                                         <div class="md:col-span-12 mt-2 p-2 bg-blue-50 border border-blue-100 rounded flex items-center">
                                             <input type="hidden" :name="`incrementables[${i}][a_cargo_importador]`" value="1">
                                             <svg class="w-4 h-4 text-blue-800 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
@@ -182,23 +162,15 @@
                                         <!-- Mismos campos que incrementables -->
                                         <div class="md:col-span-3">
                                             <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Concepto</label>
+                                            <!-- CATÁLOGO: Decrementables -->
                                             <select :name="`decrementables[${i}][concepto]`" x-model="dec.concepto" required class="w-full text-xs rounded-sm border-slate-300">
                                                 <option value="">Seleccione...</option>
-                                                <option value="Transporte posterior">Transporte posterior</option>
-                                                <option value="Construccion/Instalacion">Construcción</option>
+                                                @foreach($catalogs['decrementables'] ?? [] as $dec)
+                                                    <option value="{{ $dec['clave'] }}" title="{{ $dec['descripcion'] }}">{{ Str::limit($dec['descripcion'], 40) }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
-                                        <div class="md:col-span-2">
-                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
-                                            <input type="date" :name="`decrementables[${i}][fecha_erogacion]`" x-model="dec.fecha_erogacion" @change="updateTC(dec)" required class="w-full text-xs rounded-sm border-slate-300">
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Moneda</label>
-                                            <select :name="`decrementables[${i}][moneda]`" x-model="dec.moneda" @change="updateTC(dec)" required class="w-full text-xs rounded-sm border-slate-300">
-                                                <option value="MXN">MXN</option>
-                                                <option value="USD">USD</option>
-                                            </select>
-                                        </div>
+                                        
                                         <div class="md:col-span-2">
                                             <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Importe</label>
                                             <input type="number" step="0.01" :name="`decrementables[${i}][importe]`" x-model="dec.importe" required class="w-full text-xs rounded-sm border-slate-300">
@@ -250,7 +222,15 @@
                                                 <td class="p-2 border-b border-slate-100"><input type="number" step="0.01" :name="`pagos[${i}][importe]`" x-model="pago.importe" required class="w-full text-xs border-slate-300 rounded-sm"></td>
                                                 <td class="p-2 border-b border-slate-100"><select :name="`pagos[${i}][moneda]`" x-model="pago.moneda" @change="updateTC(pago)" required class="w-full text-xs border-slate-300 rounded-sm"><option value="USD">USD</option><option value="MXN">MXN</option></select></td>
                                                 <td class="p-2 border-b border-slate-100"><input type="number" step="0.0001" :name="`pagos[${i}][tipo_cambio]`" x-model="pago.tipo_cambio" class="w-full text-xs border-slate-300 bg-slate-50 rounded-sm" readonly></td>
-                                                <td class="p-2 border-b border-slate-100"><input type="text" :name="`pagos[${i}][forma_pago]`" x-model="pago.forma_pago" required class="w-full text-xs border-slate-300 rounded-sm" placeholder="Transferencia..."></td>
+                                                <td class="p-2 border-b border-slate-100">
+                                                    <!-- CATÁLOGO: Formas de Pago (Antes era texto libre) -->
+                                                    <select :name="`pagos[${i}][forma_pago]`" x-model="pago.forma_pago" required class="w-full text-xs border-slate-300 rounded-sm">
+                                                        <option value="">Seleccione...</option>
+                                                        @foreach($catalogs['formas_de_pago'] ?? [] as $fp)
+                                                            <option value="{{ $fp['clave'] }}">{{ $fp['descripcion'] }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
                                                 <td class="p-2 border-b border-slate-100 text-center"><button type="button" @click="pagos.splice(i,1)" class="text-slate-400 hover:text-red-600 font-bold">✕</button></td>
                                             </tr>
                                         </template>
@@ -259,7 +239,7 @@
                             </div>
                         </div>
 
-                        <!-- 6. COMPENSACIONES -->
+                        <!-- 6. COMPENSACIONES ... (igual) ... -->
                         <div class="mb-10">
                             <div class="flex justify-between items-center mb-6 border-b-2 border-yellow-500 pb-1">
                                 <h3 class="text-xs font-bold text-slate-800 uppercase">Compenso Pago (Opcional)</h3>
@@ -296,6 +276,30 @@
                             </div>
                         </div>
 
+                        <!-- 7. RFCs DE CONSULTA ... (igual) ... -->
+                        <div class="mb-10">
+                            <div class="flex justify-between items-center mb-6 border-b-2 border-green-600 pb-1">
+                                <h3 class="text-xs font-bold text-slate-800 uppercase">RFCs Autorizados para Consulta (Agente Aduanal)</h3>
+                                <button type="button" @click="addRfc()" class="text-xs bg-white border border-green-600 text-green-700 px-3 py-1 rounded-sm font-bold hover:bg-green-50 transition uppercase">
+                                    + Agregar RFC
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <template x-for="(rfc, i) in consultationRfcs" :key="i">
+                                    <div class="flex items-center bg-white border border-slate-200 rounded-sm p-2 shadow-sm">
+                                        <div class="bg-green-100 p-2 rounded-sm mr-2">
+                                            <svg class="w-4 h-4 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                        </div>
+                                        <input type="text" :name="`consultation_rfcs[${i}][rfc_consulta]`" x-model="rfc.rfc_consulta" class="flex-1 text-sm border-0 focus:ring-0 uppercase font-mono bg-transparent" placeholder="RFC..." maxlength="13" required>
+                                        <button type="button" @click="consultationRfcs.splice(i,1)" class="text-slate-400 hover:text-red-500 font-bold ml-2 p-1">✕</button>
+                                    </div>
+                                </template>
+                            </div>
+                            <div x-show="consultationRfcs.length === 0" class="text-center py-4 text-xs text-slate-400 italic bg-slate-50 border border-dashed border-slate-200 rounded">
+                                No se han autorizado RFCs adicionales para consultar este documento.
+                            </div>
+                        </div>
+
                         <!-- BOTONES DE NAVEGACIÓN -->
                         <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-200">
                             <a href="{{ route('manifestations.step2', $manifestation->uuid) }}" class="inline-flex items-center px-6 py-3 bg-white border border-slate-300 rounded-sm font-bold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50 hover:text-slate-900 transition">
@@ -314,49 +318,29 @@
     <script>
         function detalleHandler() {
             return {
-                // ... (mismo script de antes, sin cambios en lógica)
                 pedimentos: @json($manifestation->pedimentos ?? []) .length ? @json($manifestation->pedimentos) : [{numero_pedimento: '', patente: '', aduana_clave: '430'}],
                 incrementables: @json($incrementables ?? []),
                 decrementables: @json($decrementables ?? []),
                 pagos: @json($manifestation->payments ?? []),
                 compensaciones: @json($manifestation->compensations ?? []),
+                consultationRfcs: @json($manifestation->consultationRfcs ?? []),
 
                 addIncrementable() { 
-                    if (this.incrementables.length > 0) {
-                        const last = this.incrementables[this.incrementables.length - 1];
-                        if (!last.concepto || !last.fecha_erogacion || parseFloat(last.importe) <= 0) {
-                            return alert('Por favor complete los datos del incrementable actual antes de agregar otro.');
-                        }
-                    }
                     this.incrementables.push({ concepto: '', importe: 0, moneda: 'USD', tipo_cambio: 20.0000, a_cargo_importador: true, fecha_erogacion: '', loading: false }); 
                 },
                 addDecrementable() { 
-                    if (this.decrementables.length > 0) {
-                        const last = this.decrementables[this.decrementables.length - 1];
-                        if (!last.concepto || !last.fecha_erogacion || parseFloat(last.importe) <= 0) {
-                            return alert('Por favor complete los datos del decrementable actual antes de agregar otro.');
-                        }
-                    }
                     this.decrementables.push({ concepto: '', importe: 0, moneda: 'USD', tipo_cambio: 20.0000, fecha_erogacion: '', loading: false }); 
                 },
                 addPago() { 
-                    if (this.pagos.length > 0) {
-                        const last = this.pagos[this.pagos.length - 1];
-                        if (!last.fecha || parseFloat(last.importe) <= 0 || !last.forma_pago) {
-                            return alert('Por favor complete los datos del pago actual antes de agregar otro.');
-                        }
-                    }
                     this.pagos.push({ status: 'paid', fecha: '', importe: 0, moneda: 'USD', tipo_cambio: 20.0000, forma_pago: 'Transferencia', situacion_pago: '', loading: false }); 
                 },
                 addCompensacion() {
-                    if (this.compensaciones.length > 0) {
-                        const last = this.compensaciones[this.compensaciones.length - 1];
-                        if (!last.fecha || !last.motivo) {
-                            return alert('Complete la compensación anterior.');
-                        }
-                    }
                     this.compensaciones.push({ fecha: '', motivo: '', prestacion_mercancia: '', forma_pago: '' });
                 },
+                addRfc() {
+                    this.consultationRfcs.push({ rfc_consulta: '' });
+                },
+
                 formatPedimento(ped) {
                     let val = ped.numero_pedimento.replace(/\D/g, '');
                     let parts = [];
