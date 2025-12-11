@@ -8,7 +8,7 @@
     <div class="py-12" x-data="detalleHandler()">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- STEPPER ... (mismo stepper) ... -->
+             <!-- STEPPER VISUAL -->
              <div class="mb-10">
                  <div class="flex items-center justify-between w-full opacity-90">
                     <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Generales</div></div>
@@ -22,6 +22,25 @@
                     <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
                 </div>
             </div>
+
+            <div class="bg-white shadow-2xl rounded-sm overflow-hidden mb-10 border border-slate-300">
+                
+                <div class="bg-slate-100 px-8 py-6 border-b border-slate-300">
+                    <h1 class="text-lg font-bold text-slate-900 uppercase">3. Detalles y Ajustes</h1>
+                    <p class="text-xs text-slate-500">Especifique método de valoración, incrementables y pagos.</p>
+                </div>
+
+                <div class="p-10">
+                    <form method="POST" action="{{ route('manifestations.updateStep3', $manifestation->uuid) }}">
+                        @csrf
+                        @method('PUT')
+
+                        @if ($errors->any())
+                            <div class="mb-6 bg-red-50 p-4 rounded border-l-4 border-red-500 text-red-700 text-sm font-bold">
+                                Por favor revise los campos obligatorios marcados.
+                            </div>
+                        @endif
+
                         <!-- 1. GENERALES DEL TRÁMITE -->
                         <div class="mb-10">
                             <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Método e Incoterm</h3>
@@ -38,21 +57,13 @@
                                 </div>
                                 <div>
                                     <x-input-label value="INCOTERM" class="font-bold text-slate-500 text-xs uppercase mb-1 required" />
-                                    <!-- CATÁLOGO: Incoterms -->
+                                    <!-- CATÁLOGO: Incoterms (CORREGIDO: Solo descripción) -->
                                     <select name="incoterm" required class="w-full mt-1 border-slate-300 rounded-sm shadow-sm focus:border-blue-900 focus:ring-blue-900 text-slate-700 text-sm" x-model="general.incoterm">
                                         <option value="">Seleccione...</option>
                                         @foreach($catalogs['incoterms'] ?? [] as $inc)
-                                            <option value="{{ $inc['clave'] }}">{{ $inc['clave'] }} - {{ $inc['descripcion'] }}</option>
+                                            <!-- Aquí quitamos la clave visual para que no se vea doble -->
+                                            <option value="{{ $inc['clave'] }}">{{ $inc['descripcion'] }}</option>
                                         @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <x-input-label value="INCOTERM" class="font-bold text-slate-500 text-xs uppercase mb-1 required" />
-                                    <select name="incoterm" required class="w-full mt-1 border-slate-300 rounded-sm shadow-sm focus:border-blue-900 focus:ring-blue-900 text-slate-700 text-sm" x-model="general.incoterm">
-                                        <option value="FOB">FOB</option>
-                                        <option value="CIF">CIF</option>
-                                        <option value="EXW">EXW</option>
-                                        <option value="DDP">DDP</option>
                                     </select>
                                 </div>
                                 <div class="bg-slate-50 p-3 rounded border border-slate-200">
@@ -71,8 +82,8 @@
                             </div>
                         </div>
 
-                        <!-- 2. PEDIMENTOS ... (igual) ... -->
-                         <div class="mb-10">
+                        <!-- 2. PEDIMENTOS -->
+                        <div class="mb-10">
                             <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Pedimento Asociado</h3>
                             <div class="overflow-x-auto border border-slate-200 rounded">
                                 <table class="w-full text-sm">
@@ -126,6 +137,18 @@
                                         </div>
                                         
                                         <div class="md:col-span-2">
+                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
+                                            <input type="date" :name="`incrementables[${i}][fecha_erogacion]`" x-model="inc.fecha_erogacion" @change="updateTC(inc)" required class="w-full text-xs rounded-sm border-slate-300">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Moneda</label>
+                                            <select :name="`incrementables[${i}][moneda]`" x-model="inc.moneda" @change="updateTC(inc)" required class="w-full text-xs rounded-sm border-slate-300">
+                                                @foreach($currencies as $c)
+                                                    <option value="{{ $c['code'] }}">{{ $c['code'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-2">
                                             <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Importe</label>
                                             <input type="number" step="0.01" :name="`incrementables[${i}][importe]`" x-model="inc.importe" required class="w-full text-xs rounded-sm border-slate-300">
                                         </div>
@@ -159,7 +182,6 @@
                             <div class="space-y-4">
                                 <template x-for="(dec, i) in decrementables" :key="i">
                                     <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end bg-slate-50 p-4 rounded border border-slate-200 shadow-sm relative">
-                                        <!-- Mismos campos que incrementables -->
                                         <div class="md:col-span-3">
                                             <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Concepto</label>
                                             <!-- CATÁLOGO: Decrementables -->
@@ -171,6 +193,18 @@
                                             </select>
                                         </div>
                                         
+                                        <div class="md:col-span-2">
+                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
+                                            <input type="date" :name="`decrementables[${i}][fecha_erogacion]`" x-model="dec.fecha_erogacion" @change="updateTC(dec)" required class="w-full text-xs rounded-sm border-slate-300">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Moneda</label>
+                                            <select :name="`decrementables[${i}][moneda]`" x-model="dec.moneda" @change="updateTC(dec)" required class="w-full text-xs rounded-sm border-slate-300">
+                                                @foreach($currencies as $c)
+                                                    <option value="{{ $c['code'] }}">{{ $c['code'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                         <div class="md:col-span-2">
                                             <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Importe</label>
                                             <input type="number" step="0.01" :name="`decrementables[${i}][importe]`" x-model="dec.importe" required class="w-full text-xs rounded-sm border-slate-300">
@@ -223,7 +257,7 @@
                                                 <td class="p-2 border-b border-slate-100"><select :name="`pagos[${i}][moneda]`" x-model="pago.moneda" @change="updateTC(pago)" required class="w-full text-xs border-slate-300 rounded-sm"><option value="USD">USD</option><option value="MXN">MXN</option></select></td>
                                                 <td class="p-2 border-b border-slate-100"><input type="number" step="0.0001" :name="`pagos[${i}][tipo_cambio]`" x-model="pago.tipo_cambio" class="w-full text-xs border-slate-300 bg-slate-50 rounded-sm" readonly></td>
                                                 <td class="p-2 border-b border-slate-100">
-                                                    <!-- CATÁLOGO: Formas de Pago (Antes era texto libre) -->
+                                                    <!-- CATÁLOGO: Formas de Pago -->
                                                     <select :name="`pagos[${i}][forma_pago]`" x-model="pago.forma_pago" required class="w-full text-xs border-slate-300 rounded-sm">
                                                         <option value="">Seleccione...</option>
                                                         @foreach($catalogs['formas_de_pago'] ?? [] as $fp)
@@ -239,7 +273,7 @@
                             </div>
                         </div>
 
-                        <!-- 6. COMPENSACIONES ... (igual) ... -->
+                        <!-- 6. COMPENSACIONES -->
                         <div class="mb-10">
                             <div class="flex justify-between items-center mb-6 border-b-2 border-yellow-500 pb-1">
                                 <h3 class="text-xs font-bold text-slate-800 uppercase">Compenso Pago (Opcional)</h3>
@@ -276,7 +310,7 @@
                             </div>
                         </div>
 
-                        <!-- 7. RFCs DE CONSULTA ... (igual) ... -->
+                        <!-- 7. RFCs DE CONSULTA -->
                         <div class="mb-10">
                             <div class="flex justify-between items-center mb-6 border-b-2 border-green-600 pb-1">
                                 <h3 class="text-xs font-bold text-slate-800 uppercase">RFCs Autorizados para Consulta (Agente Aduanal)</h3>
@@ -297,6 +331,32 @@
                             </div>
                             <div x-show="consultationRfcs.length === 0" class="text-center py-4 text-xs text-slate-400 italic bg-slate-50 border border-dashed border-slate-200 rounded">
                                 No se han autorizado RFCs adicionales para consultar este documento.
+                            </div>
+                        </div>
+
+                        <!-- 8. DECLARACIÓN ART. 81 -->
+                        <div class="mb-10">
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm leading-5 font-medium text-yellow-800">
+                                            Documentación Soporte (Art. 81 RLA)
+                                        </h3>
+                                        <div class="mt-2 text-sm leading-5 text-yellow-700">
+                                            <label class="inline-flex items-start cursor-pointer">
+                                                <input type="checkbox" required class="mt-1 form-checkbox h-4 w-4 text-yellow-600 transition duration-150 ease-in-out border-yellow-300 focus:ring-yellow-500">
+                                                <span class="ml-2">
+                                                    Manifiesto bajo protesta de decir verdad que cuento con el <strong>Documento Principal (Factura Comercial)</strong> y demás documentación anexa requerida por el Artículo 81 del Reglamento de la Ley Aduanera para sustentar el valor declarado.
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
