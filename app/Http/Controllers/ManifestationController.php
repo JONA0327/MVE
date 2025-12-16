@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Services\MFileParserService; 
 use Exception;
 
 class ManifestationController extends Controller
@@ -50,11 +49,11 @@ class ManifestationController extends Controller
     {
         $validated = $request->validate([
             'curp_solicitante' => 'required|string|size:18',
-            'rfc_solicitante' => 'required|string|size:13',
+            'rfc_solicitante' => 'required|string|between:12,13',
             'nombre' => 'required|string|max:255',
             'apellido_paterno' => 'required|string|max:255',
             'apellido_materno' => 'required|string|max:255', 
-            'rfc_importador' => 'required|string|size:13',
+            'rfc_importador' => 'required|string|between:12,13',
             'razon_social_importador' => 'required|string',
             'registro_nacional_contribuyentes' => 'required|string', 
         ]);
@@ -76,11 +75,11 @@ class ManifestationController extends Controller
         $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate([
             'curp_solicitante' => 'required|string|size:18',
-            'rfc_solicitante' => 'required|string|size:13',
+            'rfc_solicitante' => 'required|string|between:12,13',
             'nombre' => 'required|string|max:255',
             'apellido_paterno' => 'required|string|max:255',
             'apellido_materno' => 'required|string|max:255',
-            'rfc_importador' => 'required|string|size:13',
+            'rfc_importador' => 'required|string|between:12,13',
             'razon_social_importador' => 'required|string',
             'registro_nacional_contribuyentes' => 'required|string', 
         ]);
@@ -160,7 +159,20 @@ class ManifestationController extends Controller
 
         DB::transaction(function () use ($manifestation, $request) {
             
-            $manifestation->update($request->only(['metodo_valoracion_global', 'incoterm', 'existe_vinculacion']));
+            // Procesar incoterm: extraer solo el código (máx 3 caracteres)
+            $incotermValue = trim($request->input('incoterm', ''));
+            if (strpos($incotermValue, '.') !== false) {
+                $parts = explode('.', $incotermValue);
+                $incotermValue = strtoupper(substr(trim($parts[1]), 0, 3));
+            } else {
+                $incotermValue = strtoupper(substr($incotermValue, 0, 3));
+            }
+            
+            $manifestation->update([
+                'metodo_valoracion_global' => $request->input('metodo_valoracion_global'),
+                'incoterm' => $incotermValue,
+                'existe_vinculacion' => $request->input('existe_vinculacion'),
+            ]);
 
             // Pedimentos
             if ($request->has('pedimentos')) {
@@ -227,29 +239,7 @@ class ManifestationController extends Controller
 
         return redirect()->route('manifestations.step4', $uuid);
     }
-    //Parsea el archivo M y extrae datos relevantes
-    public function parseMFile(Request $request, MFileParserService $parser)
-    {
-        $request->validate([
-            'm_file' => 'required|file|mimes:txt,bin,325', // Ajusta extensiones permitidas
-        ]);
-
-        try {
-            $content = file_get_contents($request->file('m_file')->getRealPath());
-            
-            // Usamos UTF-8 para evitar problemas con acentos en la razón social
-            $content = mb_convert_encoding($content, 'UTF-8', 'ISO-8859-1'); 
-            
-            $data = $parser->parse($content);
-
-            return response()->json([
-                'success' => true,
-                'data' => $data
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error al leer el archivo: ' . $e->getMessage()], 500);
-        }
-    }
+    
     public function editStep4($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->with('attachments')->firstOrFail(); return view('manifestations.step4', compact('manifestation')); }
     public function uploadFile(Request $request, $uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); $request->validate(['file' => 'required|file|max:3072']); $file = $request->file('file'); $path = $file->storeAs('manifestations/' . $uuid, 'anexo_' . time() . '.' . $file->getClientOriginalExtension()); $att = $manifestation->attachments()->create([ 'tipo_documento' => $request->tipo_documento, 'descripcion_complementaria' => $request->descripcion_complementaria, 'file_path' => $path, 'file_name' => $file->getClientOriginalName(), 'file_size' => $file->getSize(), 'mime_type' => $file->getMimeType(), ]); return response()->json(['success' => true, 'id' => $att->id]); }
     public function summary($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->with(['coves', 'pedimentos', 'adjustments', 'payments', 'compensations', 'attachments', 'consultationRfcs'])->firstOrFail(); return view('manifestations.summary', compact('manifestation')); }

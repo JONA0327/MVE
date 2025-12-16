@@ -75,7 +75,7 @@
                             </div>
                             <div class="lg:col-span-1">
                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">RFC</label>
-                                <input type="text" name="rfc" value="{{ old('rfc') }}" class="w-full text-sm rounded-md border-slate-300 focus:ring-blue-900 focus:border-blue-900 uppercase" maxlength="13" required>
+                                <input type="text" name="rfc" value="{{ old('rfc') }}" class="w-full text-sm rounded-md border-slate-300 focus:ring-blue-900 focus:border-blue-900 uppercase" minlength="12" maxlength="13" required>
                             </div>
                             <div class="lg:col-span-1">
                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Correo Electrónico</label>

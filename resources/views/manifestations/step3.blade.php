@@ -31,16 +31,6 @@
                 </div>
 
                 <div class="p-10">
-                    <!-- Indicador de datos cargados desde archivo M -->
-                    <div x-show="pedimentos.length > 0 && sessionStorage.getItem('mFileData')" class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm" style="display: none;">
-                        <div class="flex items-center">
-                            <svg class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <p class="text-sm font-bold text-green-800">Datos de pedimentos cargados automáticamente desde el Archivo M</p>
-                        </div>
-                    </div>
-                    
                     <form method="POST" action="{{ route('manifestations.updateStep3', $manifestation->uuid) }}">
                         @csrf
                         @method('PUT')
@@ -334,7 +324,7 @@
                                         <div class="bg-green-100 p-2 rounded-sm mr-2">
                                             <svg class="w-4 h-4 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                                         </div>
-                                        <input type="text" :name="`consultation_rfcs[${i}][rfc_consulta]`" x-model="rfc.rfc_consulta" class="flex-1 text-sm border-0 focus:ring-0 uppercase font-mono bg-transparent" placeholder="RFC..." maxlength="13" required>
+                                        <input type="text" :name="`consultation_rfcs[${i}][rfc_consulta]`" x-model="rfc.rfc_consulta" class="flex-1 text-sm border-0 focus:ring-0 uppercase font-mono bg-transparent" placeholder="RFC..." minlength="12" maxlength="13" required>
                                         <button type="button" @click="consultationRfcs.splice(i,1)" class="text-slate-400 hover:text-red-500 font-bold ml-2 p-1">✕</button>
                                     </div>
                                 </template>
@@ -395,56 +385,7 @@
                 compensaciones: @json($manifestation->compensations ?? []),
                 consultationRfcs: @json($manifestation->consultationRfcs ?? []),
 
-                init() {
-                    // Cargar datos del archivo M si existen y no hay pedimentos cargados
-                    if (this.pedimentos.length === 1 && !this.pedimentos[0].numero_pedimento) {
-                        const mFileData = sessionStorage.getItem('mFileData');
-                        if (mFileData) {
-                            try {
-                                const data = JSON.parse(mFileData);
-                                
-                                // Cargar pedimentos del archivo M
-                                if (data.pedimentos && data.pedimentos.length > 0) {
-                                    this.pedimentos = data.pedimentos.map(ped => ({
-                                        numero_pedimento: ped.numero_pedimento || '',
-                                        patente: data.patente || '',
-                                        aduana_clave: data.aduana || '430',
-                                        fecha: ped.fecha || ''
-                                    }));
-                                    console.log('Pedimentos cargados desde el archivo M:', this.pedimentos.length);
-                                } else if (data.patente && data.pedimento_clave) {
-                                    // Si no hay pedimentos en registro 512, usar el pedimento principal del 500
-                                    const formattedPed = this.formatPedimentoString(data.patente, data.pedimento_clave, data.aduana);
-                                    this.pedimentos = [{
-                                        numero_pedimento: formattedPed,
-                                        patente: data.patente || '',
-                                        aduana_clave: data.aduana || '430',
-                                        fecha: ''
-                                    }];
-                                    console.log('Pedimento principal cargado desde el archivo M');
-                                }
 
-                                // Cargar incoterm si existe
-                                if (data.incoterm) {
-                                    const incotermSelect = document.querySelector('select[name="incoterm"]');
-                                    if (incotermSelect) {
-                                        incotermSelect.value = data.incoterm;
-                                    }
-                                }
-                            } catch (e) {
-                                console.error('Error al cargar datos del archivo M:', e);
-                            }
-                        }
-                    }
-                },
-                
-                formatPedimentoString(patente, pedimento, aduana) {
-                    // Formato: XX  XXX  XXXX  XXXXXXX
-                    const aduanaStr = (aduana || '').padStart(2, '0');
-                    const patenteStr = (patente || '').padStart(4, '0');
-                    const pedStr = (pedimento || '').padStart(7, '0');
-                    return `${aduanaStr}  ${patenteStr.substring(0, 3)}  ${patenteStr}  ${pedStr}`;
-                },
 
                 addIncrementable() { 
                     this.incrementables.push({ concepto: '', importe: 0, moneda: 'USD', tipo_cambio: 20.0000, a_cargo_importador: true, fecha_erogacion: '', loading: false }); 

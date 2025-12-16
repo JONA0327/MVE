@@ -1,0 +1,946 @@
+[
+  {
+    "id": 1,
+    "aduana": "01",
+    "seccion": "0",
+    "denominacion": "ACAPULCO, ACAPULCO DE JUÁREZ, GUERRERO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 2,
+    "aduana": "01",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL JUAN N. ÁLVAREZ, ACAPULCO, GUERRERO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 3,
+    "aduana": "02",
+    "seccion": "0",
+    "denominacion": "AGUA PRIETA, AGUA PRIETA, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 4,
+    "aduana": "05",
+    "seccion": "0",
+    "denominacion": "SUBTENIENTE LÓPEZ, SUBTENIENTE LÓPEZ, QUINTANA ROO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 5,
+    "aduana": "05",
+    "seccion": "1",
+    "denominacion": "SUBTENIENTE LÓPEZ II \"CHACTEMAL\", OTHÓN P. BLANCO, CHETUMAL, QUINTANA ROO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 6,
+    "aduana": "06",
+    "seccion": "0",
+    "denominacion": "CIUDAD DEL CARMEN, CIUDAD DEL CARMEN, CAMPECHE.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 7,
+    "aduana": "06",
+    "seccion": "3",
+    "denominacion": "SEYBAPLAYA, CHAMPOTÓN, CAMPECHE.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 8,
+    "aduana": "07",
+    "seccion": "0",
+    "denominacion": "CIUDAD JUÁREZ, JUÁREZ, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 9,
+    "aduana": "07",
+    "seccion": "1",
+    "denominacion": "PUENTE INTERNACIONAL ZARAGOZA ISLETA, JUÁREZ, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 10,
+    "aduana": "07",
+    "seccion": "2",
+    "denominacion": "SAN JERÓNIMO-SANTA TERESA, JUÁREZ, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 11,
+    "aduana": "07",
+    "seccion": "3",
+    "denominacion": "AEROPUERTO INTERNACIONAL ABRAHAM GONZÁLEZ, JUÁREZ, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 12,
+    "aduana": "07",
+    "seccion": "4",
+    "denominacion": "GUADALUPE-TORNILLO, GUADALUPE, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 13,
+    "aduana": "08",
+    "seccion": "0",
+    "denominacion": "COATZACOALCOS, COATZACOALCOS, VERACRUZ.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 14,
+    "aduana": "11",
+    "seccion": "0",
+    "denominacion": "ENSENADA, ENSENADA, BAJA CALIFORNIA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 15,
+    "aduana": "12",
+    "seccion": "0",
+    "denominacion": "GUAYMAS, GUAYMAS, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 16,
+    "aduana": "14",
+    "seccion": "0",
+    "denominacion": "LA PAZ, LA PAZ, BAJA CALIFORNIA SUR.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 17,
+    "aduana": "14",
+    "seccion": "2",
+    "denominacion": "SAN JOSÉ DEL CABO, LOS CABOS, BAJA CALIFORNIA SUR.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 18,
+    "aduana": "14",
+    "seccion": "4",
+    "denominacion": "SANTA ROSALÍA, MULEGÉ, BAJA CALIFORNIA SUR.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 19,
+    "aduana": "14",
+    "seccion": "7",
+    "denominacion": "PICHILINGÜE, LA PAZ, BAJA CALIFORNIA SUR.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 20,
+    "aduana": "16",
+    "seccion": "0",
+    "denominacion": "MANZANILLO, MANZANILLO, COLIMA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 21,
+    "aduana": "16",
+    "seccion": "1",
+    "denominacion": "ARMERÍA, ARMERÍA, COLIMA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 22,
+    "aduana": "17",
+    "seccion": "0",
+    "denominacion": "MATAMOROS, MATAMOROS, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 23,
+    "aduana": "17",
+    "seccion": "1",
+    "denominacion": "LUCIO BLANCO-LOS INDIOS, MATAMOROS, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 24,
+    "aduana": "17",
+    "seccion": "2",
+    "denominacion": "FERROVIARIA DE MATAMOROS, MATAMOROS, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 25,
+    "aduana": "18",
+    "seccion": "0",
+    "denominacion": "MAZATLÁN, MAZATLÁN, SINALOA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 26,
+    "aduana": "18",
+    "seccion": "3",
+    "denominacion": "TOPOLOBAMPO, AHOME, SINALOA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 27,
+    "aduana": "19",
+    "seccion": "0",
+    "denominacion": "MEXICALI, MEXICALI, BAJA CALIFORNIA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 28,
+    "aduana": "19",
+    "seccion": "2",
+    "denominacion": "LOS ALGODONES, MEXICALI, BAJA CALIFORNIA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 29,
+    "aduana": "19",
+    "seccion": "3",
+    "denominacion": "SAN FELIPE, MEXICALI, BAJA CALIFORNIA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 30,
+    "aduana": "20",
+    "seccion": "0",
+    "denominacion": "MÉXICO, CIUDAD DE MÉXICO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 31,
+    "aduana": "20",
+    "seccion": "2",
+    "denominacion": "IMPORTACIÓN Y EXPORTACIÓN DE CONTENEDORES, ALCALDÍA AZCAPOTZALCO, CIUDAD DE MÉXICO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 32,
+    "aduana": "22",
+    "seccion": "0",
+    "denominacion": "NACO, NACO, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 33,
+    "aduana": "23",
+    "seccion": "0",
+    "denominacion": "NOGALES, NOGALES, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 34,
+    "aduana": "23",
+    "seccion": "1",
+    "denominacion": "SÁSABE, SÁRIC, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 35,
+    "aduana": "23",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL IGNACIO PESQUEIRA GARCÍA, HERMOSILLO, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 36,
+    "aduana": "23",
+    "seccion": "3",
+    "denominacion": "CIUDAD OBREGÓN ADYACENTE AL AEROPUERTO DE CIUDAD OBREGÓN, CAJEME, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 37,
+    "aduana": "23",
+    "seccion": "4",
+    "denominacion": "AEROPUERTO INTERNACIONAL DE CULIACÁN, CULIACÁN, SINALOA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 38,
+    "aduana": "24",
+    "seccion": "0",
+    "denominacion": "NUEVO LAREDO, NUEVO LAREDO, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 39,
+    "aduana": "25",
+    "seccion": "0",
+    "denominacion": "OJINAGA, OJINAGA, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 40,
+    "aduana": "26",
+    "seccion": "0",
+    "denominacion": "PUERTO PALOMAS, PUERTO PALOMAS, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 41,
+    "aduana": "27",
+    "seccion": "0",
+    "denominacion": "PIEDRAS NEGRAS, PIEDRAS NEGRAS, COAHUILA DE ZARAGOZA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 42,
+    "aduana": "27",
+    "seccion": "1",
+    "denominacion": "AEROPUERTO INTERNACIONAL PLAN DE GUADALUPE, RAMOS ARIZPE, COAHUILA DE ZARAGOZA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 43,
+    "aduana": "28",
+    "seccion": "0",
+    "denominacion": "PROGRESO, PROGRESO, YUCATÁN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 44,
+    "aduana": "28",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL LIC. MANUEL CRESCENCIO REJÓN, MÉRIDA, YUCATÁN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 45,
+    "aduana": "30",
+    "seccion": "0",
+    "denominacion": "CIUDAD REYNOSA, REYNOSA, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 46,
+    "aduana": "30",
+    "seccion": "2",
+    "denominacion": "LAS FLORES, RÍO BRAVO, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 47,
+    "aduana": "30",
+    "seccion": "4",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL. LUCIO BLANCO, REYNOSA, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 48,
+    "aduana": "30",
+    "seccion": "5",
+    "denominacion": "RÍO BRAVO-DONNA, RÍO BRAVO, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 49,
+    "aduana": "30",
+    "seccion": "6",
+    "denominacion": "ANZALDÚAS, REYNOSA, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 50,
+    "aduana": "30",
+    "seccion": "7",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL PEDRO JOSÉ MÉNDEZ, VICTORIA, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 51,
+    "aduana": "31",
+    "seccion": "0",
+    "denominacion": "SALINA CRUZ, SALINA CRUZ, OAXACA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 52,
+    "aduana": "31",
+    "seccion": "3",
+    "denominacion": "PUERTO CHIAPAS, TAPACHULA, CHIAPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 53,
+    "aduana": "33",
+    "seccion": "0",
+    "denominacion": "SAN LUIS RÍO COLORADO, SAN LUIS RÍO COLORADO, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 54,
+    "aduana": "34",
+    "seccion": "0",
+    "denominacion": "CIUDAD MIGUEL ALEMÁN, MIGUEL ALEMÁN, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 55,
+    "aduana": "34",
+    "seccion": "2",
+    "denominacion": "GUERRERO, GUERRERO, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 56,
+    "aduana": "37",
+    "seccion": "0",
+    "denominacion": "CIUDAD HIDALGO, CIUDAD HIDALGO, CHIAPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 57,
+    "aduana": "37",
+    "seccion": "2",
+    "denominacion": "CIUDAD TALISMÁN, TUXTLA CHICO, CHIAPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 58,
+    "aduana": "37",
+    "seccion": "6",
+    "denominacion": "CIUDAD CUAUHTÉMOC, FRONTERA COMALAPA, CHIAPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 59,
+    "aduana": "37",
+    "seccion": "3",
+    "denominacion": "AEROPUERTO INTERNACIONAL DE OAXACA, SANTA CRUZ XOXOCOTLÁN, OAXACA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 60,
+    "aduana": "37",
+    "seccion": "4",
+    "denominacion": "AEROPUERTO INTERNACIONAL C.P.A. CARLOS ROVIROSA PÉREZ, CIUDAD DE VILLAHERMOSA, CENTRO, TABASCO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 61,
+    "aduana": "37",
+    "seccion": "7",
+    "denominacion": "EL CEIBO, TENOSIQUE, TABASCO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 62,
+    "aduana": "37",
+    "seccion": "8",
+    "denominacion": "CRUCE FRONTERIZO NUEVO ORIZABA-INGENIEROS, BENEMÉRITO DE LAS AMÉRICAS, CHIAPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 63,
+    "aduana": "38",
+    "seccion": "0",
+    "denominacion": "TAMPICO, TAMPICO, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 64,
+    "aduana": "39",
+    "seccion": "0",
+    "denominacion": "TECATE, TECATE, BAJA CALIFORNIA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 65,
+    "aduana": "39",
+    "seccion": "1",
+    "denominacion": "LORETO, LORETO, BAJA CALIFORNIA SUR.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 66,
+    "aduana": "39",
+    "seccion": "2",
+    "denominacion": "CABO SAN LUCAS, LOS CABOS, BAJA CALIFORNIA SUR.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 67,
+    "aduana": "40",
+    "seccion": "0",
+    "denominacion": "TIJUANA, TIJUANA, BAJA CALIFORNIA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 68,
+    "aduana": "40",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL DENOMINADO ABELARDO L. RODRÍGUEZ, TIJUANA, BAJA CALIFORNIA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 69,
+    "aduana": "42",
+    "seccion": "0",
+    "denominacion": "TUXPAN, TUXPAN DE RODRÍGUEZ CANO, VERACRUZ.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 70,
+    "aduana": "42",
+    "seccion": "1",
+    "denominacion": "TUXPAN, TUXPAN, VERACRUZ.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 71,
+    "aduana": "43",
+    "seccion": "0",
+    "denominacion": "VERACRUZ, VERACRUZ, VERACRUZ.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 72,
+    "aduana": "43",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL HERIBERTO JARA CORONA, VERACRUZ, VERACRUZ.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 73,
+    "aduana": "44",
+    "seccion": "0",
+    "denominacion": "CIUDAD ACUÑA, CIUDAD ACUÑA, COAHUILA DE ZARAGOZA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 74,
+    "aduana": "46",
+    "seccion": "0",
+    "denominacion": "TORREÓN, TORREÓN, COAHUILA DE ZARAGOZA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 75,
+    "aduana": "46",
+    "seccion": "2",
+    "denominacion": "GÓMEZ PALACIO, GÓMEZ PALACIO, DURANGO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 76,
+    "aduana": "46",
+    "seccion": "3",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL GUADALUPE VICTORIA, DURANGO, DURANGO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 77,
+    "aduana": "46",
+    "seccion": "1",
+    "denominacion": "AEROPUERTO DE TORREÓN, COAHUILA DE ZARAGOZA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 78,
+    "aduana": "47",
+    "seccion": "0",
+    "denominacion": "AEROPUERTO INTERNACIONAL DE LA CIUDAD DE MÉXICO. (Nota 1) (Decreto que establece el cierre del AICM Benito Juárez, para las operaciones del servicio al público de transporte aéreo que se indica, DOF 3/II/2023",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 79,
+    "aduana": "47",
+    "seccion": "1",
+    "denominacion": "SATÉLITE, PARA IMPORTACIÓN Y EXPORTACIÓN POR VÍA AÉREA, AEROPUERTO INTERNACIONAL \"BENITO JUÁREZ\" DE LA CIUDAD DE MÉXICO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 80,
+    "aduana": "47",
+    "seccion": "2",
+    "denominacion": "CENTRO POSTAL MECANIZADO, POR VÍA POSTAL Y POR TRÁFICO AÉREO, AEROPUERTO INTERNACIONAL \"BENITO JUÁREZ\" DE LA CIUDAD DE MÉXICO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 81,
+    "aduana": "48",
+    "seccion": "0",
+    "denominacion": "GUADALAJARA, TLAJOMULCO DE ZÚÑIGA, JALISCO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 82,
+    "aduana": "48",
+    "seccion": "1",
+    "denominacion": "PUERTO VALLARTA, PUERTO VALLARTA, JALISCO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 83,
+    "aduana": "48",
+    "seccion": "4",
+    "denominacion": "TERMINAL INTERMODAL FERROVIARIA, GUADALAJARA, JALISCO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 84,
+    "aduana": "50",
+    "seccion": "0",
+    "denominacion": "SONOYTA, SONOYTA, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 85,
+    "aduana": "50",
+    "seccion": "1",
+    "denominacion": "SAN EMETERIO, GENERAL PLUTARCO ELÍAS CALLES, SONORA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 86,
+    "aduana": "51",
+    "seccion": "0",
+    "denominacion": "LÁZARO CÁRDENAS, LÁZARO CÁRDENAS, MICHOACÁN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 87,
+    "aduana": "51",
+    "seccion": "1",
+    "denominacion": "AEROPUERTO INTERNACIONAL IXTAPA-ZIHUATANEJO, ZIHUATANEJO DE AZUETA, GUERRERO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 88,
+    "aduana": "52",
+    "seccion": "0",
+    "denominacion": "MONTERREY, GENERAL MARIANO ESCOBEDO, NUEVO LEÓN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 89,
+    "aduana": "52",
+    "seccion": "1",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL MARIANO ESCOBEDO, APODACA, NUEVO LEÓN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 90,
+    "aduana": "52",
+    "seccion": "3",
+    "denominacion": "SALINAS VICTORIA A (TERMINAL FERROVIARIA), SALINAS VICTORIA, NUEVO LEÓN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 91,
+    "aduana": "52",
+    "seccion": "4",
+    "denominacion": "GENERAL ESCOBEDO, GENERAL ESCOBEDO, NUEVO LEÓN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 92,
+    "aduana": "52",
+    "seccion": "5",
+    "denominacion": "SALINAS VICTORIA B (INTERPUERTO), SALINAS VICTORIA, NUEVO LEÓN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 93,
+    "aduana": "53",
+    "seccion": "0",
+    "denominacion": "CANCÚN, CANCÚN, QUINTANA ROO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 94,
+    "aduana": "53",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL DE COZUMEL, COZUMEL, QUINTANA ROO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 95,
+    "aduana": "53",
+    "seccion": "3",
+    "denominacion": "PUERTO MORELOS, BENITO JUÁREZ, QUINTANA ROO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 96,
+    "aduana": "64",
+    "seccion": "0",
+    "denominacion": "QUERÉTARO, EL MARQUES Y COLÓN, QUERÉTARO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 97,
+    "aduana": "64",
+    "seccion": "7",
+    "denominacion": "HIDALGO, ATOTONILCO DE TULA, HIDALGO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 98,
+    "aduana": "65",
+    "seccion": "0",
+    "denominacion": "TOLUCA, TOLUCA, ESTADO DE MÉXICO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 99,
+    "aduana": "65",
+    "seccion": "1",
+    "denominacion": "SAN CAYETANO MORELOS, TOLUCA, ESTADO DE MÉXICO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 100,
+    "aduana": "67",
+    "seccion": "0",
+    "denominacion": "CHIHUAHUA, CHIHUAHUA, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 101,
+    "aduana": "67",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL ROBERTO FIERRO VILLALOBOS, CHIHUAHUA, CHIHUAHUA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 102,
+    "aduana": "73",
+    "seccion": "0",
+    "denominacion": "AGUASCALIENTES, SAN FRANCISCO DE LOS ROMO, AGUASCALIENTES.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 103,
+    "aduana": "73",
+    "seccion": "1",
+    "denominacion": "PARQUE MULTIMODAL INTERPUERTO, SAN LUIS POTOSÍ, SAN LUIS POTOSÍ.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 104,
+    "aduana": "73",
+    "seccion": "3",
+    "denominacion": "AEROPUERTO INTERNACIONAL PONCIANO ARRIAGA, SOLEDAD DE GRACIANO SÁNCHEZ, SAN LUIS POTOSÍ.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 105,
+    "aduana": "73",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL GENERAL LEOBARDO C. RUIZ, EN CALERA, ZACATECAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 106,
+    "aduana": "73",
+    "seccion": "4",
+    "denominacion": "LA PILA-VILLA, VILLA DE REYES, SAN LUIS POTOSÍ.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 107,
+    "aduana": "73",
+    "seccion": "5",
+    "denominacion": "AEROPUERTO INTERNACIONAL LIC. JESÚS TERÁN PEREDO, AGUASCALIENTES, AGUASCALIENTES.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 108,
+    "aduana": "75",
+    "seccion": "0",
+    "denominacion": "PUEBLA, HEROICA PUEBLA DE ZARAGOZA, PUEBLA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 109,
+    "aduana": "75",
+    "seccion": "1",
+    "denominacion": "CUERNAVACA, JIUTEPEC, MORELOS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 110,
+    "aduana": "75",
+    "seccion": "4",
+    "denominacion": "AEROPUERTO INTERNACIONAL HERMANOS SERDÁN, HUEJOTZINGO, PUEBLA.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 111,
+    "aduana": "80",
+    "seccion": "0",
+    "denominacion": "COLOMBIA, COLOMBIA, NUEVO LEÓN.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 112,
+    "aduana": "81",
+    "seccion": "0",
+    "denominacion": "ALTAMIRA, ALTAMIRA, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 113,
+    "aduana": "82",
+    "seccion": "0",
+    "denominacion": "CIUDAD CAMARGO, CAMARGO, TAMAULIPAS.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 114,
+    "aduana": "83",
+    "seccion": "0",
+    "denominacion": "DOS BOCAS, PARAÍSO, TABASCO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 115,
+    "aduana": "84",
+    "seccion": "0",
+    "denominacion": "GUANAJUATO, SILAO DE LA VICTORIA, GUANAJUATO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 116,
+    "aduana": "84",
+    "seccion": "1",
+    "denominacion": "CELAYA, CELAYA, GUANAJUATO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 117,
+    "aduana": "84",
+    "seccion": "2",
+    "denominacion": "AEROPUERTO INTERNACIONAL DE GUANAJUATO, SILAO DE LA VICTORIA, GUANAJUATO.",
+    "patente": null,
+    "pais": "MX"
+  },
+  {
+    "id": 118,
+    "aduana": "85",
+    "seccion": "0",
+    "denominacion": "AEROPUERTO INTERNACIONAL FELIPE ÁNGELES, SANTA LUCÍA, ZUMPANGO, ESTADO DE MÉXICO.",
+    "patente": null,
+    "pais": "MX"
+  }
+]
