@@ -35,6 +35,15 @@
                 </div>
 
                 <div class="p-10">
+                    <!-- Indicador de datos cargados desde archivo M -->
+                    <div x-show="coves.length > 0 && sessionStorage.getItem('mFileData')" class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm" style="display: none;">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-sm font-bold text-green-800">Datos cargados automáticamente desde el Archivo M</p>
+                        </div>
+                    </div>
                     <form method="POST" action="{{ route('manifestations.updateStep2', $manifestation->uuid) }}">
                         @csrf
                         @method('PUT')
@@ -198,6 +207,46 @@
                     moneda_incrementables: 'MXN',
                     moneda_decrementables: 'MXN',
                     moneda_precio_por_pagar: 'MXN',
+                },
+                init() {
+                    // Cargar datos del archivo M si existen y no hay coves cargados
+                    if (this.coves.length === 0) {
+                        const mFileData = sessionStorage.getItem('mFileData');
+                        if (mFileData) {
+                            try {
+                                const data = JSON.parse(mFileData);
+                                if (data.coves && data.coves.length > 0) {
+                                    // Cargar los COVES del archivo M
+                                    this.coves = data.coves.map(cove => ({
+                                        edocument: cove.edocument || '',
+                                        metodo_valoracion: '1',
+                                        numero_factura: cove.numero_factura || '',
+                                        fecha_expedicion: this.formatDate(cove.numero_factura),
+                                        emisor: cove.nombre_proveedor || '',
+                                        loading: false
+                                    }));
+                                    
+                                    // Cargar incoterm si existe
+                                    if (data.incoterm) {
+                                        // Puedes guardar el incoterm en algún campo si lo necesitas
+                                        console.log('Incoterm del archivo M:', data.incoterm);
+                                    }
+                                    
+                                    console.log('COVES cargados desde el archivo M:', this.coves.length);
+                                }
+                            } catch (e) {
+                                console.error('Error al cargar datos del archivo M:', e);
+                            }
+                        }
+                    }
+                },
+                formatDate(dateStr) {
+                    // Convierte formato 24102025 a 2025-10-24
+                    if (!dateStr || dateStr.length !== 8) return '';
+                    const day = dateStr.substring(0, 2);
+                    const month = dateStr.substring(2, 4);
+                    const year = dateStr.substring(4, 8);
+                    return `${year}-${month}-${day}`;
                 },
                 calculateTotals() {
                     const pagado = parseFloat(this.totales.precio_pagado) || 0;

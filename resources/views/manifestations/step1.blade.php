@@ -8,7 +8,6 @@
     <div class="py-12" x-data="step1Handler()">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- STEPPER VISUAL -->
             <div class="mb-10">
                 <div class="flex items-center justify-between w-full opacity-90">
                     <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">Generales</div></div>
@@ -25,13 +24,36 @@
 
             <div class="bg-white shadow-2xl rounded-sm overflow-hidden mb-10 border border-slate-300">
                 
-                <!-- ENCABEZADO DE TARJETA -->
                 <div class="bg-slate-100 px-8 py-6 border-b border-slate-300">
                     <h1 class="text-lg font-bold text-slate-900 uppercase">1. Información General</h1>
                     <p class="text-xs text-slate-500">Ingrese los datos del solicitante y del importador.</p>
                 </div>
 
                 <div class="p-10 text-slate-800">
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-blue-100 p-2 rounded-full text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-blue-900 text-sm uppercase">Autocompletar con Archivo M</h4>
+                                <p class="text-xs text-blue-700 mt-1">Si cuenta con el archivo de validación (M), cárguelo aquí para llenar los datos del importador automáticamente.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="m_file_input" class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-blue-300 rounded shadow-sm text-xs font-bold text-blue-700 uppercase tracking-widest hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                Subir Archivo
+                            </label>
+                            <input type="file" id="m_file_input" class="hidden" accept=".325,.txt" @change="uploadMFile($event)">
+                            <div x-show="isUploading" class="text-center mt-2" style="display: none;">
+                                <span class="text-xs text-blue-600 font-bold animate-pulse">Procesando...</span>
+                            </div>
+                        </div>
+                    </div>
                     
                     <form method="POST" action="{{ isset($manifestation) ? route('manifestations.updateStep1', $manifestation->uuid) : route('manifestations.store') }}">
                         @csrf
@@ -50,7 +72,6 @@
                             </div>
                         @endif
 
-                        <!-- SECCIÓN 1: SOLICITANTE -->
                         <div class="mb-10">
                             <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Datos del Solicitante</h3>
                             
@@ -87,7 +108,6 @@
                             </div>
                         </div>
 
-                        <!-- SECCIÓN 2: IMPORTADOR -->
                         <div class="mb-8">
                             <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Datos del Importador</h3>
                             
@@ -130,6 +150,7 @@
     <script>
         function step1Handler() {
             return {
+                isUploading: false,
                 mensajeAyuda: 'Ingrese el RFC.',
                 form: {
                     rfc_importador: '{{ old("rfc_importador", $manifestation->rfc_importador ?? "") }}',
@@ -146,11 +167,70 @@
                     if (rfc.length >= 12) {
                         this.mensajeAyuda = 'RFC válido.';
                         if (!this.form.razon_social_importador) {
-                            this.form.razon_social_importador = "IMPORTADORA EJEMPLO DE MEXICO S.A. DE C.V.";
-                            this.form.registro_nacional = "RNC-" + Math.floor(Math.random() * 999999);
+                            // Solo simulamos si no viene del archivo M y no hay nada escrito
+                            // Idealmente aquí conectarías con una API de validación real si la tienes
                         }
                     } else {
                         this.mensajeAyuda = 'Escribiendo...';
+                    }
+                },
+                async uploadMFile(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    this.isUploading = true;
+                    const formData = new FormData();
+                    formData.append('m_file', file);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    try {
+                        const response = await fetch('{{ route("manifestations.parseMFile") }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            // Actualizar campos con los datos parseados
+                            if(result.data.rfc_importador) {
+                                this.form.rfc_importador = result.data.rfc_importador;
+                            }
+                            if(result.data.razon_social_importador) {
+                                this.form.razon_social_importador = result.data.razon_social_importador;
+                            }
+                            
+                            // Generar RNC dummy si no existe
+                            if(!this.form.registro_nacional && this.form.rfc_importador) {
+                                this.form.registro_nacional = "RNC-GENERICO"; 
+                            }
+
+                            // Guardar todos los datos del archivo M en sessionStorage para los siguientes pasos
+                            sessionStorage.setItem('mFileData', JSON.stringify(result.data));
+
+                            this.buscarRazonSocial();
+                            
+                            // Resumen de datos cargados
+                            const summary = [];
+                            if (result.data.rfc_importador) summary.push(`✓ RFC: ${result.data.rfc_importador}`);
+                            if (result.data.razon_social_importador) summary.push(`✓ Razón Social: ${result.data.razon_social_importador}`);
+                            if (result.data.coves && result.data.coves.length > 0) summary.push(`✓ ${result.data.coves.length} COVE(s)`);
+                            if (result.data.pedimentos && result.data.pedimentos.length > 0) summary.push(`✓ ${result.data.pedimentos.length} Pedimento(s)`);
+                            if (result.data.incoterm) summary.push(`✓ Incoterm: ${result.data.incoterm}`);
+                            
+                            alert('✅ Archivo M procesado exitosamente\n\nDatos importados:\n' + summary.join('\n') + '\n\nLos COVES y pedimentos se cargarán automáticamente en los siguientes pasos.');
+                        } else {
+                            alert('Error al leer el archivo: ' + (result.message || 'Formato desconocido'));
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Ocurrió un error al procesar el archivo.');
+                    } finally {
+                        this.isUploading = false;
+                        event.target.value = '';
                     }
                 }
             }
