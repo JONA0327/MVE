@@ -11,13 +11,13 @@
              <!-- STEPPER VISUAL -->
              <div class="mb-10">
                  <div class="flex items-center justify-between w-full opacity-90">
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Generales</div></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">PASO 1</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Valores</div></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">PASO 2</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">Detalles</div></div>
-                    <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Archivos</div></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">PASO 3</div></div>
+                    <div class="flex-auto border-t-2 border-blue-900"></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 4</div></div>
                     <div class="flex-auto border-t-2 border-slate-200"></div>
                     <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
                 </div>
@@ -26,7 +26,7 @@
             <div class="bg-white shadow-2xl rounded-sm overflow-hidden mb-10 border border-slate-300">
                 
                 <div class="bg-slate-100 px-8 py-6 border-b border-slate-300">
-                    <h1 class="text-lg font-bold text-slate-900 uppercase">3. Detalles y Ajustes</h1>
+                    <h1 class="text-lg font-bold text-slate-900 uppercase">4. Detalles y Ajustes</h1>
                     <p class="text-xs text-slate-500">Especifique método de valoración, incrementables y pagos.</p>
                 </div>
 
@@ -55,16 +55,22 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div>
+                                <div class="relative">
                                     <x-input-label value="INCOTERM" class="font-bold text-slate-500 text-xs uppercase mb-1 required" />
                                     <!-- CATÁLOGO: Incoterms (CORREGIDO: Solo descripción) -->
-                                    <select name="incoterm" required class="w-full mt-1 border-slate-300 rounded-sm shadow-sm focus:border-blue-900 focus:ring-blue-900 text-slate-700 text-sm" x-model="general.incoterm">
+                                    <select name="incoterm" 
+                                        required 
+                                        class="w-full mt-1 border-slate-300 rounded-sm shadow-sm focus:border-blue-900 focus:ring-blue-900 text-slate-700 text-sm" 
+                                        x-bind:class="isFromEme('incoterm') ? 'bg-gray-50 cursor-not-allowed' : 'bg-white'"
+                                        x-bind:disabled="isFromEme('incoterm')"
+                                        x-model="general.incoterm">
                                         <option value="">Seleccione...</option>
                                         @foreach($catalogs['incoterms'] ?? [] as $inc)
                                             <!-- Aquí quitamos la clave visual para que no se vea doble -->
                                             <option value="{{ $inc['clave'] }}">{{ $inc['descripcion'] }}</option>
                                         @endforeach
                                     </select>
+                                    <span x-show="isFromEme('incoterm')" class="absolute top-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded-bl text-[10px] font-bold">📄 Del EME</span>
                                 </div>
                                 <div class="bg-slate-50 p-3 rounded border border-slate-200">
                                     <span class="text-xs font-bold text-slate-500 uppercase block mb-2 required">¿Existe Vinculación?</span>
@@ -310,6 +316,54 @@
                             </div>
                         </div>
 
+                        <!-- FECHAS INFORMATIVAS (EME) -->
+                        <div class="mb-10" x-show="emeData !== null">
+                            <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Fechas Informativas del Pedimento</h3>
+                            <div class="bg-blue-50 border border-blue-200 rounded-sm p-6">
+                                <p class="text-xs text-blue-700 mb-4 italic">📄 Información extraída del archivo EME (solo lectura)</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <x-input-label value="Fecha de Entrada" class="text-xs font-bold text-slate-500 uppercase mb-1" />
+                                        <input type="date" 
+                                            name="fecha_entrada" 
+                                            x-model="fechas_informativas.fecha_entrada" 
+                                            readonly 
+                                            class="w-full mt-1 border-slate-300 rounded-sm shadow-sm bg-gray-50 cursor-not-allowed text-slate-700 text-sm" />
+                                    </div>
+                                    <div>
+                                        <x-input-label value="Fecha de Pago" class="text-xs font-bold text-slate-500 uppercase mb-1" />
+                                        <input type="date" 
+                                            name="fecha_pago_pedimento" 
+                                            x-model="fechas_informativas.fecha_pago_pedimento" 
+                                            readonly 
+                                            class="w-full mt-1 border-slate-300 rounded-sm shadow-sm bg-gray-50 cursor-not-allowed text-slate-700 text-sm" />
+                                    </div>
+                                    <div>
+                                        <x-input-label value="Fecha de Presentación" class="text-xs font-bold text-slate-500 uppercase mb-1" />
+                                        <input type="date" 
+                                            name="fecha_presentacion" 
+                                            x-model="fechas_informativas.fecha_presentacion" 
+                                            readonly 
+                                            class="w-full mt-1 border-slate-300 rounded-sm shadow-sm bg-gray-50 cursor-not-allowed text-slate-700 text-sm" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- OBSERVACIONES DEL PEDIMENTO -->
+                        <div class="mb-10">
+                            <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-6 pb-1">Observaciones del Pedimento</h3>
+                            <div class="relative">
+                                <textarea name="observaciones_pedimento" 
+                                    x-model="observaciones_pedimento"
+                                    rows="4"
+                                    class="w-full mt-1 border-slate-300 rounded-sm shadow-sm focus:border-blue-900 focus:ring-blue-900 text-slate-700 text-sm"
+                                    placeholder="Capture observaciones adicionales del pedimento..."></textarea>
+                                <span x-show="isFromEme('observaciones_pedimento')" class="absolute top-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded-bl text-[10px] font-bold">📄 Del EME</span>
+                                <p class="text-xs text-slate-500 mt-2 italic">Campo editable - Si viene del EME, puede modificarse según sea necesario.</p>
+                            </div>
+                        </div>
+
                         <!-- 7. RFCs DE CONSULTA -->
                         <div class="mb-10">
                             <div class="flex justify-between items-center mb-6 border-b-2 border-green-600 pb-1">
@@ -384,6 +438,60 @@
                 pagos: @json($manifestation->payments ?? []),
                 compensaciones: @json($manifestation->compensations ?? []),
                 consultationRfcs: @json($manifestation->consultationRfcs ?? []),
+                emeData: null,
+                general: {
+                    metodo: '{{ old("metodo_valoracion_global", $manifestation->metodo_valoracion_global ?? "") }}',
+                    incoterm: '{{ old("incoterm", $manifestation->incoterm ?? "") }}'
+                },
+                fechas_informativas: {
+                    fecha_entrada: '{{ old("fecha_entrada", $manifestation->fecha_entrada ?? "") }}',
+                    fecha_pago_pedimento: '{{ old("fecha_pago_pedimento", $manifestation->fecha_pago_pedimento ?? "") }}',
+                    fecha_presentacion: '{{ old("fecha_presentacion", $manifestation->fecha_presentacion ?? "") }}'
+                },
+                observaciones_pedimento: '{{ old("observaciones_pedimento", $manifestation->observaciones_pedimento ?? "") }}',
+                init() {
+                    // Recuperar datos del EME de sessionStorage si existen
+                    const storedEme = sessionStorage.getItem('emeData');
+                    if (storedEme) {
+                        this.emeData = JSON.parse(storedEme);
+                        this.aplicarDatosEme();
+                    }
+                },
+                aplicarDatosEme() {
+                    if (!this.emeData) return;
+                    
+                    // Precargar pedimento
+                    if (this.emeData.numero_pedimento && this.pedimentos.length === 1 && !this.pedimentos[0].numero_pedimento) {
+                        this.pedimentos[0].numero_pedimento = this.emeData.numero_pedimento;
+                        this.pedimentos[0].patente = this.emeData.patente || '';
+                        this.pedimentos[0].aduana_clave = this.emeData.aduana_clave || '430';
+                        this.pedimentos[0].from_eme = true;
+                    }
+                    
+                    // Precargar incoterm
+                    if (this.emeData.incoterm) {
+                        this.general.incoterm = this.emeData.incoterm;
+                    }
+                    
+                    // Precargar fechas informativas
+                    if (this.emeData.fecha_entrada) {
+                        this.fechas_informativas.fecha_entrada = this.emeData.fecha_entrada;
+                    }
+                    if (this.emeData.fecha_pago_pedimento) {
+                        this.fechas_informativas.fecha_pago_pedimento = this.emeData.fecha_pago_pedimento;
+                    }
+                    if (this.emeData.fecha_presentacion) {
+                        this.fechas_informativas.fecha_presentacion = this.emeData.fecha_presentacion;
+                    }
+                    
+                    // Precargar observaciones
+                    if (this.emeData.observaciones_pedimento) {
+                        this.observaciones_pedimento = this.emeData.observaciones_pedimento;
+                    }
+                },
+                isFromEme(field) {
+                    return this.emeData && this.emeData[field];
+                },
 
 
 

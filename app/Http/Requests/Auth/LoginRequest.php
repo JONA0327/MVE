@@ -42,16 +42,35 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Intentamos loguear usando los 3 datos
-        if (! Auth::attempt($this->only('rfc', 'username', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        // Como el RFC está encriptado, necesitamos buscar manualmente
+        $inputRfc = $this->input('rfc');
+        $inputUsername = $this->input('username');
+        $inputPassword = $this->input('password');
 
-            throw ValidationException::withMessages([
-                'rfc' => trans('auth.failed'), // Mensaje de error genérico
-            ]);
+        // Obtener todos los usuarios y buscar el que coincida con RFC y username
+        $users = \App\Models\User::all();
+        $user = null;
+
+        foreach ($users as $potentialUser) {
+            // Comparar RFC desencriptado y username
+            if ($potentialUser->rfc === $inputRfc && $potentialUser->username === $inputUsername) {
+                $user = $potentialUser;
+                break;
+            }
         }
 
-        RateLimiter::clear($this->throttleKey());
+        // Si encontramos el usuario, verificar la contraseña
+        if ($user && Auth::attempt(['id' => $user->id, 'password' => $inputPassword], $this->boolean('remember'))) {
+            RateLimiter::clear($this->throttleKey());
+            return;
+        }
+
+        // Si no se pudo autenticar
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'rfc' => trans('auth.failed'), // Mensaje de error genérico
+        ]);
     }
 
     /**

@@ -21,6 +21,7 @@ class ForceUpperCase
         'file', // Los archivos binarios no se tocan
         'cer_file',
         'key_file',
+        'tipo_figura', // No convertir tipo de figura a mayúsculas
     ];
 
     /**

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\MFileParserService;
 use Exception;
 
 class ManifestationController extends Controller
@@ -34,31 +35,140 @@ class ManifestationController extends Controller
     private function getCatalogs()
     {
         $path = resource_path('data/catalogs.json');
+        $catalogs = [];
+        
         if (file_exists($path)) {
-            return json_decode(file_get_contents($path), true);
+            $catalogs = json_decode(file_get_contents($path), true);
         }
-        return [];
+        
+        // Cargar el catálogo de aduanas por separado
+        $aduanasPath = resource_path('data/aduanas.json');
+        if (file_exists($aduanasPath)) {
+            $catalogs['aduanas'] = json_decode(file_get_contents($aduanasPath), true);
+        }
+        
+        return $catalogs;
     }
 
     public function createStep1()
     {
-        return view('manifestations.step1');
+        $user = auth()->user();
+        $userData = [
+            'rfc' => $user->rfc,
+            'razon_social' => $user->razon_social,
+            'actividad_economica' => $user->actividad_economica,
+            'pais' => $user->pais,
+            'codigo_postal' => $user->codigo_postal,
+            'estado' => $user->estado,
+            'municipio' => $user->municipio,
+            'localidad' => $user->localidad,
+            'colonia' => $user->colonia,
+            'calle' => $user->calle,
+            'numero_exterior' => $user->numero_exterior,
+            'numero_interior' => $user->numero_interior,
+            'lada' => $user->lada,
+            'telefono' => $user->telefono,
+            'email' => $user->email,
+        ];
+        
+        $catalogs = $this->getCatalogs();
+        return view('manifestations.step1', compact('userData', 'catalogs'));
     }
 
     public function storeStep1(Request $request)
     {
+        // Filter out empty consultation_rfcs
+        if ($request->has('consultation_rfcs') && is_array($request->consultation_rfcs)) {
+            $filtered_rfcs = [];
+            foreach ($request->consultation_rfcs as $rfc) {
+                if (isset($rfc['rfc_consulta']) && isset($rfc['razon_social']) && isset($rfc['tipo_figura']) && 
+                    !empty(trim($rfc['rfc_consulta'])) && !empty(trim($rfc['razon_social'])) && !empty(trim($rfc['tipo_figura']))) {
+                    $filtered_rfcs[] = $rfc;
+                }
+            }
+            
+            if (empty($filtered_rfcs)) {
+                $request->request->remove('consultation_rfcs');
+            } else {
+                $request->merge(['consultation_rfcs' => $filtered_rfcs]);
+            }
+        }
+        
+        // Debug: Log what we're validating
+        \Log::info('Consultation RFCs being validated:', $request->consultation_rfcs ?? []);
+
         $validated = $request->validate([
-            'curp_solicitante' => 'required|string|size:18',
+            // Campos del solicitante
             'rfc_solicitante' => 'required|string|between:12,13',
-            'nombre' => 'required|string|max:255',
-            'apellido_paterno' => 'required|string|max:255',
-            'apellido_materno' => 'required|string|max:255', 
+            'razon_social_solicitante' => 'required|string|max:255',
+            'actividad_economica_solicitante' => 'required|string|max:500',
+            'pais_solicitante' => 'required|string|max:100',
+            'codigo_postal_solicitante' => 'required|string|max:10',
+            'estado_solicitante' => 'required|string|max:100',
+            'municipio_solicitante' => 'required|string|max:100',
+            'localidad_solicitante' => 'nullable|string|max:100',
+            'colonia_solicitante' => 'required|string|max:100',
+            'calle_solicitante' => 'required|string|max:255',
+            'numero_exterior_solicitante' => 'required|string|max:20',
+            'numero_interior_solicitante' => 'nullable|string|max:20',
+            'lada_solicitante' => 'required|string|max:5',
+            'telefono_solicitante' => 'required|string|max:20',
+            'correo_solicitante' => 'required|email',
+            // Campos del importador
             'rfc_importador' => 'required|string|between:12,13',
             'razon_social_importador' => 'required|string',
-            'registro_nacional_contribuyentes' => 'required|string', 
+            'registro_nacional_contribuyentes' => 'required|string',
+            'domicilio_fiscal_importador' => 'nullable|string',
         ]);
+        
+        // Validar que el RFC del importador sea el mismo que el del solicitante
+        if ($validated['rfc_importador'] !== $validated['rfc_solicitante']) {
+            return back()->withErrors([
+                'rfc_importador' => 'El RFC del importador debe ser el mismo que el del solicitante.'
+            ])->withInput();
+        }
+        
+        // Validate consultation_rfcs separately if present and not empty
+        if ($request->has('consultation_rfcs') && !empty(array_filter($request->consultation_rfcs ?? [], function($rfc) {
+            return !empty($rfc['rfc_consulta']);
+        }))) {
+            $request->validate([
+                'consultation_rfcs' => 'array',
+                'consultation_rfcs.*.rfc_consulta' => 'required|string|between:12,13',
+                'consultation_rfcs.*.razon_social' => 'required|string',
+                'consultation_rfcs.*.tipo_figura' => 'required|string|in:Agencia Aduanal,Agente aduanal,Otro,Representante Legal',
+            ]);
+        }
 
+        // Buscar o crear importador
+        $importador = \App\Models\Importador::firstOrCreate(
+            ['rfc' => strtoupper($validated['rfc_importador'])],
+            [
+                'razon_social' => $validated['razon_social_importador'],
+                'registro_nacional_contribuyentes' => $validated['registro_nacional_contribuyentes'],
+                'domicilio_fiscal' => $validated['domicilio_fiscal_importador'] ?? null,
+            ]
+        );
+
+        // Si el importador ya existe, actualizar datos si son diferentes
+        if (!$importador->wasRecentlyCreated) {
+            $importador->updateIfNewer([
+                'razon_social' => $validated['razon_social_importador'],
+                'registro_nacional_contribuyentes' => $validated['registro_nacional_contribuyentes'],
+                'domicilio_fiscal' => $validated['domicilio_fiscal_importador'] ?? null,
+            ]);
+        }
+
+        // Crear manifestación con relación al importador
+        $validated['importador_id'] = $importador->id;
         $manifestation = Manifestation::create($validated);
+        
+        // Guardar RFCs de consulta
+        if (!empty($validated['consultation_rfcs'])) {
+            foreach ($validated['consultation_rfcs'] as $rfc) {
+                $manifestation->consultationRfcs()->create($rfc);
+            }
+        }
 
         return redirect()->route('manifestations.step2', $manifestation->uuid)
             ->with('status', 'Borrador iniciado. Continúe con los valores.');
@@ -66,26 +176,235 @@ class ManifestationController extends Controller
 
     public function editStep1($uuid)
     {
-        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
-        return view('manifestations.step1', compact('manifestation'));
+        $manifestation = Manifestation::where('uuid', $uuid)
+            ->with([
+                'importador', 
+                'coves', 
+                'pedimentos', 
+                'adjustments',
+                'payments', 
+                'compensations', 
+                'consultationRfcs'
+            ])
+            ->firstOrFail();
+        
+        // Separar incrementables y decrementables
+        $incrementables = $manifestation->adjustments->where('type', 'incrementable');
+        $decrementables = $manifestation->adjustments->where('type', 'decrementable');
+        
+        $user = auth()->user();
+        $userData = [
+            'rfc' => $user->rfc,
+            'razon_social' => $user->razon_social,
+            'actividad_economica' => $user->actividad_economica,
+            'pais' => $user->pais,
+            'codigo_postal' => $user->codigo_postal,
+            'estado' => $user->estado,
+            'municipio' => $user->municipio,
+            'localidad' => $user->localidad,
+            'colonia' => $user->colonia,
+            'calle' => $user->calle,
+            'numero_exterior' => $user->numero_exterior,
+            'numero_interior' => $user->numero_interior,
+            'lada' => $user->lada,
+            'telefono' => $user->telefono,
+            'email' => $user->email,
+        ];
+        
+        $catalogs = $this->getCatalogs();
+        return view('manifestations.step1', compact('manifestation', 'userData', 'incrementables', 'decrementables', 'catalogs'));
     }
 
     public function updateStep1(Request $request, $uuid)
     {
         $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
+        
+        // Filter out empty consultation_rfcs
+        if ($request->has('consultation_rfcs') && is_array($request->consultation_rfcs)) {
+            $filtered_rfcs = [];
+            foreach ($request->consultation_rfcs as $rfc) {
+                if (isset($rfc['rfc_consulta']) && isset($rfc['razon_social']) && isset($rfc['tipo_figura']) && 
+                    !empty(trim($rfc['rfc_consulta'])) && !empty(trim($rfc['razon_social'])) && !empty(trim($rfc['tipo_figura']))) {
+                    $filtered_rfcs[] = $rfc;
+                }
+            }
+            
+            if (empty($filtered_rfcs)) {
+                $request->request->remove('consultation_rfcs');
+            } else {
+                $request->merge(['consultation_rfcs' => $filtered_rfcs]);
+            }
+        }
+
         $validated = $request->validate([
-            'curp_solicitante' => 'required|string|size:18',
+            // Campos del solicitante
             'rfc_solicitante' => 'required|string|between:12,13',
-            'nombre' => 'required|string|max:255',
-            'apellido_paterno' => 'required|string|max:255',
-            'apellido_materno' => 'required|string|max:255',
+            'razon_social_solicitante' => 'required|string|max:255',
+            'actividad_economica_solicitante' => 'required|string|max:500',
+            'pais_solicitante' => 'required|string|max:100',
+            'codigo_postal_solicitante' => 'required|string|max:10',
+            'estado_solicitante' => 'required|string|max:100',
+            'municipio_solicitante' => 'required|string|max:100',
+            'localidad_solicitante' => 'nullable|string|max:100',
+            'colonia_solicitante' => 'required|string|max:100',
+            'calle_solicitante' => 'required|string|max:255',
+            'numero_exterior_solicitante' => 'required|string|max:20',
+            'numero_interior_solicitante' => 'nullable|string|max:20',
+            'lada_solicitante' => 'required|string|max:5',
+            'telefono_solicitante' => 'required|string|max:20',
+            'correo_solicitante' => 'required|email',
+            // Campos del importador
             'rfc_importador' => 'required|string|between:12,13',
             'razon_social_importador' => 'required|string',
-            'registro_nacional_contribuyentes' => 'required|string', 
+            'registro_nacional_contribuyentes' => 'required|string',
+            'domicilio_fiscal_importador' => 'nullable|string',
+            // Campos de valores aduanales
+            'total_precio_pagado' => 'nullable|numeric|min:0',
+            'total_incrementables' => 'nullable|numeric|min:0',
+            'total_decrementables' => 'nullable|numeric|min:0',
+            'total_valor_aduana' => 'nullable|numeric|min:0',
+            'total_precio_por_pagar' => 'nullable|numeric|min:0',
+            // Campos de la sección MV
+            'metodo_valoracion_global' => 'nullable|string',
+            'incoterm' => 'nullable|string|max:3',
+            // COVEs
+            'coves' => 'nullable|array',
+            'coves.*.edocument' => 'nullable|string',
+            'coves.*.metodo_valoracion' => 'nullable|string',
+            'coves.*.numero_factura' => 'nullable|string',
+            'coves.*.fecha_expedicion' => 'nullable|date',
+            'coves.*.emisor' => 'nullable|string',
         ]);
+        
+        // Validar que el RFC del importador sea el mismo que el del solicitante
+        if ($validated['rfc_importador'] !== $validated['rfc_solicitante']) {
+            return back()->withErrors([
+                'rfc_importador' => 'El RFC del importador debe ser el mismo que el del solicitante.'
+            ])->withInput();
+        }
+        
+        // Validate consultation_rfcs separately if present and not empty
+        if ($request->has('consultation_rfcs') && !empty(array_filter($request->consultation_rfcs ?? [], function($rfc) {
+            return !empty($rfc['rfc_consulta']);
+        }))) {
+            $request->validate([
+                'consultation_rfcs' => 'array',
+                'consultation_rfcs.*.rfc_consulta' => 'required|string|between:12,13',
+                'consultation_rfcs.*.razon_social' => 'required|string',
+                'consultation_rfcs.*.tipo_figura' => 'required|string|in:Agencia Aduanal,Agente aduanal,Otro,Representante Legal',
+            ]);
+        }
+
+        // Buscar o crear importador
+        $importador = \App\Models\Importador::firstOrCreate(
+            ['rfc' => strtoupper($validated['rfc_importador'])],
+            [
+                'razon_social' => $validated['razon_social_importador'],
+                'registro_nacional_contribuyentes' => $validated['registro_nacional_contribuyentes'],
+                'domicilio_fiscal' => $validated['domicilio_fiscal_importador'] ?? null,
+            ]
+        );
+
+        // Si el importador ya existe, actualizar datos si son diferentes
+        if (!$importador->wasRecentlyCreated) {
+            $importador->updateIfNewer([
+                'razon_social' => $validated['razon_social_importador'],
+                'registro_nacional_contribuyentes' => $validated['registro_nacional_contribuyentes'],
+                'domicilio_fiscal' => $validated['domicilio_fiscal_importador'] ?? null,
+            ]);
+        }
+
+        // Actualizar manifestación con relación al importador
+        $validated['importador_id'] = $importador->id;
         $manifestation->update($validated);
+        
+        // Actualizar RFCs de consulta
+        $manifestation->consultationRfcs()->delete();
+        if (!empty($validated['consultation_rfcs'])) {
+            foreach ($validated['consultation_rfcs'] as $rfc) {
+                $manifestation->consultationRfcs()->create($rfc);
+            }
+        }
+
+        // Guardar todos los datos de la sección MV usando transacción
+        DB::transaction(function () use ($manifestation, $request) {
+            // Actualizar COVEs
+            if ($request->has('coves')) {
+                $manifestation->coves()->delete();
+                $coves = collect($request->input('coves'))
+                    ->filter(fn($c) => !empty($c['edocument']))
+                    ->values();
+                
+                if($coves->isNotEmpty()) {
+                    $manifestation->coves()->createMany($coves);
+                }
+            }
+
+            // Actualizar Pedimentos
+            if ($request->has('pedimentos')) {
+                $manifestation->pedimentos()->delete();
+                $pedimentos = collect($request->input('pedimentos'))
+                    ->filter(fn($p) => !empty($p['numero_pedimento']))
+                    ->values();
+                
+                if($pedimentos->isNotEmpty()) {
+                    $manifestation->pedimentos()->createMany($pedimentos);
+                }
+            }
+
+            // Actualizar Incrementables
+            if ($request->has('incrementables')) {
+                $manifestation->adjustments()->where('type', 'incrementable')->delete();
+                $incrementables = collect($request->input('incrementables'))
+                    ->filter(fn($i) => !empty($i['concepto']))
+                    ->map(fn($i) => [...$i, 'type' => 'incrementable'])
+                    ->values();
+                
+                if($incrementables->isNotEmpty()) {
+                    $manifestation->adjustments()->createMany($incrementables);
+                }
+            }
+
+            // Actualizar Decrementables
+            if ($request->has('decrementables')) {
+                $manifestation->adjustments()->where('type', 'decrementable')->delete();
+                $decrementables = collect($request->input('decrementables'))
+                    ->filter(fn($d) => !empty($d['concepto']))
+                    ->map(fn($d) => [...$d, 'type' => 'decrementable'])
+                    ->values();
+                
+                if($decrementables->isNotEmpty()) {
+                    $manifestation->adjustments()->createMany($decrementables);
+                }
+            }
+
+            // Actualizar Pagos
+            if ($request->has('pagos')) {
+                $manifestation->payments()->delete();
+                $pagos = collect($request->input('pagos'))
+                    ->filter(fn($p) => !empty($p['fecha']))
+                    ->values();
+                
+                if($pagos->isNotEmpty()) {
+                    $manifestation->payments()->createMany($pagos);
+                }
+            }
+
+            // Actualizar Compensaciones
+            if ($request->has('compensaciones')) {
+                $manifestation->compensations()->delete();
+                $compensaciones = collect($request->input('compensaciones'))
+                    ->filter(fn($c) => !empty($c['fecha']))
+                    ->values();
+                
+                if($compensaciones->isNotEmpty()) {
+                    $manifestation->compensations()->createMany($compensaciones);
+                }
+            }
+        });
+        
         return redirect()->route('manifestations.step2', $manifestation->uuid)
-            ->with('status', 'Datos generales actualizados.');
+            ->with('status', 'Manifestación actualizada correctamente.');
     }
 
     /**
@@ -238,6 +557,166 @@ class ManifestationController extends Controller
         });
 
         return redirect()->route('manifestations.step4', $uuid);
+    }
+
+    /**
+     * Buscar importador por RFC en tabla de importadores
+     */
+    public function buscarImportadorPorRfc(Request $request)
+    {
+        $request->validate([
+            'rfc' => 'required|string|between:12,13'
+        ]);
+
+        $rfc = strtoupper(trim($request->input('rfc')));
+        
+        \Log::info('Buscando importador con RFC: ' . $rfc);
+
+        try {
+            // Buscar en la tabla de importadores
+            $importador = \App\Models\Importador::where('rfc', $rfc)->first();
+
+            if ($importador) {
+                \Log::info('Importador encontrado: ' . $importador->razon_social);
+                
+                return response()->json([
+                    'found' => true,
+                    'data' => [
+                        'id' => $importador->id,
+                        'rfc' => $importador->rfc,
+                        'razon_social' => $importador->razon_social,
+                        'domicilio_fiscal' => $importador->domicilio_fiscal ?? '',
+                        'registro_nacional' => $importador->registro_nacional_contribuyentes ?? $rfc,
+                    ]
+                ]);
+            }
+
+            \Log::info('Importador no encontrado en BD para RFC: ' . $rfc);
+            
+            return response()->json([
+                'found' => false,
+                'message' => 'RFC no encontrado en registros previos'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error al buscar importador: ' . $e->getMessage());
+            
+            return response()->json([
+                'found' => false,
+                'error' => 'Error al buscar en la base de datos',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Buscar RFC en consultation_rfcs y importadores para razón social
+     */
+    public function buscarRfcConsulta(Request $request)
+    {
+        $request->validate([
+            'rfc' => 'required|string|between:12,13'
+        ]);
+
+        $rfc = strtoupper(trim($request->input('rfc')));
+        
+        \Log::info('Buscando RFC de consulta: ' . $rfc);
+
+        try {
+            // Buscar primero en la tabla de importadores
+            $importador = \App\Models\Importador::where('rfc', $rfc)->first();
+            if ($importador) {
+                \Log::info('RFC encontrado en importadores: ' . $importador->razon_social);
+                
+                return response()->json([
+                    'found' => true,
+                    'data' => [
+                        'razon_social' => $importador->razon_social,
+                        'source' => 'importadores'
+                    ]
+                ]);
+            }
+            
+            // Buscar en consultation_rfcs de otras manifestaciones
+            $consultationRfc = \App\Models\ConsultationRfc::where('rfc_consulta', $rfc)
+                ->whereNotNull('razon_social')
+                ->first();
+                
+            if ($consultationRfc) {
+                \Log::info('RFC encontrado en consultation_rfcs: ' . $consultationRfc->razon_social);
+                
+                return response()->json([
+                    'found' => true,
+                    'data' => [
+                        'razon_social' => $consultationRfc->razon_social,
+                        'tipo_figura' => $consultationRfc->tipo_figura ?? null,
+                        'source' => 'consultation_rfcs'
+                    ]
+                ]);
+            }
+            
+            \Log::info('RFC de consulta no encontrado en BD: ' . $rfc);
+            
+            return response()->json([
+                'found' => false,
+                'message' => 'RFC no encontrado en registros previos'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error al buscar RFC de consulta: ' . $e->getMessage());
+            
+            return response()->json([
+                'found' => false,
+                'error' => 'Error al buscar en la base de datos',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Parsea el archivo EME y extrae datos para precarga
+     */
+    public function parseEme(Request $request, MFileParserService $parser)
+    {
+        \Log::info('========================================');
+        \Log::info('MÉTODO parseEme LLAMADO');
+        \Log::info('Archivo recibido: ' . ($request->hasFile('eme_file') ? 'SI' : 'NO'));
+        
+        $request->validate([
+            'eme_file' => 'required|file|mimes:txt,eme,325',
+        ]);
+
+        try {
+            $file = $request->file('eme_file');
+            \Log::info('Nombre del archivo: ' . $file->getClientOriginalName());
+            \Log::info('Tamaño del archivo: ' . $file->getSize() . ' bytes');
+            
+            $content = file_get_contents($file->getRealPath());
+            \Log::info('Contenido leído: ' . strlen($content) . ' caracteres');
+            
+            // Convertir a UTF-8 si es necesario
+            $content = mb_convert_encoding($content, 'UTF-8', 'ISO-8859-1,UTF-8,ASCII');
+            
+            $data = $parser->parse($content);
+            
+            \Log::info('Datos parseados exitosamente');
+            \Log::info('RFC Importador extraído: ' . ($data['rfc_importador'] ?? 'NULL'));
+            \Log::info('Razón Social extraída: ' . ($data['razon_social_importador'] ?? 'NULL'));
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+                'source' => 'eme'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error al parsear EME: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al procesar el archivo EME: ' . $e->getMessage()
+            ], 500);
+        }
     }
     
     public function editStep4($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->with('attachments')->firstOrFail(); return view('manifestations.step4', compact('manifestation')); }

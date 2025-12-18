@@ -29,6 +29,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // --- PARSER EME ---
+    Route::post('/manifestacion/parse-eme', [ManifestationController::class, 'parseEme'])->name('manifestations.parseEme');
+    
+    // --- BUSCAR IMPORTADOR POR RFC ---
+    Route::post('/manifestacion/buscar-importador', [ManifestationController::class, 'buscarImportadorPorRfc'])->name('manifestations.buscarImportador');
+    Route::post('/manifestacion/buscar-rfc-consulta', [ManifestationController::class, 'buscarRfcConsulta'])->name('manifestations.buscarRfcConsulta');
+    
     // --- ADMIN ---
     Route::middleware('can:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');

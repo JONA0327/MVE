@@ -11,13 +11,13 @@
             <!-- STEPPER VISUAL -->
             <div class="mb-10">
                 <div class="flex items-center justify-between w-full opacity-90">
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Generales</div></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">PASO 1</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Valores</div></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">PASO 2</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Detalles</div></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">PASO 3</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">Archivos</div></div>
+                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 4</div></div>
                     <div class="flex-auto border-t-2 border-slate-200"></div>
                     <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
                 </div>
