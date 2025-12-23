@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl text-slate-800 leading-tight">
-            Expediente Digital
+            Firma con eFirma
         </h2>
     </x-slot>
 
@@ -27,8 +27,8 @@
                 
                 <!-- ENCABEZADO DE TARJETA -->
                 <div class="bg-slate-100 px-8 py-6 border-b border-slate-300">
-                    <h1 class="text-lg font-bold text-slate-900 uppercase">4. Adjuntar Documentación</h1>
-                    <p class="text-xs text-slate-500">Suba los archivos soporte en formato PDF o Imagen.</p>
+                    <h1 class="text-lg font-bold text-slate-900 uppercase">4. Firma con eFirma</h1>
+                    <p class="text-xs text-slate-500">Firme electrónicamente el documento para enviarlo a VUCEM.</p>
                 </div>
 
                 <div class="p-10">

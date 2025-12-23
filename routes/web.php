@@ -36,6 +36,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/manifestacion/buscar-importador', [ManifestationController::class, 'buscarImportadorPorRfc'])->name('manifestations.buscarImportador');
     Route::post('/manifestacion/buscar-rfc-consulta', [ManifestationController::class, 'buscarRfcConsulta'])->name('manifestations.buscarRfcConsulta');
     
+    // --- TIPOS DE CAMBIO ---
+    Route::get('/manifestacion/tipo-cambio', [ManifestationController::class, 'getExchangeRate'])->name('manifestations.exchangeRate');
+    
     // --- ADMIN ---
     Route::middleware('can:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
@@ -57,6 +60,10 @@ Route::middleware('auth')->group(function () {
     // Paso 2
     Route::get('/manifestacion/{uuid}/paso-2', [ManifestationController::class, 'editStep2'])->name('manifestations.step2');
     Route::put('/manifestacion/{uuid}/paso-2', [ManifestationController::class, 'updateStep2'])->name('manifestations.updateStep2');
+    
+    // CONVERTIDOR Y VERIFICADOR PDF
+    Route::post('/convertidor/pdf', [\App\Http\Controllers\Convertidor\PdfConverterController::class, 'convert'])->name('pdf.convert');
+    Route::post('/verificador/pdf', [\App\Http\Controllers\Convertidor\PdfConverterController::class, 'verify'])->name('pdf.verify');
 
     // Paso 3
     Route::get('/manifestacion/{uuid}/paso-3', [ManifestationController::class, 'editStep3'])->name('manifestations.step3');

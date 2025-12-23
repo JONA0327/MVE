@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl text-slate-800 leading-tight">
-            Manifestaciones de Valor
+            Carga de los documentos
         </h2>
     </x-slot>
 
@@ -11,15 +11,11 @@
             <!-- STEPPER VISUAL -->
             <div class="mb-10">
                 <div class="flex items-center justify-between w-full opacity-90">
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">PASO 1</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-blue-900">PASO 1</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 2</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 2</div></div>
                     <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">PASO 3</div></div>
-                    <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">PASO 4</div></div>
-                    <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-slate-400">PASO 3</div></div>
                 </div>
             </div>
 
@@ -27,8 +23,8 @@
                 
                 <div class="bg-slate-100 px-8 py-6 border-b border-slate-300 flex justify-between items-center">
                     <div>
-                        <h1 class="text-lg font-bold text-slate-900 uppercase">2. Manifestaciones de Valor</h1>
-                        <p class="text-xs text-slate-500">Agregue pedimentos, incrementables y decrementables.</p>
+                        <h1 class="text-lg font-bold text-slate-900 uppercase">2. Carga de los documentos</h1>
+                        <p class="text-xs text-slate-500">Suba los archivos soporte en formato PDF o Imagen.</p>
                     </div>
                     <button type="button" @click="addMV()" class="bg-blue-900 hover:bg-blue-800 text-white text-sm px-6 py-3 rounded-sm font-bold shadow-md transition flex items-center uppercase tracking-wider">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,9 +223,9 @@
                                     &larr; Anterior
                                 </a>
                             </div>
-                            <button type="submit" class="inline-flex items-center px-8 py-3 bg-slate-900 border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-900 shadow-md transform hover:-translate-y-0.5 transition">
-                                Guardar y Siguiente &rarr;
-                            </button>
+                            <a href="{{ route('manifestations.step3', $manifestation->uuid) }}" class="inline-flex items-center px-8 py-3 bg-slate-900 border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-900 shadow-md transform hover:-translate-y-0.5 transition">
+                                Continuar &rarr;
+                            </a>
                         </div>
                     </form>
                 </div>

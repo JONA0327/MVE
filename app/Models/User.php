@@ -20,6 +20,7 @@ class User extends Authenticatable
         'role',
         'parent_id',
         'is_admin',
+        'webservice_key',
         // Campos del solicitante
         'razon_social',
         'actividad_economica',
@@ -167,6 +168,11 @@ class User extends Authenticatable
         $this->attributes['telefono'] = $value ? Crypt::encrypt($value) : null;
     }
 
+    public function setWebserviceKeyAttribute($value)
+    {
+        $this->attributes['webservice_key'] = $value ? Crypt::encrypt($value) : null;
+    }
+
     // --- ACCESSORS PARA DESENCRIPTACIÓN ---
     public function getRfcAttribute($value)
     {
@@ -287,6 +293,15 @@ class User extends Authenticatable
     }
 
     public function getTelefonoAttribute($value)
+    {
+        try {
+            return $value ? Crypt::decrypt($value) : null;
+        } catch (\Exception $e) {
+            return $value;
+        }
+    }
+
+    public function getWebserviceKeyAttribute($value)
     {
         try {
             return $value ? Crypt::decrypt($value) : null;

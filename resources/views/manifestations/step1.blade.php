@@ -10,15 +10,11 @@
             
             <div class="mb-10">
                 <div class="flex items-center justify-between w-full opacity-90">
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 1</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 1</div></div>
                     <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">PASO 2</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-slate-400">PASO 2</div></div>
                     <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">PASO 3</div></div>
-                    <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">PASO 4</div></div>
-                    <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-slate-400">PASO 3</div></div>
                 </div>
             </div>
 
@@ -245,7 +241,7 @@
                         <!-- TAB: MANIFESTACIÓN DE VALOR -->
                         <div x-show="activeTab === 'manifestacion'" x-transition>
                             
-                            <!-- Carga de Archivo EME -->
+                            <!-- Carga de Archivo M -->
                             <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-6 shadow-sm">
                                 <div class="flex items-center justify-between">
                                     <div class="flex-1">
@@ -253,16 +249,16 @@
                                             <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                             </svg>
-                                            Cargar Archivo EME (Opcional)
+                                            Cargar Archivo M (Opcional)
                                         </h4>
-                                        <p class="text-xs text-slate-600">Precargue automáticamente los datos del importador y la manifestación desde un archivo EME.</p>
+                                        <p class="text-xs text-slate-600">Precargue automáticamente los datos del importador y la manifestación desde un archivo M.</p>
                                     </div>
                                     <div class="ml-4">
                                         <label for="emeFile" class="cursor-pointer inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase rounded-sm shadow-md transition transform hover:-translate-y-0.5">
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                             </svg>
-                                            <span x-show="!isUploading">Seleccionar EME</span>
+                                            <span x-show="!isUploading">Seleccionar M</span>
                                             <span x-show="isUploading" x-cloak>Procesando...</span>
                                         </label>
                                         <input type="file" id="emeFile" @change="uploadEme($event)" accept=".txt,.eme,.325" class="hidden">
@@ -319,16 +315,6 @@
                                 <div class="md:col-span-2">
                                     <x-input-label for="registro_nacional_contribuyentes" :value="__('Registro Nacional de Contribuyentes (o Tax ID)')" class="font-bold text-slate-500 text-xs uppercase mb-1 required" />
                                     <input id="registro_nacional_contribuyentes" class="block w-full bg-slate-100 text-slate-600 border-slate-300 rounded-sm shadow-sm font-bold text-sm cursor-not-allowed" type="text" name="registro_nacional_contribuyentes" x-model="form.registro_nacional_contribuyentes" readonly required />
-                                </div>
-                                <div class="md:col-span-2 relative">
-                                    <x-input-label for="domicilio_fiscal_importador" :value="__('Domicilio Fiscal del Importador')" class="font-bold text-slate-500 text-xs uppercase mb-1" />
-                                    <textarea id="domicilio_fiscal_importador" 
-                                        class="block w-full text-sm rounded-sm shadow-sm bg-slate-100 text-slate-600 border-slate-300 cursor-not-allowed" 
-                                        name="domicilio_fiscal_importador" 
-                                        x-model="form.domicilio_fiscal_importador"
-                                        readonly
-                                        rows="2"
-                                        placeholder="Calle, número, colonia, código postal, ciudad, estado, país"></textarea>
                                 </div>
                             </div>
 
@@ -462,6 +448,7 @@
                                     <table class="min-w-full divide-y divide-slate-200">
                                         <thead class="bg-slate-50">
                                             <tr>
+                                                <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase tracking-wider">Seleccionar</th>
                                                 <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">COVE</th>
                                                 <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Método</th>
                                                 <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider"># Factura</th>
@@ -473,6 +460,10 @@
                                         <tbody class="bg-white divide-y divide-slate-200">
                                             <template x-for="(cove, index) in coves" :key="index">
                                                 <tr class="hover:bg-slate-50">
+                                                    <td class="p-3 align-middle text-center">
+                                                        <input type="radio" :name="`selected_cove`" :value="index" x-model="selectedCoveIndex" 
+                                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                                    </td>
                                                     <td class="p-3 align-top relative">
                                                         <div class="flex">
                                                             <input type="text" :name="`coves[${index}][edocument]`" x-model="cove.edocument" 
@@ -484,7 +475,7 @@
                                                             </button>
                                                         </div>
                                                         <p x-show="cove.loading" class="text-xs text-blue-600 mt-1 animate-pulse font-medium">Buscando...</p>
-                                                        <div x-show="cove.fromEme" class="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-md" title="Del archivo EME"></div>
+                                                        <div x-show="cove.fromEme" class="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-md" title="Del archivo M"></div>
                                                     </td>
                                                     <td class="p-3 align-top">
                                                         <select :name="`coves[${index}][metodo_valoracion]`" x-model="cove.metodo_valoracion" required class="w-full text-xs border-slate-300 rounded-sm focus:ring-blue-900 focus:border-blue-900">
@@ -515,13 +506,28 @@
 
                                 <!-- BOTÓN AÑADIR MV -->
                                 <div class="mt-6 text-center">
-                                    <button type="button" @click="showMVSection = !showMVSection" 
-                                        class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm uppercase rounded-sm shadow-md transition transform hover:-translate-y-0.5">
+                                    <button type="button" @click="toggleMVSection()" 
+                                        :disabled="coves.length === 0 || selectedCoveIndex === null"
+                                        :class="(coves.length === 0 || selectedCoveIndex === null) ? 
+                                            'inline-flex items-center px-6 py-3 bg-gray-400 text-gray-600 font-bold text-sm uppercase rounded-sm shadow-md cursor-not-allowed opacity-50' : 
+                                            'inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm uppercase rounded-sm shadow-md transition transform hover:-translate-y-0.5'">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                         </svg>
                                         <span x-text="showMVSection ? 'Ocultar Detalles MV' : 'Añadir MV'"></span>
                                     </button>
+                                    <p x-show="coves.length === 0" class="text-xs text-red-600 mt-2">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                        </svg>
+                                        Debe agregar al menos un COVE antes de configurar la Manifestación de Valor
+                                    </p>
+                                    <p x-show="coves.length > 0 && selectedCoveIndex === null" class="text-xs text-orange-600 mt-2">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                        </svg>
+                                        Debe seleccionar un COVE de la tabla para asociar con la Manifestación de Valor
+                                    </p>
                                 </div>
 
                                 <!-- SECCIÓN MV EXPANDIBLE -->
@@ -567,6 +573,35 @@
                                         </div>
                                     </div>
 
+                                    <!-- VINCULACIÓN ENTRE PARTES -->
+                                    <div class="mb-8">
+                                        <h3 class="text-xs font-bold text-yellow-800 uppercase border-b-2 border-yellow-800 mb-4 pb-1">Vinculación entre Partes</h3>
+                                        <div class="bg-yellow-50 border border-yellow-200 rounded-sm p-4">
+                                            <p class="text-xs text-yellow-700 mb-4">¿Existe vinculación entre el importador y el vendedor/exportador? Indique si existe alguna relación comercial, familiar, de control o participación entre las partes</p>
+                                            
+                                            <div class="flex items-center space-x-6 mb-4">
+                                                <label class="flex items-center">
+                                                    <input type="radio" name="existe_vinculacion" value="1" x-model="form.existe_vinculacion" class="text-yellow-600 border-yellow-300 focus:ring-yellow-600">
+                                                    <span class="ml-2 text-sm font-bold text-yellow-800">SÍ, existe vinculación</span>
+                                                </label>
+                                                <label class="flex items-center">
+                                                    <input type="radio" name="existe_vinculacion" value="0" x-model="form.existe_vinculacion" class="text-yellow-600 border-yellow-300 focus:ring-yellow-600">
+                                                    <span class="ml-2 text-sm font-bold text-yellow-800">NO, no existe vinculación</span>
+                                                </label>
+                                            </div>
+                                            
+                                            <!-- Campo de descripción cuando existe vinculación -->
+                                            <div x-show="form.existe_vinculacion === '1'" class="mt-4">
+                                                <label class="block text-xs font-bold text-yellow-800 uppercase mb-1">Describa la vinculación existente:</label>
+                                                <textarea name="descripcion_vinculacion" 
+                                                    x-model="form.descripcion_vinculacion"
+                                                    rows="3" 
+                                                    class="w-full text-sm border-yellow-300 rounded-sm focus:ring-yellow-600 focus:border-yellow-600" 
+                                                    placeholder="Describa el tipo de vinculación (comercial, familiar, de control, etc.)"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- PEDIMENTOS -->
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center mb-4 border-b-2 border-blue-900 pb-1">
@@ -598,7 +633,7 @@
                                                                 <select :name="`pedimentos[${i}][aduana_clave]`" x-model="ped.aduana_clave" required class="w-full text-sm rounded-md border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" style="min-width: 300px;">
                                                                     <option value="">Seleccione aduana...</option>
                                                                     @foreach($catalogs['aduanas'] ?? [] as $aduana)
-                                                                        <option value="{{ $aduana['aduana'] }}">{{ $aduana['aduana'] }} - {{ $aduana['denominacion'] }}</option>
+                                                                        <option value="{{ $aduana['aduana'] }}{{ $aduana['seccion'] }}">{{ $aduana['aduana'] }}{{ $aduana['seccion'] }} - {{ $aduana['denominacion'] }}</option>
                                                                     @endforeach
                                                                 </select>
                                                             </td>
@@ -615,7 +650,7 @@
                                     <!-- INCREMENTABLES -->
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center mb-4 border-b-2 border-green-600 pb-1">
-                                            <h3 class="text-xs font-bold text-green-700 uppercase">Incrementables</h3>
+                                            <h3 class="text-xs font-bold text-green-700 uppercase">Incrementables conforme al artículo 65 de la ley</h3>
                                             <button type="button" @click="addIncrementable()" class="text-xs bg-white border border-green-600 text-green-700 px-3 py-1 rounded-sm font-bold hover:bg-green-50 transition uppercase">
                                                 + Agregar
                                             </button>
@@ -634,14 +669,15 @@
                                                     </div>
                                                     <div class="md:col-span-2">
                                                         <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
-                                                        <input type="date" :name="`incrementables[${i}][fecha_erogacion]`" x-model="inc.fecha_erogacion" required class="w-full text-xs rounded-sm border-slate-300">
+                                                        <input type="date" :name="`incrementables[${i}][fecha_erogacion]`" x-model="inc.fecha_erogacion" @change="updateExchangeRate('incrementables', i)" required class="w-full text-xs rounded-sm border-slate-300">
                                                     </div>
                                                     <div class="md:col-span-2">
                                                         <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Moneda</label>
-                                                        <select :name="`incrementables[${i}][moneda]`" x-model="inc.moneda" required class="w-full text-xs rounded-sm border-slate-300">
-                                                            <option value="USD">USD</option>
-                                                            <option value="MXN">MXN</option>
-                                                            <option value="EUR">EUR</option>
+                                                        <select :name="`incrementables[${i}][moneda]`" x-model="inc.moneda" @change="updateExchangeRate('incrementables', i)" required class="w-full text-xs rounded-sm border-slate-300">
+                                                            <option value="">Seleccione moneda...</option>
+                                                            @foreach($currencies ?? [] as $currency)
+                                                                <option value="{{ $currency['code'] }}">{{ $currency['code'] }} - {{ $currency['name'] }}</option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
                                                     <div class="md:col-span-2">
@@ -682,14 +718,15 @@
                                                     </div>
                                                     <div class="md:col-span-2">
                                                         <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
-                                                        <input type="date" :name="`decrementables[${i}][fecha_erogacion]`" x-model="dec.fecha_erogacion" required class="w-full text-xs rounded-sm border-slate-300">
+                                                        <input type="date" :name="`decrementables[${i}][fecha_erogacion]`" x-model="dec.fecha_erogacion" @change="updateExchangeRate('decrementables', i)" required class="w-full text-xs rounded-sm border-slate-300">
                                                     </div>
                                                     <div class="md:col-span-2">
                                                         <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Moneda</label>
-                                                        <select :name="`decrementables[${i}][moneda]`" x-model="dec.moneda" required class="w-full text-xs rounded-sm border-slate-300">
-                                                            <option value="USD">USD</option>
-                                                            <option value="MXN">MXN</option>
-                                                            <option value="EUR">EUR</option>
+                                                        <select :name="`decrementables[${i}][moneda]`" x-model="dec.moneda" @change="updateExchangeRate('decrementables', i)" required class="w-full text-xs rounded-sm border-slate-300">
+                                                            <option value="">Seleccione moneda...</option>
+                                                            @foreach($currencies ?? [] as $currency)
+                                                                <option value="{{ $currency['code'] }}">{{ $currency['code'] }} - {{ $currency['name'] }}</option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
                                                     <div class="md:col-span-2">
@@ -738,12 +775,14 @@
                                                                     <option value="payable">Por Pagar</option>
                                                                 </select>
                                                             </td>
-                                                            <td class="p-2"><input type="date" :name="`pagos[${i}][fecha]`" x-model="pago.fecha" required class="w-full text-xs border-slate-300 rounded-sm"></td>
+                                                            <td class="p-2"><input type="date" :name="`pagos[${i}][fecha]`" x-model="pago.fecha" @change="updateExchangeRate('pagos', i)" required class="w-full text-xs border-slate-300 rounded-sm"></td>
                                                             <td class="p-2"><input type="number" step="0.01" :name="`pagos[${i}][importe]`" x-model="pago.importe" required class="w-full text-xs border-slate-300 rounded-sm"></td>
                                                             <td class="p-2">
-                                                                <select :name="`pagos[${i}][moneda]`" x-model="pago.moneda" required class="w-full text-xs border-slate-300 rounded-sm">
-                                                                    <option value="USD">USD</option>
-                                                                    <option value="MXN">MXN</option>
+                                                                <select :name="`pagos[${i}][moneda]`" x-model="pago.moneda" @change="updateExchangeRate('pagos', i)" required class="w-full text-xs border-slate-300 rounded-sm">
+                                                                    <option value="">Seleccione moneda...</option>
+                                                                    @foreach($currencies ?? [] as $currency)
+                                                                        <option value="{{ $currency['code'] }}">{{ $currency['code'] }} - {{ $currency['name'] }}</option>
+                                                                    @endforeach
                                                                 </select>
                                                             </td>
                                                             <td class="p-2"><input type="number" step="0.0001" :name="`pagos[${i}][tipo_cambio]`" x-model="pago.tipo_cambio" class="w-full text-xs border-slate-300 bg-slate-50 rounded-sm" readonly></td>
@@ -812,7 +851,7 @@
                                                 <option value="EUR">EUR</option>
                                             </select>
                                         </div>
-                                        <div x-show="isFromEme('total_precio_pagado')" class="absolute top-6 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-md" title="Del archivo EME"></div>
+                                        <div x-show="isFromEme('total_precio_pagado')" class="absolute top-6 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-md" title="Del archivo M"></div>
                                     </div>
                                     
                                     <!-- Incrementables -->
@@ -854,7 +893,7 @@
                                                 class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none font-black text-xl focus:ring-blue-900 focus:border-blue-900" required />
                                             <span class="inline-flex items-center px-3 rounded-r-sm border border-l-0 border-blue-300 bg-blue-50 text-blue-900 text-xs font-bold">MXN</span>
                                         </div>
-                                        <div x-show="isFromEme('total_valor_aduana')" class="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-md" title="Del archivo EME"></div>
+                                        <div x-show="isFromEme('total_valor_aduana')" class="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-md" title="Del archivo M"></div>
                                     </div>
                                     
                                     <!-- Precio por Pagar -->
@@ -906,6 +945,8 @@
                 showRfcForm: false,
                 consultationRfcs: @if(isset($manifestation) && $manifestation->consultationRfcs->count() > 0) @json($manifestation->consultationRfcs) @else [] @endif,
                 coves: @if(isset($manifestation) && $manifestation->coves->count() > 0) @json($manifestation->coves) @else [] @endif,
+                selectedCoveIndex: null, // Índice del COVE seleccionado
+                aduanas: @json($catalogs['aduanas'] ?? []), // Catálogo de aduanas para autoselección
                 // Variables para la sección MV
                 showMVSection: false,
                 general: {
@@ -921,8 +962,9 @@
                     rfc_solicitante: '{{ Auth::user()->rfc ?? "" }}',
                     rfc_importador: '{{ old("rfc_importador", $manifestation->rfc_importador ?? "") }}',
                     razon_social_importador: '{{ old("razon_social_importador", $manifestation->razon_social_importador ?? "") }}',
-                    domicilio_fiscal_importador: '{{ old("domicilio_fiscal_importador", $manifestation->domicilio_fiscal_importador ?? "") }}',
-                    registro_nacional_contribuyentes: '{{ old("registro_nacional_contribuyentes", $manifestation->registro_nacional_contribuyentes ?? "") }}'
+                    registro_nacional_contribuyentes: '{{ old("registro_nacional_contribuyentes", $manifestation->registro_nacional_contribuyentes ?? "") }}',
+                    existe_vinculacion: '{{ old("existe_vinculacion", $manifestation->existe_vinculacion ?? "") }}',
+                    descripcion_vinculacion: '{{ old("descripcion_vinculacion", $manifestation->descripcion_vinculacion ?? "") }}'
                 },
                 datosCompletos: false,
                 init() {
@@ -943,8 +985,9 @@
                         // Limpiar campos del importador
                         this.form.rfc_importador = '';
                         this.form.razon_social_importador = '';
-                        this.form.domicilio_fiscal_importador = '';
                         this.form.registro_nacional_contribuyentes = '';
+                        this.form.existe_vinculacion = '';
+                        this.form.descripcion_vinculacion = '';
                     } else {
                         // Si es edición, recuperar datos del EME de sessionStorage si existen
                         const storedEme = sessionStorage.getItem('emeData');
@@ -987,6 +1030,20 @@
                         const result = await response.json();
 
                         if (result.success && result.data) {
+                            // VALIDAR RFC DEL SOLICITANTE
+                            const rfcSolicitante = '{{ Auth::user()->rfc }}';
+                            const rfcDelArchivo = result.data.rfc_importador || 
+                                                 (result.data.rfc_consultable_eme ? result.data.rfc_consultable_eme.rfc_consulta : null);
+                            
+                            if (rfcDelArchivo && rfcSolicitante !== rfcDelArchivo) {
+                                alert('❌ Error de Validación\n\n' +
+                                      'El RFC del archivo M no coincide con el RFC del solicitante:\n\n' +
+                                      `✓ RFC del Solicitante: ${rfcSolicitante}\n` +
+                                      `❌ RFC del Archivo M: ${rfcDelArchivo}\n\n` +
+                                      'Solo puede cargar archivos M que correspondan a su RFC.');
+                                return;
+                            }
+                            
                             this.emeData = result.data;
                             sessionStorage.setItem('emeData', JSON.stringify(result.data));
                             this.aplicarDatosEme();
@@ -1002,16 +1059,16 @@
                             if (result.data.coves && result.data.coves.length > 0) summary.push(`✓ ${result.data.coves.length} COVE(s) detectado(s)`);
                             if (result.data.pedimentos && result.data.pedimentos.length > 0) summary.push(`✓ ${result.data.pedimentos.length} Pedimento(s) detectado(s)`);
                             
-                            alert('✅ Archivo EME procesado exitosamente\n\n' + 
+                            alert('✅ Archivo M procesado exitosamente\n\n' + 
                                   'Datos precargados:\n' + summary.join('\n') + 
                                   '\n\nLos campos marcados son de solo lectura.\n' +
                                   'Complete manualmente los campos restantes.');
                         } else {
-                            alert('❌ Error: ' + (result.message || 'No se pudo procesar el archivo EME'));
+                            alert('❌ Error: ' + (result.message || 'No se pudo procesar el archivo M'));
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        alert('❌ Ocurrió un error al procesar el archivo EME.');
+                        alert('❌ Ocurrió un error al procesar el archivo M.');
                     } finally {
                         this.isUploading = false;
                         event.target.value = '';
@@ -1041,7 +1098,7 @@
                         }
                     }
 
-                    // Precargar COVEs del archivo EME
+                    // Precargar COVEs del archivo M
                     if (this.emeData.coves && this.emeData.coves.length > 0) {
                         this.coves = this.emeData.coves.map(cove => ({
                             ...cove,
@@ -1051,18 +1108,39 @@
                         console.log('COVEs cargados del EME:', this.coves);
                     }
 
-                    // Precargar pedimentos del archivo EME
+                    // Precargar pedimentos del archivo M
                     if (this.emeData.pedimentos && this.emeData.pedimentos.length > 0) {
-                        this.pedimentos = this.emeData.pedimentos.map(ped => ({
-                            numero_pedimento: ped.numero_pedimento || '',
-                            patente: ped.patente || '',
-                            aduana_clave: ped.aduana_clave || '430',
-                            fromEme: true
-                        }));
+                        this.pedimentos = this.emeData.pedimentos.map(ped => {
+                            const pedimento = {
+                                numero_pedimento: ped.numero_pedimento || '',
+                                patente: ped.patente || '',
+                                aduana_clave: ped.aduana_clave || '430',
+                                fromEme: true
+                            };
+                            
+                            // Autoseleccionar aduana basada en el código del número de pedimento
+                            if (pedimento.numero_pedimento) {
+                                const numero = pedimento.numero_pedimento.replace(/\s/g, ''); // Quitar espacios
+                                if (numero.length >= 5) {
+                                    // Extraer código de aduana completo (3 dígitos: código + sección)
+                                    let codigoCompleto;
+                                    if (numero.length >= 16) {
+                                        // Formato con año: YYAAAPPPPNNNNNNN
+                                        codigoCompleto = numero.substring(2, 5); // 3 dígitos
+                                    } else {
+                                        // Formato sin año: AAAPPPPNNNNNNN
+                                        codigoCompleto = numero.substring(0, 3); // 3 dígitos
+                                    }
+                                    this.autoSelectAduana(pedimento, codigoCompleto);
+                                }
+                            }
+                            
+                            return pedimento;
+                        });
                         console.log('Pedimentos cargados del EME:', this.pedimentos);
                     }
 
-                    // Precargar incrementables del archivo EME
+                    // Precargar incrementables del archivo M
                     if (this.emeData.adjustments) {
                         const incrementablesEme = this.emeData.adjustments.filter(adj => adj.type === 'incrementable');
                         if (incrementablesEme.length > 0) {
@@ -1079,7 +1157,7 @@
                             console.log('Incrementables cargados del EME:', this.incrementables);
                         }
 
-                        // Precargar decrementables del archivo EME
+                        // Precargar decrementables del archivo M
                         const decrementablesEme = this.emeData.adjustments.filter(adj => adj.type === 'decrementable');
                         if (decrementablesEme.length > 0) {
                             this.decrementables = decrementablesEme.map(dec => ({
@@ -1095,7 +1173,7 @@
                         }
                     }
 
-                    // Precargar pagos del archivo EME
+                    // Precargar pagos del archivo M
                     if (this.emeData.payments && this.emeData.payments.length > 0) {
                         this.pagos = this.emeData.payments.map(pago => ({
                             status: pago.status || 'paid',
@@ -1110,7 +1188,7 @@
                         console.log('Pagos cargados del EME:', this.pagos);
                     }
 
-                    // Precargar valores de aduana del archivo EME
+                    // Precargar valores de aduana del archivo M
                     if (this.emeData.total_precio_pagado) {
                         const precioPagadoInput = document.querySelector('input[name="total_precio_pagado"]');
                         if (precioPagadoInput) precioPagadoInput.value = this.emeData.total_precio_pagado;
@@ -1118,6 +1196,22 @@
                     if (this.emeData.total_valor_aduana) {
                         const valorAduanaInput = document.querySelector('input[name="total_valor_aduana"]');
                         if (valorAduanaInput) valorAduanaInput.value = this.emeData.total_valor_aduana;
+                    }
+
+                    // Autoseleccionar INCOTERM del archivo M (registro 505, campo 5)
+                    if (this.emeData.incoterm) {
+                        const incotermFromFile = this.emeData.incoterm.toUpperCase().trim();
+                        
+                        // Lista de incoterms válidos para comparar
+                        const validIncoterms = ['EXW', 'FCA', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP', 'FAS', 'FOB', 'CFR', 'CIF'];
+                        
+                        // Verificar que el incoterm del archivo sea válido
+                        if (validIncoterms.includes(incotermFromFile)) {
+                            this.general.incoterm = incotermFromFile;
+                            console.log(`✅ INCOTERM autoseleccionado del archivo M: ${incotermFromFile}`);
+                        } else {
+                            console.warn(`⚠️ INCOTERM del archivo M no reconocido: ${incotermFromFile}`);
+                        }
                     }
 
                     console.log('✅ Datos del EME aplicados correctamente a la sección MV');
@@ -1161,25 +1255,9 @@
                     // Cargar datos del perfil del usuario autenticado en los campos del importador
                     const user = @json($userData ?? []);
                     this.form.razon_social_importador = user.razon_social || '';
-                    this.form.domicilio_fiscal_importador = this.construirDomicilioFiscal();
                     this.form.registro_nacional_contribuyentes = this.form.rfc_solicitante;
                     
                     this.mensajeAyuda = '✓ Datos del solicitante cargados correctamente';
-                },
-                construirDomicilioFiscal() {
-                    const user = @json($userData ?? []);
-                    
-                    let domicilio = [];
-                    if (user.calle) domicilio.push(user.calle);
-                    if (user.numero_exterior) domicilio.push(user.numero_exterior);
-                    if (user.numero_interior) domicilio.push('Int. ' + user.numero_interior);
-                    if (user.colonia) domicilio.push(user.colonia);
-                    if (user.codigo_postal) domicilio.push('C.P. ' + user.codigo_postal);
-                    if (user.municipio) domicilio.push(user.municipio);
-                    if (user.estado) domicilio.push(user.estado);
-                    if (user.pais) domicilio.push(user.pais);
-                    
-                    return domicilio.join(', ');
                 },
                 aceptarRfcImportador() {
                     const rfcImportador = this.form.rfc_importador;
@@ -1267,16 +1345,12 @@
                             if (!this.isFromEme('razon_social_importador')) {
                                 this.form.razon_social_importador = '';
                             }
-                            if (!this.isFromEme('domicilio_fiscal_importador')) {
-                                this.form.domicilio_fiscal_importador = '';
-                            }
                             
                             this.mensajeAyuda = '⚠️ RFC no encontrado. Complete manualmente los datos.';
                             
                             alert('ℹ️ RFC no encontrado en registros previos\n\n' +
                                   'Los campos están ahora habilitados para edición manual:\n' +
-                                  '• Razón Social\n' +
-                                  '• Domicilio Fiscal\n\n' +
+                                  '• Razón Social\n\n' +
                                   'Estos datos se guardarán para futuras manifestaciones.');
                         }
                     } catch (error) {
@@ -1298,8 +1372,9 @@
                     if (!this.isFromEme('razon_social_importador')) {
                         this.form.razon_social_importador = '';
                     }
-                    if (!this.isFromEme('domicilio_fiscal_importador')) {
-                        this.form.domicilio_fiscal_importador = '';
+                    if (!this.isFromEme('existe_vinculacion')) {
+                        this.form.existe_vinculacion = '';
+                        this.form.descripcion_vinculacion = '';
                     }
                     
                     this.mensajeAyuda = 'Campos habilitados para edición manual.';
@@ -1408,7 +1483,35 @@
                     });
                 },
                 removeCove(index) {
+                    // Si se elimina el COVE seleccionado, limpiar la selección
+                    if (this.selectedCoveIndex === index) {
+                        this.selectedCoveIndex = null;
+                        this.showMVSection = false; // Ocultar la sección MV si estaba visible
+                    }
+                    // Si se elimina un COVE anterior al seleccionado, ajustar el índice
+                    else if (this.selectedCoveIndex !== null && index < this.selectedCoveIndex) {
+                        this.selectedCoveIndex--;
+                    }
+                    
                     this.coves.splice(index, 1);
+                },
+                toggleMVSection() {
+                    // Validar que hay al menos un COVE
+                    if (this.coves.length === 0) {
+                        alert('⚠️ Debe agregar al menos un COVE antes de configurar la Manifestación de Valor.\n\nVaya a la pestaña "COVEs" y agregue al menos un COVE.');
+                        this.activeTab = 'coves';
+                        return;
+                    }
+                    
+                    // Validar que hay un COVE seleccionado
+                    if (this.selectedCoveIndex === null) {
+                        alert('⚠️ Debe seleccionar un COVE específico para asociar con la Manifestación de Valor.\n\nSeleccione uno de los COVEs de la tabla usando el botón de selección.');
+                        this.activeTab = 'coves';
+                        return;
+                    }
+                    
+                    // Si hay COVEs y uno está seleccionado, permitir mostrar/ocultar la sección MV
+                    this.showMVSection = !this.showMVSection;
                 },
                 async fetchCoveData(index) {
                     const cove = this.coves[index];
@@ -1478,13 +1581,61 @@
                     });
                 },
                 formatPedimento(ped) {
+                    // No formatear si viene del archivo EME (ya está formateado correctamente en el backend)
+                    if (ped.fromEme) {
+                        return;
+                    }
+                    
                     let val = ped.numero_pedimento.replace(/\D/g, '');
                     let parts = [];
-                    if (val.length > 0) parts.push(val.substring(0, 2));
-                    if (val.length > 2) parts.push(val.substring(2, 5));
-                    if (val.length > 5) parts.push(val.substring(5, 9));
-                    if (val.length > 9) parts.push(val.substring(9));
+                    let codigoAduana = '';
+                    
+                    // Si el valor tiene menos de 16 dígitos (no incluye año), agregar año actual
+                    if (val.length > 0 && val.length < 16) {
+                        const currentYear = new Date().getFullYear().toString().slice(-2); // Últimos 2 dígitos del año actual
+                        parts.push(currentYear);
+                        if (val.length > 0) {
+                            codigoAduana = val.substring(0, 3).padStart(3, '0'); // Aduana con ceros a la izquierda
+                            parts.push(codigoAduana);
+                        }
+                        if (val.length > 3) parts.push(val.substring(3, 7));   // Patente  
+                        if (val.length > 7) parts.push(val.substring(7));      // Folio
+                    } else {
+                        // Lógica original para números que ya incluyen el año
+                        if (val.length > 0) parts.push(val.substring(0, 2));
+                        if (val.length > 2) {
+                            codigoAduana = val.substring(2, 5);
+                            parts.push(codigoAduana);
+                        }
+                        if (val.length > 5) parts.push(val.substring(5, 9));
+                        if (val.length > 9) parts.push(val.substring(9));
+                    }
                     ped.numero_pedimento = parts.join('  ');
+                    
+                    // Autoseleccionar aduana si tenemos código de aduana (3 dígitos: código + sección)
+                    if (codigoAduana) {
+                        this.autoSelectAduana(ped, codigoAduana);
+                    }
+                },
+                autoSelectAduana(pedimento, codigoCompleto) {
+                    // Extraer código de aduana (2 dígitos) y sección (1 dígito)
+                    // Ejemplo: "070" -> aduana="07", seccion="0"
+                    const codigoAduana = codigoCompleto.substring(0, 2).replace(/^0+/, '') || '0'; // Primeros 2 dígitos sin ceros a la izquierda
+                    const seccionAduana = codigoCompleto.substring(2, 3) || '0'; // Tercer dígito
+                    
+                    // Buscar la aduana que coincida con código Y sección
+                    const aduanaEncontrada = this.aduanas.find(aduana => 
+                        (aduana.aduana === codigoAduana || aduana.aduana.padStart(2, '0') === codigoAduana.padStart(2, '0')) &&
+                        aduana.seccion === seccionAduana
+                    );
+                    
+                    if (aduanaEncontrada) {
+                        // Asignar el código y sección juntos: "070"
+                        pedimento.aduana_clave = `${aduanaEncontrada.aduana}${aduanaEncontrada.seccion}`;
+                        console.log(`✅ Aduana autoseleccionada: ${aduanaEncontrada.aduana}${aduanaEncontrada.seccion} - ${aduanaEncontrada.denominacion}`);
+                    } else {
+                        console.warn(`⚠️ No se encontró aduana para código: ${codigoAduana} sección: ${seccionAduana} (${codigoCompleto})`);
+                    }
                 },
                 canContinueToStep2() {
                     // Verificar que el perfil del usuario esté completo
@@ -1502,11 +1653,34 @@
                         return false;
                     }
 
-                    // Verificar COVEs (si hay, deben estar completos)
+                    // Verificar COVEs (OBLIGATORIO - debe haber al menos uno y uno seleccionado)
+                    if (this.coves.length === 0) {
+                        alert('⚠️ Debe agregar al menos un COVE antes de continuar.\n\nVaya a la pestaña "COVEs" y agregue la información requerida.');
+                        this.activeTab = 'coves';
+                        return false;
+                    }
+                    
+                    if (this.selectedCoveIndex === null) {
+                        alert('⚠️ Debe seleccionar un COVE específico para asociar con la Manifestación de Valor.\n\nVaya a la pestaña "COVEs" y seleccione uno de los COVEs disponibles.');
+                        this.activeTab = 'coves';
+                        return false;
+                    }
+                    
+                    // Verificar que el COVE seleccionado esté completo
+                    if (this.selectedCoveIndex !== null && this.selectedCoveIndex < this.coves.length) {
+                        const selectedCove = this.coves[this.selectedCoveIndex];
+                        if (!selectedCove.edocument || !selectedCove.metodo_valoracion || !selectedCove.numero_factura) {
+                            alert('⚠️ El COVE seleccionado debe tener todos sus campos obligatorios completos antes de continuar.');
+                            this.activeTab = 'coves';
+                            return false;
+                        }
+                    }
+                    
+                    // Verificar que todos los COVEs están completos (opcional, pero si existen deben estar completos)
                     for (let i = 0; i < this.coves.length; i++) {
                         const cove = this.coves[i];
-                        if (!cove.edocument || !cove.metodo_valoracion || !cove.numero_factura) {
-                            alert('⚠️ Debe completar todos los campos obligatorios de los COVEs antes de continuar.');
+                        if (cove.edocument && (!cove.metodo_valoracion || !cove.numero_factura)) {
+                            alert('⚠️ Todos los COVEs que tengan información deben estar completos antes de continuar.');
                             this.activeTab = 'coves';
                             return false;
                         }
@@ -1536,6 +1710,42 @@
                     }
 
                     return true;
+                },
+                async getExchangeRate(currency, date) {
+                    if (!currency || !date) return 20.0000;
+                    
+                    if (currency === 'MXN') {
+                        return 1.0000;
+                    }
+                    
+                    try {
+                        const response = await fetch(`{{ route('manifestations.exchangeRate') }}?currency=${currency}&date=${date}`);
+                        const data = await response.json();
+                        return data.rate || 20.0000;
+                    } catch (error) {
+                        console.warn('Error obteniendo tipo de cambio:', error);
+                        return 20.0000;
+                    }
+                },
+                async updateExchangeRate(type, index) {
+                    let item;
+                    if (type === 'incrementables') {
+                        item = this.incrementables[index];
+                    } else if (type === 'decrementables') {
+                        item = this.decrementables[index];
+                    } else if (type === 'pagos') {
+                        item = this.pagos[index];
+                    }
+                    
+                    if (!item || !item.moneda || (!item.fecha_erogacion && !item.fecha)) {
+                        return;
+                    }
+                    
+                    const fecha = item.fecha_erogacion || item.fecha;
+                    const rate = await this.getExchangeRate(item.moneda, fecha);
+                    item.tipo_cambio = rate;
+                    
+                    console.log(`ℹ️ Tipo de cambio actualizado: ${item.moneda} (${fecha}) = ${rate}`);
                 }
             }
         }

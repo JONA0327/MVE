@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-bold text-xl text-slate-800 leading-tight">
-                Vista Preliminar de la Manifestación de Valor
+                Previsualización y firma
             </h2>
             <!-- Botón de Imprimir -->
             <button onclick="window.print()" class="inline-flex items-center px-4 py-2 bg-white border border-slate-300 rounded-md font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150 print:hidden">
@@ -18,15 +18,11 @@
             <!-- STEPPER VISUAL (Oculto al imprimir) -->
             <div class="mb-10 print:hidden">
                 <div class="flex items-center justify-between w-full opacity-75">
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Generales</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-blue-900">PASO 1</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Valores</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-blue-900">PASO 2</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Detalles</div></div>
-                    <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">Archivos</div></div>
-                    <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">Resumen</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 3</div></div>
                 </div>
             </div>
 
@@ -265,7 +261,7 @@
                     <section class="break-inside-avoid">
                         <div class="flex justify-between items-end border-b-2 border-blue-900 mb-4 pb-1 print:border-black">
                             <h3 class="text-xs font-bold text-blue-900 uppercase print:text-black">8. Anexos</h3>
-                            <a href="{{ route('manifestations.step4', $manifestation->uuid) }}" class="text-xs text-blue-600 hover:underline print:hidden flex items-center">
+                            <a href="{{ route('manifestations.summary', $manifestation->uuid) }}" class="text-xs text-blue-600 hover:underline print:hidden flex items-center">
                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 Editar
                             </a>
@@ -337,7 +333,7 @@
                         </div>
 
                         <div class="flex justify-between items-center pt-6 border-t border-slate-700">
-                             <a href="{{ route('manifestations.step4', $manifestation->uuid) }}" class="text-slate-400 hover:text-white text-sm font-medium transition flex items-center">
+                             <a href="{{ route('manifestations.summary', $manifestation->uuid) }}" class="text-slate-400 hover:text-white text-sm font-medium transition flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                                 Volver a Archivos
                             </a>

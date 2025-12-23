@@ -9,7 +9,7 @@ class ConsultationRfc extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['manifestation_id', 'rfc_consulta', 'tipo_figura', 'nombre'];
+    protected $fillable = ['manifestation_id', 'rfc_consulta', 'razon_social', 'tipo_figura', 'nombre'];
 
     public function manifestation()
     {

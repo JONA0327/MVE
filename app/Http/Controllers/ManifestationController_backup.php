@@ -72,8 +72,7 @@ class ManifestationController extends Controller
         ];
         
         $catalogs = $this->getCatalogs();
-        $currencies = $this->getCurrencies(); // Cargar catálogo monedas
-        return view('manifestations.step1', compact('userData', 'catalogs', 'currencies'));
+        return view('manifestations.step1', compact('userData', 'catalogs'));
     }
 
     public function storeStep1(Request $request)
@@ -136,8 +135,8 @@ class ManifestationController extends Controller
             $request->validate([
                 'consultation_rfcs' => 'array',
                 'consultation_rfcs.*.rfc_consulta' => 'required|string|between:12,13',
-                'consultation_rfcs.*.razon_social' => 'nullable|string',
-                'consultation_rfcs.*.tipo_figura' => 'nullable|string|in:Agencia Aduanal,Agente aduanal,Otro,Representante Legal',
+                'consultation_rfcs.*.razon_social' => 'required|string',
+                'consultation_rfcs.*.tipo_figura' => 'required|string|in:Agencia Aduanal,Agente aduanal,Otro,Representante Legal',
             ]);
         }
 
@@ -166,8 +165,10 @@ class ManifestationController extends Controller
         
         // Guardar RFCs de consulta
         if (!empty($validated['consultation_rfcs'])) {
+            \Log::info('Guardando RFCs de consulta en storeStep1:', $validated['consultation_rfcs']);
             foreach ($validated['consultation_rfcs'] as $rfc) {
-                $manifestation->consultationRfcs()->create($rfc);
+                $created = $manifestation->consultationRfcs()->create($rfc);
+                \Log::info('RFC de consulta creado:', $created->toArray());
             }
         }
 
@@ -188,6 +189,9 @@ class ManifestationController extends Controller
                 'consultationRfcs'
             ])
             ->firstOrFail();
+        
+        // Debug: Log los RFCs de consulta cargados
+        \Log::info('RFCs de consulta cargados en editStep1:', $manifestation->consultationRfcs->toArray());
         
         // Separar incrementables y decrementables
         $incrementables = $manifestation->adjustments->where('type', 'incrementable');
@@ -213,8 +217,7 @@ class ManifestationController extends Controller
         ];
         
         $catalogs = $this->getCatalogs();
-        $currencies = $this->getCurrencies(); // Cargar catálogo monedas
-        return view('manifestations.step1', compact('manifestation', 'userData', 'incrementables', 'decrementables', 'catalogs', 'currencies'));
+        return view('manifestations.step1', compact('manifestation', 'userData', 'incrementables', 'decrementables', 'catalogs'));
     }
 
     public function updateStep1(Request $request, $uuid)
@@ -292,8 +295,8 @@ class ManifestationController extends Controller
             $request->validate([
                 'consultation_rfcs' => 'array',
                 'consultation_rfcs.*.rfc_consulta' => 'required|string|between:12,13',
-                'consultation_rfcs.*.razon_social' => 'nullable|string',
-                'consultation_rfcs.*.tipo_figura' => 'nullable|string|in:Agencia Aduanal,Agente aduanal,Otro,Representante Legal',
+                'consultation_rfcs.*.razon_social' => 'required|string',
+                'consultation_rfcs.*.tipo_figura' => 'required|string|in:Agencia Aduanal,Agente aduanal,Otro,Representante Legal',
             ]);
         }
 
@@ -329,8 +332,10 @@ class ManifestationController extends Controller
         // Actualizar RFCs de consulta
         $manifestation->consultationRfcs()->delete();
         if (!empty($validated['consultation_rfcs'])) {
+            \Log::info('Guardando RFCs de consulta en updateStep1:', $validated['consultation_rfcs']);
             foreach ($validated['consultation_rfcs'] as $rfc) {
-                $manifestation->consultationRfcs()->create($rfc);
+                $created = $manifestation->consultationRfcs()->create($rfc);
+                \Log::info('RFC de consulta creado:', $created->toArray());
             }
         }
 
@@ -744,63 +749,4 @@ class ManifestationController extends Controller
     public function signManifestation(Request $request, $uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); $request->validate([ 'cer_file' => 'required|file', 'key_file' => 'required|file', 'password' => 'required|string', ]); try { $pathAcuse = 'manifestations/' . $uuid . '/SAT_ACUSE_' . time() . '.pdf'; $pathDetalle = 'manifestations/' . $uuid . '/SAT_DETALLE_' . time() . '.pdf'; Storage::put($pathAcuse, '%PDF-1.4 ... (Contenido Simulado Acuse) ...'); Storage::put($pathDetalle, '%PDF-1.4 ... (Contenido Simulado Detalle) ...'); $manifestation->update([ 'status' => 'signed', 'sello_digital' => 'SELLO_SAT_SIMULADO_XYZ_' . time(), 'cadena_original' => '||CADENA|ORIGINAL|SAT||', 'path_acuse_manifestacion' => $pathAcuse, 'path_detalle_manifestacion' => $pathDetalle, ]); return redirect()->route('dashboard')->with('status', 'Manifestación enviada y firmada correctamente. Acuses recibidos.'); } catch (Exception $e) { return back()->withErrors(['password' => 'Error: ' . $e->getMessage()]); } }
     public function downloadAcuse($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); if (!$manifestation->path_acuse_manifestacion || !Storage::exists($manifestation->path_acuse_manifestacion)) { $data = [ 'm' => $manifestation, 'fecha_impresion' => now()->format('d/m/Y H:i:s'), 'folio_sat' => 'M-' . substr($manifestation->uuid, 0, 8), ]; $pdf = Pdf::loadView('manifestations.pdf.acuse', $data); return $pdf->download('Acuse_' . $manifestation->uuid . '.pdf'); } return Storage::download($manifestation->path_acuse_manifestacion, 'Acuse_SAT_' . $manifestation->uuid . '.pdf'); }
     public function destroy($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); if ($manifestation->status === 'signed') { return back()->with('error', 'No es posible eliminar una manifestación firmada.'); } Storage::deleteDirectory('manifestations/' . $uuid); $manifestation->delete(); return redirect()->route('dashboard')->with('status', 'Borrador eliminado correctamente.'); }
-
-    /**
-     * Obtener tipo de cambio de una fecha específica
-     */
-    public function getExchangeRate(Request $request)
-    {
-        $date = $request->input('date');
-        $currency = $request->input('currency', 'USD');
-        
-        // Si la moneda es MXN, el tipo de cambio es 1
-        if ($currency === 'MXN') {
-            return response()->json(['rate' => 1.0000]);
-        }
-        
-        try {
-            // Simulamos obtener del SAT o servicio externo
-            $rate = $this->getHistoricalRate($currency, $date);
-            return response()->json(['rate' => $rate]);
-        } catch (Exception $e) {
-            // Tipo de cambio por defecto si no se puede obtener
-            $defaultRates = [
-                'USD' => 20.0000,
-                'EUR' => 22.0000,
-                'CAD' => 15.0000,
-                'GBP' => 25.0000,
-                'JPY' => 0.1500,
-            ];
-            
-            $rate = $defaultRates[$currency] ?? 20.0000;
-            return response()->json(['rate' => $rate]);
-        }
-    }
-    
-    /**
-     * Obtener tipo de cambio histórico (simulado)
-     */
-    private function getHistoricalRate($currency, $date)
-    {
-        // Simulación de tipos de cambio históricos con variación
-        $baseRates = [
-            'USD' => 20.0000,
-            'EUR' => 22.0000,
-            'CAD' => 15.0000,
-            'GBP' => 25.0000,
-            'JPY' => 0.1500,
-            'CHF' => 22.5000,
-            'CNY' => 2.8000,
-            'AUD' => 14.0000,
-        ];
-        
-        $baseRate = $baseRates[$currency] ?? 20.0000;
-        
-        // Agregar variación basada en la fecha para simular fluctuaciones
-        $dateObject = new \DateTime($date);
-        $dayOfYear = $dateObject->format('z');
-        $variation = sin($dayOfYear / 365 * 2 * M_PI) * 0.1; // Variación del ±10%
-        
-        return round($baseRate * (1 + $variation), 4);
-    }
 }

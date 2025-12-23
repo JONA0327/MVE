@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl text-slate-800 leading-tight">
-            Documentación de Soporte
+            Carga de los documentos
         </h2>
     </x-slot>
 
@@ -10,11 +10,11 @@
             <!-- STEPPER -->
             <div class="mb-10">
                  <div class="flex items-center justify-between w-full opacity-90">
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900">PASO 1</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-blue-900">PASO 1</div></div>
                     <div class="flex-auto border-t-2 border-blue-900"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 2</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-blue-900 border-2 border-blue-900 rounded-full px-2">PASO 2</div></div>
                     <div class="flex-auto border-t-2 border-slate-200"></div>
-                    <div class="flex flex-col items-center w-1/5"><div class="text-xs font-bold text-slate-400">Resumen</div></div>
+                    <div class="flex flex-col items-center w-1/3"><div class="text-xs font-bold text-slate-400">PASO 3</div></div>
                 </div>
             </div>
 
@@ -117,6 +117,90 @@
                         <p class="text-xs mt-2">Utilice el formulario superior para adjuntar los documentos requeridos.</p>
                     </div>
 
+                    <!-- HERRAMIENTAS PDF VUCEM -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                        <h3 class="text-sm font-bold text-blue-900 uppercase border-b border-blue-200 mb-4 pb-2">
+                            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Herramientas para Documentos PDF
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- VERIFICADOR PDF -->
+                            <div class="bg-white border border-blue-200 rounded p-4">
+                                <h4 class="font-bold text-blue-900 mb-3 text-sm">
+                                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.414-4.414a2 2 0 00-2.828 0L9 12l-2.172-2.172a2 2 0 00-2.828 2.828l4 4a2 2 0 002.828 0l10-10a2 2 0 00-2.828-2.828z"></path>
+                                    </svg>
+                                    Verificador de PDF VUCEM
+                                </h4>
+                                <p class="text-xs text-slate-600 mb-3">Verifique que su PDF cumple con los requisitos VUCEM antes de subirlo.</p>
+                                
+                                <div x-data="{ verificando: false, resultadoVerificacion: null }">
+                                    <input type="file" x-ref="verificadorFile" accept=".pdf" class="block w-full text-xs border border-slate-300 rounded p-2 mb-3">
+                                    
+                                    <button type="button" @click="verificarPdf()" 
+                                        :disabled="verificando"
+                                        class="w-full bg-green-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-green-700 disabled:opacity-50">
+                                        <span x-show="!verificando">Verificar PDF</span>
+                                        <span x-show="verificando">Verificando...</span>
+                                    </button>
+                                    
+                                    <div x-show="resultadoVerificacion" x-transition class="mt-3 p-3 rounded text-xs"
+                                         :class="resultadoVerificacion?.valido ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                                        <div x-show="resultadoVerificacion?.valido">
+                                            ✅ <strong>PDF Válido:</strong> Cumple con los requisitos VUCEM
+                                        </div>
+                                        <div x-show="!resultadoVerificacion?.valido">
+                                            ❌ <strong>PDF No Válido:</strong>
+                                            <ul class="mt-2 ml-4 list-disc" x-show="resultadoVerificacion?.errores">
+                                                <template x-for="error in resultadoVerificacion?.errores">
+                                                    <li x-text="error"></li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CONVERTIDOR PDF -->
+                            <div class="bg-white border border-blue-200 rounded p-4">
+                                <h4 class="font-bold text-blue-900 mb-3 text-sm">
+                                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Convertidor PDF VUCEM
+                                </h4>
+                                <p class="text-xs text-slate-600 mb-3">Convierta su PDF al formato requerido por VUCEM (300 DPI, escala de grises).</p>
+                                
+                                <div x-data="{ convirtiendo: false, archivoConvertido: null }">
+                                    <input type="file" x-ref="convertidorFile" accept=".pdf" class="block w-full text-xs border border-slate-300 rounded p-2 mb-3">
+                                    
+                                    <button type="button" @click="convertirPdf()" 
+                                        :disabled="convirtiendo"
+                                        class="w-full bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-700 disabled:opacity-50">
+                                        <span x-show="!convirtiendo">Convertir a VUCEM</span>
+                                        <span x-show="convirtiendo">Convirtiendo...</span>
+                                    </button>
+                                    
+                                    <div x-show="archivoConvertido" x-transition class="mt-3 p-3 bg-green-100 text-green-800 rounded text-xs">
+                                        ✅ <strong>Conversión Completada</strong>
+                                        <div class="mt-2">
+                                            <a :href="archivoConvertido?.url" :download="archivoConvertido?.nombre" 
+                                               class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                Descargar PDF VUCEM
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- BOTONES DE NAVEGACIÓN -->
                     <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-200">
                         <div class="flex items-center">
@@ -125,8 +209,8 @@
                                 &larr; Anterior
                             </a>
                         </div>
-                        <a href="{{ route('manifestations.summary', $manifestation->uuid) }}" class="inline-flex items-center px-8 py-3 bg-slate-900 border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-900 shadow-md transform hover:-translate-y-0.5 transition">
-                            Ver Vista Preliminar &rarr;
+                        <a href="{{ route('manifestations.step3', $manifestation->uuid) }}" class="inline-flex items-center px-8 py-3 bg-slate-900 border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-900 shadow-md transform hover:-translate-y-0.5 transition">
+                            Continuar &rarr;
                         </a>
                     </div>
                 </div>
@@ -187,6 +271,85 @@
                         this.uploading = false; 
                     }
                 }
+            }
+        }
+        
+        // Función global para verificar PDF
+        async function verificarPdf() {
+            const fileInput = this.$refs.verificadorFile;
+            if (!fileInput.files.length) {
+                alert('Por favor, seleccione un archivo PDF para verificar.');
+                return;
+            }
+            
+            this.verificando = true;
+            this.resultadoVerificacion = null;
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            try {
+                const response = await fetch("{{ route('pdf.verify') }}", {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                this.resultadoVerificacion = result;
+            } catch (error) {
+                alert('❌ Error al verificar el archivo PDF.');
+                console.error(error);
+            } finally {
+                this.verificando = false;
+            }
+        }
+        
+        // Función global para convertir PDF
+        async function convertirPdf() {
+            const fileInput = this.$refs.convertidorFile;
+            if (!fileInput.files.length) {
+                alert('Por favor, seleccione un archivo PDF para convertir.');
+                return;
+            }
+            
+            this.convirtiendo = true;
+            this.archivoConvertido = null;
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            try {
+                const response = await fetch("{{ route('pdf.convert') }}", {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    // Si la respuesta es un archivo (blob)
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const originalName = fileInput.files[0].name;
+                    const nameWithoutExt = originalName.replace('.pdf', '');
+                    
+                    this.archivoConvertido = {
+                        url: url,
+                        nombre: `${nameWithoutExt}_VUCEM.pdf`
+                    };
+                } else {
+                    const result = await response.json();
+                    throw new Error(result.message || 'Error al convertir el archivo');
+                }
+            } catch (error) {
+                alert('❌ Error al convertir el archivo PDF: ' + error.message);
+                console.error(error);
+            } finally {
+                this.convirtiendo = false;
             }
         }
     </script>

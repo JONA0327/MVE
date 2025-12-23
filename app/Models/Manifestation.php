@@ -34,7 +34,6 @@ class Manifestation extends Model
         // Campos legacy del importador (mantener temporalmente para compatibilidad)
         'rfc_importador',
         'razon_social_importador',
-        'domicilio_fiscal_importador',
         'registro_nacional_contribuyentes',
         'total_precio_pagado',
         'total_incrementables',
@@ -42,6 +41,7 @@ class Manifestation extends Model
         'total_valor_aduana',
         'total_precio_por_pagar',
         'existe_vinculacion',
+        'descripcion_vinculacion',
         'metodo_valoracion_global',
         'incoterm',
         'fecha_factura',

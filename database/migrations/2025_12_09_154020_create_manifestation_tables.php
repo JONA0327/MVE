@@ -37,6 +37,7 @@ return new class extends Migration
 
             // Datos del Paso 3 (Detalles)
             $table->boolean('existe_vinculacion')->default(false);
+            $table->text('descripcion_vinculacion')->nullable();
             $table->string('metodo_valoracion_global')->nullable();
             $table->string('incoterm', 3)->nullable();
 

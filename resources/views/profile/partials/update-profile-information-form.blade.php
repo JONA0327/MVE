@@ -47,6 +47,15 @@
             @endif
         </div>
 
+        <div>
+            <x-input-label for="webservice_key" value="Clave de Web Service VUCEM" />
+            <x-text-input id="webservice_key" name="webservice_key" type="password" class="mt-1 block w-full" :value="old('webservice_key', $user->webservice_key)" autocomplete="off" />
+            <x-input-error class="mt-2" :messages="$errors->get('webservice_key')" />
+            <p class="mt-1 text-xs text-gray-600">
+                Esta clave será utilizada para conectar con los servicios web de VUCEM. Déjela en blanco si no la conoce o no la necesita aún.
+            </p>
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

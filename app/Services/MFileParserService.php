@@ -207,13 +207,15 @@ class MFileParserService
                 $aduana = $fields[4] ?? '';
                 
                 if (!empty($pedimento)) {
-                    // Formato: AA  PPP  PPPP  NNNNNNN
+                    // Formato correcto: YY  AAA  PPPP  NNNNNNN
+                    // YY = año actual (2 dígitos), AAA = aduana, PPPP = patente, NNNNNNN = folio
+                    $currentYear = date('y'); // Últimos 2 dígitos del año actual
                     $numeroPedimentoFormateado = sprintf(
                         '%s  %s  %s  %s',
-                        str_pad($aduana, 2, '0', STR_PAD_LEFT),
-                        substr(str_pad($patente, 4, '0', STR_PAD_LEFT), 0, 3),
-                        str_pad($patente, 4, '0', STR_PAD_LEFT),
-                        str_pad($pedimento, 7, '0', STR_PAD_LEFT)
+                        str_pad($currentYear, 2, '0', STR_PAD_LEFT),     // Año
+                        str_pad($aduana, 3, '0', STR_PAD_LEFT),          // Aduana (3 dígitos)
+                        str_pad($patente, 4, '0', STR_PAD_LEFT),         // Patente (4 dígitos) 
+                        str_pad($pedimento, 7, '0', STR_PAD_LEFT)        // Folio (7 dígitos)
                     );
                     
                     $data['pedimentos'][] = [
@@ -238,12 +240,14 @@ class MFileParserService
 
         // Si no se encontraron pedimentos en 512, usar el pedimento principal del 500
         if (empty($data['pedimentos']) && !empty($data['pedimento_numero'])) {
+            // Formato correcto: YY  AAA  PPPP  NNNNNNN
+            $currentYear = date('y'); // Últimos 2 dígitos del año actual
             $numeroPedimentoFormateado = sprintf(
                 '%s  %s  %s  %s',
-                str_pad($data['aduana_clave'] ?? '', 2, '0', STR_PAD_LEFT),
-                substr(str_pad($data['patente'] ?? '', 4, '0', STR_PAD_LEFT), 0, 3),
-                str_pad($data['patente'] ?? '', 4, '0', STR_PAD_LEFT),
-                str_pad($data['pedimento_numero'] ?? '', 7, '0', STR_PAD_LEFT)
+                str_pad($currentYear, 2, '0', STR_PAD_LEFT),                    // Año
+                str_pad($data['aduana_clave'] ?? '', 3, '0', STR_PAD_LEFT),     // Aduana (3 dígitos)
+                str_pad($data['patente'] ?? '', 4, '0', STR_PAD_LEFT),          // Patente (4 dígitos)
+                str_pad($data['pedimento_numero'] ?? '', 7, '0', STR_PAD_LEFT)  // Folio (7 dígitos)
             );
             
             $data['pedimentos'][] = [

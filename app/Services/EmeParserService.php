@@ -29,6 +29,7 @@ class EmeParserService
             'fecha_pago_pedimento' => null,
             'fecha_presentacion' => null,
             'numero_pedimento' => null,
+            'numero_pedimento_raw' => null,
             'patente' => null,
             'aduana_clave' => null,
             'total_precio_pagado' => null,
@@ -48,7 +49,7 @@ class EmeParserService
             // ========================================================================
             if ($recordType == '500' && count($fields) > 3) {
                 $data['patente'] = $fields[1] ?? null;
-                $data['numero_pedimento'] = $this->formatPedimento($fields[2] ?? '');
+                $data['numero_pedimento_raw'] = $fields[2] ?? ''; // Guardar sin formatear
                 $data['aduana_clave'] = substr($fields[3] ?? '', 0, 3); // Solo clave
             }
 
@@ -154,6 +155,11 @@ class EmeParserService
             }
         }
 
+        // Formatear número de pedimento al final, usando las fechas procesadas
+        if (!empty($data['numero_pedimento_raw'])) {
+            $data['numero_pedimento'] = $this->formatPedimento($data['numero_pedimento_raw'], $data);
+        }
+
         return $data;
     }
 
@@ -176,17 +182,40 @@ class EmeParserService
     }
 
     /**
-     * Formatea número de pedimento: XX  XXX  XXXX  XXXXXXX
+     * Formatea número de pedimento con el año correcto: YY  XXX  XXXX  XXXXXXX
+     * Formato: año (2 dígitos) + aduana (3 dígitos) + patente (4 dígitos) + folio (7 dígitos)
      */
-    private function formatPedimento(string $pedimento): string
+    private function formatPedimento(string $pedimento, array $data = []): string
     {
         $cleaned = preg_replace('/\D/', '', $pedimento);
-        $parts = [];
         
-        if (strlen($cleaned) > 0) $parts[] = substr($cleaned, 0, 2);
-        if (strlen($cleaned) > 2) $parts[] = substr($cleaned, 2, 3);
-        if (strlen($cleaned) > 5) $parts[] = substr($cleaned, 5, 4);
-        if (strlen($cleaned) > 9) $parts[] = substr($cleaned, 9);
+        // Obtener año de las fechas disponibles (prioridad: pago > presentacion > entrada > factura)
+        $year = null;
+        if (!empty($data['fecha_pago_pedimento'])) {
+            $year = substr($data['fecha_pago_pedimento'], 0, 4);
+        } elseif (!empty($data['fecha_presentacion'])) {
+            $year = substr($data['fecha_presentacion'], 0, 4);
+        } elseif (!empty($data['fecha_entrada'])) {
+            $year = substr($data['fecha_entrada'], 0, 4);
+        } elseif (!empty($data['fecha_factura'])) {
+            $year = substr($data['fecha_factura'], 0, 4);
+        }
+        
+        // Si no hay fechas, usar año actual
+        if (!$year) {
+            $year = date('Y');
+        }
+        
+        $yearShort = substr($year, -2); // Últimos 2 dígitos del año
+        
+        $parts = [];
+        $parts[] = $yearShort; // Año (2 dígitos)
+        
+        // El número del pedimento del archivo EME ya no incluye el año, solo tiene:
+        // aduana (3) + patente (4) + folio (7) = 14 dígitos
+        if (strlen($cleaned) >= 3) $parts[] = substr($cleaned, 0, 3);     // Aduana (3 dígitos)
+        if (strlen($cleaned) >= 7) $parts[] = substr($cleaned, 3, 4);     // Patente (4 dígitos)
+        if (strlen($cleaned) >= 7) $parts[] = substr($cleaned, 7);        // Folio (resto)
         
         return implode('  ', $parts);
     }
