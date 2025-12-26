@@ -7,6 +7,7 @@ use SoapFault;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Services\Vucem\EFirmaService;
 
 class ConsultarCoveService
 {
@@ -16,6 +17,7 @@ class ConsultarCoveService
     private $rfc;
     private $wsPassword;
     private $debugInfo = [];
+    private EFirmaService $efirmaService;
 
     public function __construct()
     {
@@ -38,6 +40,9 @@ class ConsultarCoveService
         $this->wsPassword = $user->getDecryptedWebserviceKey();
         $this->endpoint = config('vucem.consultar_cove.endpoint');
         $this->soapAction = config('vucem.consultar_cove.soap_action');
+        
+        // Inicializar servicio de e.firma
+        $this->efirmaService = new EFirmaService();
         
         $this->initializeSoapClient();
     }
@@ -110,14 +115,14 @@ class ConsultarCoveService
             // Establecer headers de seguridad
             $this->setSecurityHeader();
 
+            // Generar firma electrónica
+            Log::info('[COVE] Generando firma electrónica para folio: ' . $folioCove);
+            $firmaElectronica = $this->efirmaService->generarFirmaElectronica($folioCove, $this->rfc);
+
             // Preparar request con estructura correcta según WSDL
             $requestData = [
                 'numeroOperacion' => $folioCove,
-                'firmaElectronica' => [
-                    'certificado' => '',
-                    'cadenaOriginal' => '',
-                    'firma' => ''
-                ]
+                'firmaElectronica' => $firmaElectronica
             ];
 
             // Ejecutar consulta SOAP con nombre correcto de operación

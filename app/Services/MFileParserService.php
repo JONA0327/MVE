@@ -289,4 +289,311 @@ class MFileParserService
         
         return null;
     }
+
+    /**
+     * Procesa un archivo M de pedimento y obtiene/consulta COVEs
+     *
+     * @param string $filePath Ruta del archivo M a procesar
+     * @return array Array de operaciones con sus datos y COVEs
+     * @throws \Exception
+     */
+    public function processMFileForCove(string $filePath): array
+    {
+        if (!file_exists($filePath)) {
+            throw new \Exception("Archivo no encontrado: {$filePath}");
+        }
+
+        if (!is_readable($filePath)) {
+            throw new \Exception("Archivo no es legible: {$filePath}");
+        }
+
+        $operaciones = [];
+        
+        try {
+            \Log::info("Iniciando procesamiento de archivo M para COVE: {$filePath}");
+            
+            // Parsear archivo y extraer datos por número de operación
+            $datosArchivo = $this->parseFileMForCove($filePath);
+            
+            // Procesar cada operación
+            foreach ($datosArchivo as $numeroOperacion => $datos) {
+                $operacion = [
+                    'aduana' => $datos['aduana'] ?? null,
+                    'seccion' => $datos['seccion'] ?? null,
+                    'patente' => $datos['patente'] ?? null,
+                    'ejercicio' => $datos['ejercicio'] ?? null,
+                    'numeroOperacion' => $numeroOperacion,
+                    'folioCove' => null,
+                    'estatusCove' => 'no_encontrado',
+                ];
+
+                // Verificar si ya tiene COVE en línea 505
+                if (!empty($datos['cove_existente'])) {
+                    $operacion['folioCove'] = $datos['cove_existente'];
+                    $operacion['estatusCove'] = 'encontrado';
+                    \Log::info("COVE ya existe para operación {$numeroOperacion}: {$datos['cove_existente']}");
+                } else {
+                    // Consultar COVE via web service
+                    \Log::info("Consultando COVE para operación: {$numeroOperacion}");
+                    $coveResult = $this->consultarCoveParaOperacion($numeroOperacion, $datos);
+                    
+                    if ($coveResult['success']) {
+                        $operacion['folioCove'] = $coveResult['cove'];
+                        $operacion['estatusCove'] = 'encontrado';
+                    } else {
+                        $operacion['estatusCove'] = 'error_ws';
+                        \Log::warning("Error al consultar COVE para operación {$numeroOperacion}: " . $coveResult['error']);
+                    }
+                }
+                
+                $operaciones[] = $operacion;
+            }
+            
+            \Log::info("Procesamiento COVE completado. Total operaciones: " . count($operaciones));
+            
+        } catch (\Exception $e) {
+            \Log::error("Error procesando archivo M para COVE: " . $e->getMessage());
+            throw $e;
+        }
+        
+        return $operaciones;
+    }
+
+    /**
+     * Parsea el archivo M y extrae datos agrupados por número de operación para COVE
+     *
+     * @param string $filePath
+     * @return array
+     */
+    private function parseFileMForCove(string $filePath): array
+    {
+        $operaciones = [];
+        $aduana = null;
+        
+        $handle = fopen($filePath, 'r');
+        if (!$handle) {
+            throw new \Exception("No se pudo abrir el archivo: {$filePath}");
+        }
+        
+        try {
+            while (($linea = fgets($handle)) !== false) {
+                $linea = trim($linea);
+                if (empty($linea)) {
+                    continue;
+                }
+                
+                $campos = explode('|', $linea);
+                $tipoRegistro = $campos[0] ?? '';
+                
+                switch ($tipoRegistro) {
+                    case '500':
+                        // 500|1|3429|5000745|480||
+                        $patente = $campos[2] ?? null;
+                        $numeroOperacion = $campos[3] ?? null;
+                        $seccion = $campos[4] ?? null;
+                        
+                        if ($numeroOperacion) {
+                            $operaciones[$numeroOperacion] = [
+                                'patente' => $patente,
+                                'seccion' => $seccion,
+                                'aduana' => null,
+                                'ejercicio' => null,
+                                'cove_existente' => null,
+                            ];
+                        }
+                        break;
+                        
+                    case '505':
+                        // 505|5000745|05062025|COVE257M4C974|DAP|USD|...
+                        $numeroOperacion = $campos[1] ?? null;
+                        $fecha = $campos[2] ?? null;
+                        $cove = $campos[3] ?? null;
+                        
+                        if ($numeroOperacion) {
+                            if (!isset($operaciones[$numeroOperacion])) {
+                                $operaciones[$numeroOperacion] = [
+                                    'patente' => null,
+                                    'seccion' => null,
+                                    'aduana' => null,
+                                    'ejercicio' => null,
+                                    'cove_existente' => null,
+                                ];
+                            }
+                            
+                            // Extraer ejercicio de la fecha (ddMMyyyy -> yyyy)
+                            if ($fecha && strlen($fecha) >= 8) {
+                                $operaciones[$numeroOperacion]['ejercicio'] = (int) substr($fecha, -4);
+                            }
+                            
+                            // Guardar COVE si existe y no es vacío
+                            if ($cove && !empty(trim($cove)) && strpos($cove, 'COVE') === 0) {
+                                $operaciones[$numeroOperacion]['cove_existente'] = trim($cove);
+                            }
+                        }
+                        break;
+                        
+                    case '801':
+                        // 801|m3429224.177|1|25|010|
+                        $aduanaExtraida = $campos[3] ?? null;
+                        if ($aduanaExtraida && is_numeric($aduanaExtraida)) {
+                            $aduana = (int) $aduanaExtraida;
+                        }
+                        break;
+                }
+            }
+            
+            // Asignar aduana a todas las operaciones
+            foreach ($operaciones as $numeroOperacion => &$datos) {
+                $datos['aduana'] = $aduana;
+            }
+            
+        } finally {
+            fclose($handle);
+        }
+        
+        return $operaciones;
+    }
+
+    /**
+     * Consulta COVE para una operación específica
+     *
+     * @param string $numeroOperacion
+     * @param array $datosOperacion
+     * @return array ['success' => bool, 'cove' => string|null, 'error' => string|null]
+     */
+    private function consultarCoveParaOperacion(string $numeroOperacion, array $datosOperacion): array
+    {
+        try {
+            // Construir folio COVE (15 dígitos)
+            $folio = $this->construirFolioCove($numeroOperacion, $datosOperacion);
+            
+            if (!$folio) {
+                return [
+                    'success' => false,
+                    'cove' => null,
+                    'error' => 'No se pudo construir folio COVE válido'
+                ];
+            }
+            
+            \Log::info("Consultando COVE con folio: {$folio} para operación: {$numeroOperacion}");
+            
+            // Crear instancia del servicio ConsultarCove
+            $consultarCoveService = new \App\Services\Vucem\ConsultarCoveService();
+            
+            // Usar el servicio existente para consultar
+            $resultado = $consultarCoveService->consultarCove($folio);
+            
+            if ($resultado && $resultado['success']) {
+                // Buscar COVE en la respuesta
+                $cove = $this->extraerCoveDeRespuesta($resultado['data'] ?? '');
+                
+                if ($cove) {
+                    return [
+                        'success' => true,
+                        'cove' => $cove,
+                        'error' => null
+                    ];
+                }
+            }
+            
+            return [
+                'success' => false,
+                'cove' => null,
+                'error' => $resultado['error'] ?? 'No se encontró COVE en la respuesta'
+            ];
+            
+        } catch (\Exception $e) {
+            \Log::error("Error consultando COVE para operación {$numeroOperacion}: " . $e->getMessage());
+            
+            return [
+                'success' => false,
+                'cove' => null,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Construye el folio COVE de 15 dígitos para la consulta
+     *
+     * @param string $numeroOperacion
+     * @param array $datosOperacion
+     * @return string|null
+     */
+    private function construirFolioCove(string $numeroOperacion, array $datosOperacion): ?string
+    {
+        // Formato correcto: AAPPPPAAANNNNNNN (15 dígitos)
+        // AA = código aduana (2 dígitos)
+        // PPPP = código patente (4 dígitos) 
+        // AA = ejercicio año (últimos 2 dígitos del año)
+        // NNNNNNN = número operación (7 dígitos)
+        
+        $aduana = $datosOperacion['aduana'] ?? null;
+        $patente = $datosOperacion['patente'] ?? null;
+        $ejercicio = $datosOperacion['ejercicio'] ?? null;
+        
+        if (!$aduana || !$patente || !$ejercicio || !$numeroOperacion) {
+            \Log::warning("Datos insuficientes para construir folio COVE: aduana={$aduana}, patente={$patente}, ejercicio={$ejercicio}, numeroOperacion={$numeroOperacion}");
+            return null;
+        }
+        
+        // Formatear componentes según la fórmula correcta
+        $aduanaStr = str_pad((string)$aduana, 2, '0', STR_PAD_LEFT);           // 2 dígitos
+        $patenteStr = str_pad((string)$patente, 4, '0', STR_PAD_LEFT);         // 4 dígitos
+        $ejercicioStr = substr((string)$ejercicio, -2);                        // últimos 2 dígitos del año
+        $operacionStr = str_pad((string)$numeroOperacion, 7, '0', STR_PAD_LEFT); // 7 dígitos
+        
+        $folio = $aduanaStr . $patenteStr . $ejercicioStr . $operacionStr;
+        
+        \Log::info("Construyendo folio COVE: {$aduanaStr}(aduana) + {$patenteStr}(patente) + {$ejercicioStr}(ejercicio) + {$operacionStr}(operacion) = {$folio}");
+        
+        // Verificar que tenga exactamente 15 dígitos
+        if (strlen($folio) !== 15 || !ctype_digit($folio)) {
+            \Log::warning("Folio COVE construido no es válido: {$folio} (longitud: " . strlen($folio) . ")");
+            return null;
+        }
+        
+        return $folio;
+    }
+
+    /**
+     * Extrae el COVE de la respuesta XML del web service
+     *
+     * @param string $xmlResponse
+     * @return string|null
+     */
+    private function extraerCoveDeRespuesta(string $xmlResponse): ?string
+    {
+        if (empty($xmlResponse)) {
+            return null;
+        }
+        
+        try {
+            // Buscar etiquetas que podrían contener el COVE
+            $patterns = [
+                '/<folioCove[^>]*>([^<]+)<\/folioCove>/i',
+                '/<cove[^>]*>([^<]+)<\/cove>/i',
+                '/<eDocument[^>]*>([^<]*COVE[^<]*)<\/eDocument>/i',
+                '/COVE[A-Z0-9]{8,}/i'
+            ];
+            
+            foreach ($patterns as $pattern) {
+                if (preg_match($pattern, $xmlResponse, $matches)) {
+                    $cove = trim($matches[1] ?? $matches[0]);
+                    
+                    // Validar que parece un COVE válido
+                    if (strpos($cove, 'COVE') === 0 && strlen($cove) >= 10) {
+                        return $cove;
+                    }
+                }
+            }
+            
+            \Log::warning("No se pudo extraer COVE de la respuesta XML");
+            return null;
+            
+        } catch (\Exception $e) {
+            \Log::error("Error extrayendo COVE de respuesta: " . $e->getMessage());
+            return null;
+        }
+    }
 }

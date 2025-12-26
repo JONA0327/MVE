@@ -22,3 +22,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# E-firma y archivos de certificados (NUNCA subir a Git)
+/pruebaEfirma/
+/efirma/
+*.cer
+*.key
+*.p12
+*.pfx

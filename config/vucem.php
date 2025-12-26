@@ -16,13 +16,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Configuración del Servicio ConsultarRespuestaCove
+    | SEGURIDAD COVE - Control de Generación
+    |--------------------------------------------------------------------------
+    |
+    | ⚠️  PELIGRO: RecibirCove genera trámites REALES ante SAT
+    | ✅  SEGURO:  ConsultarRespuestaCove solo consulta
+    |
+    | Deshabilita RecibirCove en producción para evitar generar 
+    | trámites no deseados.
+    |
+    */
+    'cove_recibir_enabled' => env('COVE_RECIBIR_ENABLED', false),
+
+    // RFC para el sello digital (RFC de prueba oficial SAT)
+    'rfc' => env('VUCEM_RFC', 'GWT921026L97'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Configuración del Servicio ConsultarRespuestaCove  
     |--------------------------------------------------------------------------
     */
     'consultar_cove' => [
-        'endpoint' => env('VUCEM_COVE_ENDPOINT', 'https://www2.ventanillaunica.gob.mx/ventanilla/ConsultarRespuestaCoveService'),
+        'endpoint' => env('VUCEM_CONSULTAR_COVE_ENDPOINT', 'https://www.ventanillaunica.gob.mx/ventanilla/ConsultarRespuestaCoveService'),
         'soap_action' => env('VUCEM_CONSULTAR_COVE_ACTION', 'http://www.ventanillaunica.gob.mx/ConsultarRespuestaCove'),
-        'wsdl_path' => base_path('wsdl/vucem/ConsultarRespuestaCove.wsdl'),
+        'wsdl_path' => base_path('wsdl/vucem/COVE/ConsultarCOVE/ConsultarRespuestaCove.wsdl'),
         
         // Configuración SOAP para ambiente de pruebas
         'timeout' => env('VUCEM_SOAP_TIMEOUT', 8), // Timeout reducido
@@ -70,5 +87,25 @@ return [
         'development' => [
             'consultar_cove' => 'http://localhost:8080/mock/ConsultarRespuestaCoveService',
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Configuración e.firma (Firma Electrónica)
+    |--------------------------------------------------------------------------
+    */
+    'efirma' => [
+        // Ruta relativa donde están los archivos de e.firma
+        'path' => env('E_FIRMA_PATH', 'pruebaEfirma'),
+        
+        // Contraseña desde archivo (más seguro que variable de entorno)
+        'password_file' => 'CONTRASEÑA.txt',
+        
+        // Nombres de archivos específicos para NET070608EM9
+        'cert_file' => '00001000000716248795.cer',
+        'key_file' => 'Claveprivada_FIEL_NET070608EM9_20250604_163343.key',
+        
+        // Configuración de firma
+        'signature_algorithm' => OPENSSL_ALGO_SHA256,
     ],
 ];

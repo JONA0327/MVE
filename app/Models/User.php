@@ -309,4 +309,20 @@ class User extends Authenticatable
             return $value;
         }
     }
+
+    /**
+     * Verifica si el usuario tiene clave webservice configurada
+     */
+    public function hasWebserviceKey(): bool
+    {
+        return !empty($this->webservice_key);
+    }
+
+    /**
+     * Obtiene la clave webservice desencriptada
+     */
+    public function getDecryptedWebserviceKey(): ?string
+    {
+        return $this->webservice_key; // Ya se desencripta automáticamente con el accessor
+    }
 }

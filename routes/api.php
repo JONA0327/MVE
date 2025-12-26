@@ -45,4 +45,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Opcional: Ruta para ver el estado actual de una manifestación (para recargar la página)
     Route::get('/manifestations/{uuid}', [ManifestationController::class, 'show']);
+
+    // --- PROCESAMIENTO DE ARCHIVOS M PARA COVE ---
+    // Procesar archivo M y obtener COVEs
+    Route::post('/mfile/procesar-cove', [App\Http\Controllers\MFileCoveController::class, 'procesarArchivo']);
+    
+    // Ejemplo de uso (para desarrollo/testing)
+    Route::get('/mfile/ejemplo-cove', [App\Http\Controllers\MFileCoveController::class, 'ejemploUso']);
 });
