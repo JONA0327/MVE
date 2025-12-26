@@ -33,6 +33,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Configuración del Servicio ConsultarEdocument  
+    |--------------------------------------------------------------------------
+    */
+    'edocument' => [
+        'endpoint' => env('VUCEM_EDOCUMENT_ENDPOINT', 'https://www.ventanillaunica.gob.mx/ventanilla/ConsultarEdocument'),
+        'soap_action' => env('VUCEM_EDOCUMENT_ACTION', 'http://www.ventanillaunica.gob.mx/cove/ws/service/ConsultarEdocument'),
+        'wsdl_path' => base_path('wsdl/vucem/COVE/edocument/ConsultarEdocument.wsdl'),
+        
+        // Configuración SOAP para ambiente de pruebas
+        'soap_version' => SOAP_1_1,
+        'connection_timeout' => 30,
+        'trace' => true,
+        'exceptions' => true,
+        'cache_wsdl' => WSDL_CACHE_NONE,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Configuración del Servicio ConsultarRespuestaCove  
     |--------------------------------------------------------------------------
     */
