@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -42,25 +43,20 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Como el RFC está encriptado, necesitamos buscar manualmente
         $inputRfc = $this->input('rfc');
         $inputUsername = $this->input('username');
         $inputPassword = $this->input('password');
 
-        // Obtener todos los usuarios y buscar el que coincida con RFC y username
-        $users = \App\Models\User::all();
-        $user = null;
+        // Buscar usuario por username (que es único y no encriptado)
+        $user = \App\Models\User::where('username', $inputUsername)->first();
 
-        foreach ($users as $potentialUser) {
-            // Comparar RFC desencriptado y username
-            if ($potentialUser->rfc === $inputRfc && $potentialUser->username === $inputUsername) {
-                $user = $potentialUser;
-                break;
-            }
-        }
-
-        // Si encontramos el usuario, verificar la contraseña
-        if ($user && Auth::attempt(['id' => $user->id, 'password' => $inputPassword], $this->boolean('remember'))) {
+        // Si encontramos el usuario, verificar RFC desencriptado y contraseña
+        if ($user && 
+            $user->rfc === $inputRfc && 
+            Hash::check($inputPassword, $user->password)) {
+            
+            // Autenticar al usuario
+            Auth::login($user, $this->boolean('remember'));
             RateLimiter::clear($this->throttleKey());
             return;
         }
@@ -69,7 +65,7 @@ class LoginRequest extends FormRequest
         RateLimiter::hit($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'rfc' => trans('auth.failed'), // Mensaje de error genérico
+            'rfc' => trans('auth.failed'),
         ]);
     }
 
