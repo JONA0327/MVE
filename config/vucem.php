@@ -94,6 +94,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Configuración del Servicio ConsultaAcusesCove (Consulta Acuse de COVE)
+    |--------------------------------------------------------------------------
+    */
+    'consulta_acuses_cove' => [
+        'endpoint' => env('VUCEM_CONSULTA_ACUSES_COVE_ENDPOINT', 
+            'https://www.ventanillaunica.gob.mx/ventanilla-acuses-HA/ConsultaAcusesServiceWS'),
+        'soap_action' => env('VUCEM_CONSULTA_ACUSES_COVE_ACTION', 
+            'http://www.ventanillaunica.gob.mx/ventanilla/ConsultaAcusesService/consultarAcuseCove'),
+        'wsdl_path' => base_path('wsdl/vucem/ACUSES/ConsultaAcusesServiceWS.wsdl'),
+        
+        // Configuración SOAP
+        'soap_version' => SOAP_1_1,
+        'connection_timeout' => 30,
+        'trace' => true,
+        'exceptions' => true,
+        'cache_wsdl' => WSDL_CACHE_NONE,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Configuración de Seguridad y Logging
     |--------------------------------------------------------------------------
     */
