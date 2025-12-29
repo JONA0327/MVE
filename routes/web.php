@@ -3,6 +3,7 @@
 use App\Http\Controllers\ManifestationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AcuseController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Manifestation;
 use Illuminate\Support\Facades\Auth;
@@ -80,6 +81,15 @@ Route::middleware('auth')->group(function () {
     // Finales
     Route::get('/manifestacion/{uuid}/acuse', [ManifestationController::class, 'downloadAcuse'])->name('manifestations.downloadAcuse');
     Route::delete('/manifestacion/{uuid}', [ManifestationController::class, 'destroy'])->name('manifestations.destroy');
+});
+
+// --- ACUSES VUCEM (eDocument y COVE) ---
+Route::middleware('auth')->group(function () {
+    // Descargar acuse (detecta automáticamente si es eDocument o COVE según el formato del folio)
+    Route::get('/acuses/{folio}', [AcuseController::class, 'descargarAcuse'])->name('acuses.descargar');
+    
+    // Listar acuses en cache (opcional, para debug)
+    Route::get('/acuses', [AcuseController::class, 'listarAcuses'])->name('acuses.listar');
 });
 
 require __DIR__.'/auth.php';

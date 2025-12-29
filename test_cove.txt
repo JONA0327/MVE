@@ -1,0 +1,65 @@
+﻿======================================
+  TEST CONSULTA ACUSES - VUCEM
+======================================
+Folio: COVE214KNPVU4
+Tipo detectado: COVE (Acuse de Valor)
+======================================
+
+1´©ÅÔâú  Validando usuario autenticado...
+Ô£à Usuario encontrado: AMOS GUILLERMO AGUILERA GONZALEZ (NET070608EM9)
+
+2´©ÅÔâú  Validando credenciales Web Service...
+Ô£à webservice_user: NET070608EM9
+Ô£à webservice_key: CJ+ZEKptDgclWnB+...
+
+3´©ÅÔâú  Validando configuraci├│n VUCEM...
+Ô£à Endpoint: https://www.ventanillaunica.gob.mx/ventanilla-acuses-HA/ConsultaAcusesServiceWS
+
+4´©ÅÔâú  Consultando acuse...
+
+5´©ÅÔâú  RESULTADO:
+======================================
+ÔØî Consulta fallida
+C├│digo: 0
+Descripci├│n: El Edocument  tiene un formato inv├ílido, favor de validar. 
+
+Mensajes de error:
+  - [2] El Edocument  tiene un formato inv├ílido, favor de validar. 
+  - [4] El RFC  no tiene relaci├│n con el eDocument. 
+
+6´©ÅÔâú  DEBUG:
+======================================
+
+­ƒôñ REQUEST HEADERS:
+Custom request via __doRequest
+
+­ƒôñ REQUEST XML:
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:oxml="http://www.ventanillaunica.gob.mx/consulta/acuses/oxml">
+  <soapenv:Header>
+    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" soapenv:mustUnderstand="1">
+      <wsse:UsernameToken>
+        <wsse:Username>NET070608EM9</wsse:Username>
+        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">CJ+ZEKptDgclWnB+EE2o4g8dYjjQnQJRiYOGyGcuEgZWvLGxJsHNjL23KnFzVEDb</wsse:Password>
+      </wsse:UsernameToken>
+    </wsse:Security>
+  </soapenv:Header>
+  <soapenv:Body>
+    <oxml:consultaAcusesPeticion>
+      <idEdocument>COVE214KNPVU4</idEdocument>
+    </oxml:consultaAcusesPeticion>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+
+­ƒôÑ RESPONSE HEADERS:
+Custom request via __doRequest
+
+­ƒôÑ RESPONSE XML:
+--uuid:84ce7475-1468-4534-97fc-7a5a27b59eac
+Content-Id: <rootpart*84ce7475-1468-4534-97fc-7a5a27b59eac@example.jaxws.sun.com>
+Content-Type: application/xop+xml;charset=utf-8;type="text/xml"
+Content-Transfer-Encoding: binary
+
+<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" S:mustUnderstand="1"><wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"><wsu:Created>2025-12-26T23:07:58Z</wsu:Created><wsu:Expires>2025-12-26T23:08:58Z</wsu:Expires></wsu:Timestamp></wsse:Security></S:Header><S:Body><ns3:responseConsultaAcuses xmlns:ns2="http://www.ventanillaunica.gob.mx/consulta/acuses/oxml" xmlns:ns3="http://www.ventanillaunica.gob.mx/ws/consulta/acuses/"><code>0</code>true<mensajeErrores><claveMensaje>2</claveMensaje><descripcion>El Edocument  tiene un formato inv├ílido, favor de validar. </descripcion></mensajeErrores><mensajeErrores><claveMensaje>4</claveMensaje><descripcion>El RFC  no tiene relaci├│n con el eDocument. </descripcion></mensajeErrores></ns3:responseConsultaAcuses></S:Body></S:Envelope>
+--uuid:84ce7475-1468-4534-97fc-7a5a27b59eac--

@@ -293,4 +293,44 @@ class EFirmaService
 
         return false;
     }
+
+    /**
+     * Generar firma electrónica con cadena original personalizada
+     * 
+     * @param string $cadenaOriginal Cadena original completa (con pipes)
+     * @param string $rfc RFC del firmante (para logs)
+     * @return array ['certificado', 'cadenaOriginal', 'firma']
+     * @throws Exception
+     */
+    public function generarFirmaElectronicaRaw(string $cadenaOriginal, string $rfc): array
+    {
+        try {
+            Log::info("[E-FIRMA] Iniciando generación de firma con cadena raw", [
+                'cadena_original' => $cadenaOriginal,
+                'rfc' => $rfc
+            ]);
+
+            // 1. Leer y convertir certificado a Base64
+            $certificadoBase64 = $this->getCertificadoBase64();
+
+            // 2. Generar firma de la cadena
+            $firmaBase64 = $this->firmarCadena($cadenaOriginal);
+
+            Log::info("[E-FIRMA] Firma generada exitosamente", [
+                'cadena_original' => $cadenaOriginal,
+                'certificado_length' => strlen($certificadoBase64),
+                'firma_length' => strlen($firmaBase64)
+            ]);
+
+            return [
+                'certificado' => $certificadoBase64,
+                'cadenaOriginal' => $cadenaOriginal,
+                'firma' => $firmaBase64
+            ];
+
+        } catch (Exception $e) {
+            Log::error("[E-FIRMA] Error generando firma electrónica: " . $e->getMessage());
+            throw $e;
+        }
+    }
 }

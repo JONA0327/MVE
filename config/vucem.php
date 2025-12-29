@@ -37,7 +37,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'edocument' => [
-        'endpoint' => env('VUCEM_EDOCUMENT_ENDPOINT', 'https://www.ventanillaunica.gob.mx/ventanilla/ConsultarEdocument'),
+        'endpoint' => env('VUCEM_EDOCUMENT_ENDPOINT', 'https://www.ventanillaunica.gob.mx/ventanilla-acuses-HA/ConsultaAcusesServiceWS'),
         'soap_action' => env('VUCEM_EDOCUMENT_ACTION', 'http://www.ventanillaunica.gob.mx/cove/ws/service/ConsultarEdocument'),
         'wsdl_path' => base_path('wsdl/vucem/COVE/edocument/ConsultarEdocument.wsdl'),
         
@@ -53,20 +53,38 @@ return [
     |--------------------------------------------------------------------------
     | Configuración del Servicio ConsultarRespuestaCove  
     |--------------------------------------------------------------------------
+    | Servicio para consultar datos estructurados de COVE (no el PDF)
+    | Puerto 8110 es específico para este servicio según WSDL oficial
     */
-    'consultar_cove' => [
-        'endpoint' => env('VUCEM_CONSULTAR_COVE_ENDPOINT', 'https://www.ventanillaunica.gob.mx/ventanilla/ConsultarRespuestaCoveService'),
+    'consultar_respuesta_cove' => [
+        'endpoint' => env('VUCEM_CONSULTAR_COVE_ENDPOINT', 'https://www.ventanillaunica.gob.mx:8110/ventanilla/ConsultarRespuestaCoveService'),
         'soap_action' => env('VUCEM_CONSULTAR_COVE_ACTION', 'http://www.ventanillaunica.gob.mx/ConsultarRespuestaCove'),
-        'wsdl_path' => base_path('wsdl/vucem/COVE/ConsultarCOVE/ConsultarRespuestaCove.wsdl'),
+        'wsdl_path' => base_path('wsdl/vucem/COVE/ConsultarRespuestaCoveService.wsdl'),
         
-        // Configuración SOAP para ambiente de pruebas
-        'timeout' => env('VUCEM_SOAP_TIMEOUT', 8), // Timeout reducido
-        'user_agent' => 'MVE-Laravel-SOAP-Client/1.0',
-        'soap_version' => 1, // SOAP_1_1
-        'connection_timeout' => 8, // Timeout de conexión reducido
+        // Configuración SOAP
+        'soap_version' => SOAP_1_1,
+        'connection_timeout' => 30,
+        'trace' => true,
+        'exceptions' => true,
+        'cache_wsdl' => WSDL_CACHE_NONE,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Configuración del Servicio ConsultaAcuses (para descargar PDFs)
+    |--------------------------------------------------------------------------
+    */
+    'consulta_acuses' => [
+        'endpoint' => env('VUCEM_CONSULTA_ACUSES_ENDPOINT', 'https://www.ventanillaunica.gob.mx/ventanilla-acuses-HA/ConsultaAcusesServiceWS'),
+        'soap_action' => env('VUCEM_CONSULTA_ACUSES_ACTION', 'http://www.ventanillaunica.gob.mx/consulta/acuses/ConsultaAcuses'),
+        'wsdl_path' => base_path('wsdl/vucem/ACUSES/ConsultaAcusesServiceWS.wsdl'),
         
-        // Cache WSDL deshabilitado para pruebas
-        'cache_wsdl' => 0, // WSDL_CACHE_NONE
+        // Configuración SOAP
+        'soap_version' => SOAP_1_1,
+        'connection_timeout' => 30,
+        'trace' => true,
+        'exceptions' => true,
+        'cache_wsdl' => WSDL_CACHE_NONE,
     ],
 
     /*

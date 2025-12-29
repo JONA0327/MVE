@@ -1,0 +1,134 @@
+﻿ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+    ­ƒöì TEST: ConsultarEdocument VUCEM
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+
+­ƒôï PASO 1: Validando Usuario
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+Ô£à Usuario: AMOS GUILLERMO AGUILERA GONZALEZ
+Ô£à RFC: NET070608EM9
+Ô£à Clave Webservice: **************************************************************** (64 caracteres)
+
+­ƒôï PASO 2: Validando e.firma
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++----------------------+--------+
+| Archivo              | Estado |
++----------------------+--------+
+| Certificado (.cer)   | Ô£à OK  |
+| Llave Privada (.key) | Ô£à OK  |
+| Contrase├▒a           | Ô£à OK  |
++----------------------+--------+
+Ô£à Archivos e.firma correctos
+
+­ƒôï PASO 3: Validando WSDL
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++------------------+--------+-----------------------------------------------------------------------------------------------+
+| Archivo          | Existe | Ruta                                                                                          |
++------------------+--------+-----------------------------------------------------------------------------------------------+
+| WSDL             | Ô£à     | C:\Users\Sistemas\Downloads\PROYECTOSEI\MVE\wsdl/vucem/COVE/edocument/ConsultarEdocument.wsdl |
+| XSD Principal    | Ô£à     | C:\Users\Sistemas\Downloads\PROYECTOSEI\MVE\wsdl/vucem/COVE/edocument/ConsultarEdocument.xsd  |
+| XSD Firma (oxml) | Ô£à     | C:\Users\Sistemas\Downloads\PROYECTOSEI\MVE\wsdl/vucem/COVE/edocument/RecibirCove.xsd         |
++------------------+--------+-----------------------------------------------------------------------------------------------+
+Ô£à Archivos WSDL/XSD presentes
+
+­ƒôï PASO 4: Configuraci├│n VUCEM
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++--------------+----------------------------------------------------------------------+
+| Par├ímetro    | Valor                                                                |
++--------------+----------------------------------------------------------------------+
+| Endpoint     | https://www.ventanillaunica.gob.mx/ventanilla/ConsultarEdocument     |
+| SOAPAction   | http://www.ventanillaunica.gob.mx/cove/ws/service/ConsultarEdocument |
+| SOAP Version | SOAP 1.1                                                             |
+| Timeout      | 30s                                                                  |
++--------------+----------------------------------------------------------------------+
+Ô£à Endpoint de PRODUCCI├ôN
+
+­ƒôï PASO 5: Test de Generaci├│n de Firma
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+Ô£à Firma generada correctamente
+   Cadena Original: |0170220LLB2U8|NET070608EM9|
+   Certificado: MIIGQzCCBCugAwIBAgIUMDAwMDEwMDAwMDA3MTYyNDg3OTUwDQ... (2144 chars)
+   Firma: WYf2NMRiIWDPRl8tfHpBdOkNzuSVJ7xClaBzyb587+AMBnPnqD... (344 chars)
+Ô£à Formato de cadena original correcto
+
+­ƒôï PASO 6: Consulta Real a VUCEM
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+Consultando eDocument: 0170220LLB2U8
+
+ÔÅ│ Enviando solicitud a VUCEM...
+
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+ÔØî CONSULTA FALLIDA
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+
+Mensaje: Not Found
+
+­ƒÆí Sugerencias:
+
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+­ƒÉø INFORMACI├ôN DE DEBUG
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+
+­ƒôñ XML REQUEST:
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://www.ventanillaunica.gob.mx/ConsultarEdocument/" xmlns:ns2="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+  <SOAP-ENV:Header>
+    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+      <wsse:UsernameToken wsu:Id="UsernameToken-1">
+        <wsse:Username>NET070608EM9</wsse:Username>
+        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">CJ+ZEKptDgclWnB+EE2o4g8dYjjQnQJRiYOGyGcuEgZWvLGxJsHNjL23KnFzVEDb</wsse:Password>
+      </wsse:UsernameToken>
+    </wsse:Security>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns1:ConsultarEdocumentRequest>
+      <ns1:request>
+        <oxml:firmaElectronica xmlns:oxml="http://www.ventanillaunica.gob.mx/cove/ws/oxml/">
+          <oxml:certificado>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</oxml:certificado>
+          <oxml:cadenaOriginal>|0170220LLB2U8|NET070608EM9|</oxml:cadenaOriginal>
+          <oxml:firma>WYf2NMRiIWDPRl8tfHpBdOkNzuSVJ7xClaBzyb587+AMBnPnqDDcj1oQ/AdTUC58BEE3Cd4fffUW446WXmEqyZKJXrTj95eEREH1A77CbtlPXAMaXtKqU/BZpnjfAofqnQMXWZa5LcsfSwzF6jpK/y6NT5mHPyqXlDG9RZ9QqmxkAbxtR8Ei5vL/QDvTnn9iQ//pupG2wKkXUtSTZRF0bC5bPf0Fn4fwUmAhExGWIl3/1UrQ6dmOY+1WRqtFRFMdLW7aMIdncqzRfkShbsueViuSgZfms91JKmcJAtVUwRzzGqKmFWJWEtlDjj9exNxfi+4Hwd3bEjwHQU4sv8w3Tw==</oxml:firma>
+        </oxml:firmaElectronica>
+        <ns1:criterioBusqueda>
+          <ns1:eDocument>0170220LLB2U8</ns1:eDocument>
+        </ns1:criterioBusqueda>
+      </ns1:request>
+    </ns1:ConsultarEdocumentRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+
+­ƒôÑ XML RESPONSE:
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+<?xml version="1.0"?>
+
+
+­ƒôï REQUEST HEADERS:
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+POST /ventanilla/ConsultarEdocument HTTP/1.1
+Host: www.ventanillaunica.gob.mx
+Connection: Keep-Alive
+User-Agent: Laravel-VUCEM-Client/1.0
+Content-Type: text/xml; charset=utf-8
+SOAPAction: "http://www.ventanillaunica.gob.mx/cove/ws/service/ConsultarEdocument"
+Content-Length: 3936
+
+
+
+­ƒöì AN├üLISIS AUTOM├üTICO:
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++----+-----------------------------------------------+
+|    | Validaci├│n                                    |
++----+-----------------------------------------------+
+| Ô£à | Nodo <request> wrapper presente               |
+| Ô£à | Namespace ConsultarEdocument correcto         |
+| Ô£à | Namespace oxml presente                       |
+| Ô£à | Header WS-Security presente                   |
+| Ô£à | UsernameToken presente                        |
+| ÔØî | Faltan elementos de firma electr├│nica - ERROR |
+| Ô£à | Elemento criterioBusqueda presente            |
+| ÔØî | Falta elemento eDocument - ERROR              |
++----+-----------------------------------------------+
+
+Se encontraron 2 error(es) cr├¡tico(s) en el XML
+
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ

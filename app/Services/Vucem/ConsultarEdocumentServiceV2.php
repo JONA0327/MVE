@@ -4,13 +4,17 @@ namespace App\Services\Vucem;
 
 use SoapClient;
 use SoapFault;
+use SoapVar;
+use SoapHeader;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Exceptions\CoveConsultaException;
-use App\Services\Vucem\EFirmaService;
 
-class ConsultarEdocumentService
+/**
+ * Servicio mejorado para consultar eDocument con control total de namespaces
+ */
+class ConsultarEdocumentServiceV2
 {
     private SoapClient $soapClient;
     private string $rfc;
@@ -20,9 +24,14 @@ class ConsultarEdocumentService
     private EFirmaService $efirmaService;
     private array $debugInfo = [];
 
+    // Namespaces oficiales según XSD
+    private const NS_CONSULTAR = 'http://www.ventanillaunica.gob.mx/ConsultarEdocument/';
+    private const NS_OXML = 'http://www.ventanillaunica.gob.mx/cove/ws/oxml/';
+    private const NS_WSSE = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
+    private const NS_WSU = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd';
+
     public function __construct()
     {
-        // Obtener credenciales del usuario autenticado
         $user = Auth::user();
 
         if (!$user) {
@@ -33,12 +42,13 @@ class ConsultarEdocumentService
             throw new Exception('Usuario no tiene RFC configurado en su perfil');
         }
 
-        // Usar clave webservice del usuario
         $this->rfc = $user->rfc;
         $this->claveWebService = $user->getDecryptedWebserviceKey();
+        
         if (!$this->claveWebService) {
             throw new Exception('El usuario no tiene clave webservice VUCEM configurada.');
         }
+
         $this->endpoint = config('vucem.edocument.endpoint', 'https://www.ventanillaunica.gob.mx/ventanilla/ConsultarEdocument');
         $this->soapAction = config('vucem.edocument.soap_action', 'http://www.ventanillaunica.gob.mx/cove/ws/service/ConsultarEdocument');
         
@@ -56,7 +66,7 @@ class ConsultarEdocumentService
                 throw new Exception("WSDL no encontrado en: {$wsdlPath}");
             }
 
-            Log::info('[EDOCUMENT] Inicializando SoapClient', [
+            Log::info('[EDOCUMENT-V2] Inicializando SoapClient', [
                 'wsdl' => $wsdlPath,
                 'endpoint' => $this->endpoint,
                 'rfc' => $this->rfc
@@ -68,31 +78,31 @@ class ConsultarEdocumentService
                 'cache_wsdl' => WSDL_CACHE_NONE,
                 'soap_version' => SOAP_1_1,
                 'connection_timeout' => 30,
-                'user_agent' => 'Laravel-VUCEM-Client/1.0',
+                'user_agent' => 'Laravel-VUCEM-Client/2.0',
                 'location' => $this->endpoint,
                 'stream_context' => stream_context_create([
                     'ssl' => [
                         'verify_peer' => false,
                         'verify_peer_name' => false,
                         'allow_self_signed' => true
+                    ],
+                    'http' => [
+                        'protocol_version' => '1.1',
+                        'header' => "Connection: close\r\n"
                     ]
                 ])
             ]);
 
-            Log::info('[EDOCUMENT] Cliente SOAP inicializado correctamente', [
-                'endpoint' => $this->endpoint,
-                'wsdl' => $wsdlPath,
-                'rfc' => $this->rfc
-            ]);
+            Log::info('[EDOCUMENT-V2] Cliente SOAP inicializado correctamente');
 
         } catch (Exception $e) {
-            Log::error('[EDOCUMENT] Error inicializando cliente SOAP: ' . $e->getMessage());
+            Log::error('[EDOCUMENT-V2] Error inicializando cliente SOAP: ' . $e->getMessage());
             throw new CoveConsultaException("Error inicializando cliente SOAP: " . $e->getMessage());
         }
     }
 
     /**
-     * Consultar edocument COVE en VUCEM
+     * Consultar edocument COVE en VUCEM con control total de XML
      *
      * @param string $eDocument El COVE a consultar
      * @param string|null $numeroAdenda Número de adenda opcional
@@ -102,7 +112,7 @@ class ConsultarEdocumentService
     public function consultarEdocument(string $eDocument, ?string $numeroAdenda = null): array
     {
         try {
-            Log::info('[EDOCUMENT] Iniciando consulta', [
+            Log::info('[EDOCUMENT-V2] Iniciando consulta', [
                 'eDocument' => $eDocument,
                 'numeroAdenda' => $numeroAdenda,
                 'rfc' => $this->rfc,
@@ -118,52 +128,36 @@ class ConsultarEdocumentService
                 ];
             }
 
-            // Establecer headers de seguridad
+            // Establecer headers de seguridad WS-Security
             $this->setSecurityHeader();
 
-            // Generar firma electrónica para el eDocument
-            Log::info('[EDOCUMENT] Generando firma electrónica para eDocument: ' . $eDocument);
-            $firmaElectronica = $this->efirmaService->generarFirmaElectronica($eDocument, $this->rfc);
+            // Generar firma electrónica
+            Log::info('[EDOCUMENT-V2] Generando firma electrónica para eDocument: ' . $eDocument);
+            $firmaData = $this->efirmaService->generarFirmaElectronica($eDocument, $this->rfc);
 
-            // Construir request con el wrapper correcto y namespaces explícitos
-            // IMPORTANTE: firmaElectronica debe usar namespace oxml, no ConsultarEdocument
-            $requestData = [
-                'request' => [
-                    'firmaElectronica' => new \SoapVar(
-                        '<oxml:firmaElectronica xmlns:oxml="http://www.ventanillaunica.gob.mx/cove/ws/oxml/">' .
-                        '<oxml:certificado>' . htmlspecialchars($firmaElectronica['certificado'], ENT_XML1) . '</oxml:certificado>' .
-                        '<oxml:cadenaOriginal>' . htmlspecialchars($firmaElectronica['cadenaOriginal'], ENT_XML1) . '</oxml:cadenaOriginal>' .
-                        '<oxml:firma>' . htmlspecialchars($firmaElectronica['firma'], ENT_XML1) . '</oxml:firma>' .
-                        '</oxml:firmaElectronica>',
-                        XSD_ANYXML
-                    ),
-                    'criterioBusqueda' => [
-                        'eDocument' => $eDocument
-                    ]
-                ]
-            ];
+            // Construir XML manualmente con namespaces correctos
+            $requestXml = $this->buildRequestXml($eDocument, $firmaData, $numeroAdenda);
 
-            // Agregar número de adenda si se proporciona
-            if ($numeroAdenda) {
-                $requestData['request']['criterioBusqueda']['numeroAdenda'] = $numeroAdenda;
-            }
-
-            Log::info('[EDOCUMENT] Enviando request SOAP', [
-                'eDocument' => $eDocument,
-                'tiene_adenda' => !empty($numeroAdenda)
+            Log::info('[EDOCUMENT-V2] Request XML construido', [
+                'xml_length' => strlen($requestXml)
             ]);
 
+            // Crear SoapVar con el XML completo
+            $soapVar = new SoapVar($requestXml, XSD_ANYXML);
+
             // Realizar llamada SOAP
+            Log::info('[EDOCUMENT-V2] Enviando request SOAP');
+            
             $response = $this->soapClient->__soapCall(
                 'ConsultarEdocument',
-                [$requestData],
+                [$soapVar],
                 [
                     'SOAPAction' => $this->soapAction,
                     'uri' => 'http://www.ventanillaunica.gob.mx/cove/ws/service/'
                 ]
             );
 
-            // Guardar información de debug INMEDIATAMENTE
+            // Guardar información de debug
             $this->debugInfo = [
                 'last_request' => $this->soapClient->__getLastRequest(),
                 'last_response' => $this->soapClient->__getLastResponse(),
@@ -171,11 +165,11 @@ class ConsultarEdocumentService
                 'last_response_headers' => $this->soapClient->__getLastResponseHeaders()
             ];
 
-            // Log SIEMPRE para debug
-            Log::info('[EDOCUMENT] SOAP Request enviado', [
+            // Log para debug
+            Log::info('[EDOCUMENT-V2] SOAP Request enviado', [
                 'request' => $this->debugInfo['last_request']
             ]);
-            Log::info('[EDOCUMENT] SOAP Response recibido', [
+            Log::info('[EDOCUMENT-V2] SOAP Response recibido', [
                 'response' => $this->debugInfo['last_response']
             ]);
 
@@ -189,11 +183,78 @@ class ConsultarEdocumentService
     }
 
     /**
+     * Construye el XML del request con namespaces correctos
+     */
+    private function buildRequestXml(string $eDocument, array $firmaData, ?string $numeroAdenda): string
+    {
+        // Escapar valores XML
+        $eDocumentEscaped = htmlspecialchars($eDocument, ENT_XML1, 'UTF-8');
+        $certificado = htmlspecialchars($firmaData['certificado'], ENT_XML1, 'UTF-8');
+        $cadenaOriginal = htmlspecialchars($firmaData['cadenaOriginal'], ENT_XML1, 'UTF-8');
+        $firma = htmlspecialchars($firmaData['firma'], ENT_XML1, 'UTF-8');
+
+        // Construir XML con estructura exacta según XSD
+        $xml = <<<XML
+<ns1:ConsultarEdocumentRequest xmlns:ns1="http://www.ventanillaunica.gob.mx/ConsultarEdocument/">
+    <ns1:request>
+        <oxml:firmaElectronica xmlns:oxml="http://www.ventanillaunica.gob.mx/cove/ws/oxml/">
+            <oxml:certificado>{$certificado}</oxml:certificado>
+            <oxml:cadenaOriginal>{$cadenaOriginal}</oxml:cadenaOriginal>
+            <oxml:firma>{$firma}</oxml:firma>
+        </oxml:firmaElectronica>
+        <ns1:criterioBusqueda>
+            <ns1:eDocument>{$eDocumentEscaped}</ns1:eDocument>
+XML;
+
+        // Agregar numeroAdenda si existe
+        if ($numeroAdenda) {
+            $numeroAdendaEscaped = htmlspecialchars($numeroAdenda, ENT_XML1, 'UTF-8');
+            $xml .= "\n            <ns1:numeroAdenda>{$numeroAdendaEscaped}</ns1:numeroAdenda>";
+        }
+
+        $xml .= <<<XML
+
+        </ns1:criterioBusqueda>
+    </ns1:request>
+</ns1:ConsultarEdocumentRequest>
+XML;
+
+        return $xml;
+    }
+
+    /**
+     * Establecer header de seguridad WS-Security
+     */
+    private function setSecurityHeader(): void
+    {
+        $rfcEscaped = htmlspecialchars($this->rfc, ENT_XML1, 'UTF-8');
+        $claveEscaped = htmlspecialchars($this->claveWebService, ENT_XML1, 'UTF-8');
+
+        $securityXML = <<<XML
+<wsse:Security xmlns:wsse="{$this::NS_WSSE}" xmlns:wsu="{$this::NS_WSU}">
+    <wsse:UsernameToken wsu:Id="UsernameToken-1">
+        <wsse:Username>{$rfcEscaped}</wsse:Username>
+        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{$claveEscaped}</wsse:Password>
+    </wsse:UsernameToken>
+</wsse:Security>
+XML;
+
+        $securityVar = new SoapVar($securityXML, XSD_ANYXML);
+        $securityHeader = new SoapHeader(self::NS_WSSE, 'Security', $securityVar);
+        
+        $this->soapClient->__setSoapHeaders([$securityHeader]);
+
+        Log::info('[EDOCUMENT-V2] WS-Security header establecido', [
+            'username' => $this->rfc
+        ]);
+    }
+
+    /**
      * Procesar respuesta del webservice
      */
     private function processResponse($response, string $eDocument): array
     {
-        Log::info('[EDOCUMENT] Procesando respuesta', [
+        Log::info('[EDOCUMENT-V2] Procesando respuesta', [
             'eDocument' => $eDocument,
             'response_type' => gettype($response)
         ]);
@@ -242,12 +303,36 @@ class ConsultarEdocumentService
                     'tipoOperacion' => $cove->tipoOperacion ?? null,
                     'numeroFacturaRelacionFacturas' => $cove->numeroFacturaRelacionFacturas ?? null,
                     'relacionFacturas' => $cove->relacionFacturas ?? null,
-                    'automotriz' => $cove->automotriz ?? null
+                    'automotriz' => $cove->automotriz ?? null,
+                    'fechaExpedicion' => $cove->fechaExpedicion ?? null,
+                    'tipoFigura' => $cove->tipoFigura ?? null,
                 ];
+
+                // Extraer emisor si existe
+                if (isset($cove->emisor)) {
+                    $result['cove_data']['emisor'] = [
+                        'tipoIdentificador' => $cove->emisor->tipoIdentificador ?? null,
+                        'identificacion' => $cove->emisor->identificacion ?? null,
+                        'nombre' => $cove->emisor->nombre ?? null,
+                    ];
+                }
+
+                // Extraer facturas si existen
+                if (isset($cove->facturas) && isset($cove->facturas->factura)) {
+                    $result['cove_data']['facturas'] = [];
+                    $facturas = is_array($cove->facturas->factura) ? $cove->facturas->factura : [$cove->facturas->factura];
+                    
+                    foreach ($facturas as $factura) {
+                        $result['cove_data']['facturas'][] = [
+                            'numeroFactura' => $factura->numeroFactura ?? null,
+                            'certificadoOrigen' => $factura->certificadoOrigen ?? null,
+                        ];
+                    }
+                }
             }
         }
 
-        Log::info('[EDOCUMENT] Consulta exitosa', [
+        Log::info('[EDOCUMENT-V2] Consulta exitosa', [
             'eDocument' => $eDocument,
             'tiene_cove_data' => isset($result['cove_data'])
         ]);
@@ -270,17 +355,17 @@ class ConsultarEdocumentService
             'last_response_headers' => $this->soapClient->__getLastResponseHeaders()
         ];
         
-        Log::warning('[EDOCUMENT] SOAP Fault', [
+        Log::warning('[EDOCUMENT-V2] SOAP Fault', [
             'eDocument' => $eDocument,
             'fault_code' => $e->faultcode ?? 'Unknown',
             'fault_string' => $e->faultstring ?? $errorMessage
         ]);
         
         // Log request/response para debug
-        Log::info('[EDOCUMENT] SOAP Request (Error)', [
+        Log::info('[EDOCUMENT-V2] SOAP Request (Error)', [
             'request' => $this->debugInfo['last_request']
         ]);
-        Log::info('[EDOCUMENT] SOAP Response (Error)', [
+        Log::info('[EDOCUMENT-V2] SOAP Response (Error)', [
             'response' => $this->debugInfo['last_response']
         ]);
 
@@ -288,7 +373,9 @@ class ConsultarEdocumentService
             'success' => false,
             'message' => $errorMessage,
             'error_type' => 'soap_fault',
-            'eDocument' => $eDocument
+            'eDocument' => $eDocument,
+            'fault_code' => $e->faultcode ?? null,
+            'fault_string' => $e->faultstring ?? null,
         ];
     }
 
@@ -297,7 +384,7 @@ class ConsultarEdocumentService
      */
     private function handleNetworkError(Exception $e, string $eDocument): array
     {
-        Log::error('[EDOCUMENT] Error de red/conexión', [
+        Log::error('[EDOCUMENT-V2] Error de red/conexión', [
             'eDocument' => $eDocument,
             'error' => $e->getMessage(),
             'endpoint' => $this->endpoint
@@ -307,30 +394,19 @@ class ConsultarEdocumentService
     }
 
     /**
-     * Establecer header de seguridad WS-Security
-     */
-    private function setSecurityHeader(): void
-    {
-        $securityXML = '
-            <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
-                           xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
-                <wsse:UsernameToken wsu:Id="UsernameToken-1">
-                    <wsse:Username>' . htmlspecialchars($this->rfc) . '</wsse:Username>
-                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' . 
-                        htmlspecialchars($this->claveWebService) . '</wsse:Password>
-                </wsse:UsernameToken>
-            </wsse:Security>';
-
-        $this->soapClient->__setSoapHeaders([
-            new \SoapHeader('http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd', 'Security', new \SoapVar($securityXML, XSD_ANYXML))
-        ]);
-    }
-
-    /**
      * Obtener información de debug
      */
     public function getDebugInfo(): array
     {
         return $this->debugInfo;
+    }
+
+    /**
+     * Exportar XML del request para validación externa
+     */
+    public function exportRequestXml(string $eDocument, ?string $numeroAdenda = null): string
+    {
+        $firmaData = $this->efirmaService->generarFirmaElectronica($eDocument, $this->rfc);
+        return $this->buildRequestXml($eDocument, $firmaData, $numeroAdenda);
     }
 }
