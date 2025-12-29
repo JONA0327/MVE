@@ -15,6 +15,7 @@ class ManifestationPayment extends Model
         'fecha',
         'importe',
         'forma_pago',
+        'especifique', // Para cuando forma_pago = 'FORPAG.OT'
         'moneda',
         'tipo_cambio',
         'situacion_pago' // Solo para 'payable'
@@ -23,6 +24,6 @@ class ManifestationPayment extends Model
     protected $casts = [
         'fecha' => 'date',
         'importe' => 'decimal:2',
-        'tipo_cambio' => 'decimal:6',
+        'tipo_cambio' => 'decimal:3',
     ];
 }

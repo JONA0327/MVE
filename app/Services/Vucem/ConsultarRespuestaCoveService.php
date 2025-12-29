@@ -36,7 +36,7 @@ class ConsultarRespuestaCoveService
     const NAMESPACE_WSU = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd';
     const NAMESPACE_SOAP = 'http://schemas.xmlsoap.org/soap/envelope/';
 
-    public function __construct()
+    public function __construct($user = null)
     {
         $this->endpoint = config('vucem.consultar_respuesta_cove.endpoint', 
             'https://www.ventanillaunica.gob.mx:8110/ventanilla/ConsultarRespuestaCoveService');
@@ -44,7 +44,8 @@ class ConsultarRespuestaCoveService
         $this->soapAction = config('vucem.consultar_respuesta_cove.soap_action',
             'http://www.ventanillaunica.gob.mx/ConsultarRespuestaCove');
 
-        $user = Auth::user();
+        // Usar el usuario proporcionado o el autenticado
+        $user = $user ?? Auth::user();
         if ($user) {
             $this->rfc = $user->rfc ?? '';
             $this->webserviceUser = $user->webservice_user ?? $user->rfc ?? '';

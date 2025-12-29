@@ -386,15 +386,30 @@ class ManifestationController extends Controller
                 }
             }
 
-            // Actualizar Pagos
-            if ($request->has('pagos')) {
-                $manifestation->payments()->delete();
-                $pagos = collect($request->input('pagos'))
+            // Actualizar Pagos (3 secciones: pagados, por pagar, compensaciones)
+            $manifestation->payments()->delete();
+            
+            // Pagos Pagados
+            if ($request->has('pagos_pagados')) {
+                $pagosPagados = collect($request->input('pagos_pagados'))
                     ->filter(fn($p) => !empty($p['fecha']))
+                    ->map(fn($p) => array_merge($p, ['status' => 'paid']))
                     ->values();
                 
-                if($pagos->isNotEmpty()) {
-                    $manifestation->payments()->createMany($pagos);
+                if($pagosPagados->isNotEmpty()) {
+                    $manifestation->payments()->createMany($pagosPagados);
+                }
+            }
+            
+            // Pagos Por Pagar
+            if ($request->has('pagos_por_pagar')) {
+                $pagosPorPagar = collect($request->input('pagos_por_pagar'))
+                    ->filter(fn($p) => !empty($p['fecha']))
+                    ->map(fn($p) => array_merge($p, ['status' => 'payable']))
+                    ->values();
+                
+                if($pagosPorPagar->isNotEmpty()) {
+                    $manifestation->payments()->createMany($pagosPorPagar);
                 }
             }
 
@@ -537,14 +552,27 @@ class ManifestationController extends Controller
                 $manifestation->adjustments()->createMany($adjustments);
             }
 
-            // Pagos
-            if ($request->has('pagos')) {
-                $manifestation->payments()->delete();
-                $pagos = collect($request->input('pagos'))
+            // Pagos (3 secciones)
+            $manifestation->payments()->delete();
+            
+            // Pagos Pagados
+            if ($request->has('pagos_pagados')) {
+                $pagosPagados = collect($request->input('pagos_pagados'))
                     ->filter(fn($p) => !empty($p['importe']))
+                    ->map(fn($p) => array_merge($p, ['status' => 'paid']))
                     ->values()
                     ->toArray();
-                if(count($pagos) > 0) $manifestation->payments()->createMany($pagos);
+                if(count($pagosPagados) > 0) $manifestation->payments()->createMany($pagosPagados);
+            }
+            
+            // Pagos Por Pagar
+            if ($request->has('pagos_por_pagar')) {
+                $pagosPorPagar = collect($request->input('pagos_por_pagar'))
+                    ->filter(fn($p) => !empty($p['importe']))
+                    ->map(fn($p) => array_merge($p, ['status' => 'payable']))
+                    ->values()
+                    ->toArray();
+                if(count($pagosPorPagar) > 0) $manifestation->payments()->createMany($pagosPorPagar);
             }
             
             // Compensaciones

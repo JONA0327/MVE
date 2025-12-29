@@ -402,10 +402,10 @@
                                                                     class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                                     required>
                                                                     <option value="">Seleccione un valor</option>
-                                                                    <option value="Agencia Aduanal">Agencia Aduanal</option>
-                                                                    <option value="Agente aduanal">Agente aduanal</option>
-                                                                    <option value="Otro">Otro</option>
-                                                                    <option value="Representante Legal">Representante Legal</option>
+                                                                    <option value="TIPFIG.AGE">Agente Aduanal</option>
+                                                                    <option value="TIPFIG.AAD">Agencia Aduanal</option>
+                                                                    <option value="TIPFIG.REP">Representante Legal</option>
+                                                                    <option value="TIPFIG.OTR">Otro</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -469,6 +469,7 @@
                                                             <input type="text" :name="`coves[${index}][edocument]`" x-model="cove.edocument" 
                                                                 x-bind:class="cove.fromEme ? 'bg-blue-50 border-blue-300 text-blue-700 font-bold cursor-not-allowed' : 'bg-white border-slate-300'"
                                                                 x-bind:readonly="cove.fromEme"
+                                                                maxlength="20"
                                                                 class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-sm text-xs focus:ring-blue-900 focus:border-blue-900 font-mono uppercase text-slate-800" required placeholder="COVE...">
                                                             <button type="button" @click="fetchCoveData(index)" :disabled="cove.fromEme" class="inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-600 text-xs rounded-r-sm hover:bg-slate-200 hover:text-blue-900 transition disabled:opacity-50 disabled:cursor-not-allowed">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -480,12 +481,12 @@
                                                     <td class="p-3 align-top">
                                                         <select :name="`coves[${index}][metodo_valoracion]`" x-model="cove.metodo_valoracion" required class="w-full text-xs border-slate-300 rounded-sm focus:ring-blue-900 focus:border-blue-900">
                                                             <option value="">Seleccione...</option>
-                                                            <option value="1">Valor de transacción</option>
-                                                            <option value="2">Valor de transacción de mercancías idénticas</option>
-                                                            <option value="3">Valor de transacción de mercancías similares</option>
-                                                            <option value="4">Valor deductivo</option>
-                                                            <option value="5">Valor reconstruido</option>
-                                                            <option value="6">Valor de última instancia</option>
+                                                            <option value="VALADU.VTM">Valor de transacción</option>
+                                                            <option value="VALADU.VMI">Valor de transacción de las mercancías idénticas</option>
+                                                            <option value="VALADU.VMS">Valor de transacción de las mercancías similares</option>
+                                                            <option value="VALADU.VPU">Valor de precio unitario de venta</option>
+                                                            <option value="VALADU.VR">Valor reconstruido de las mercancías importadas</option>
+                                                            <option value="VALADU.A78">Valor determinado conforme a lo establecido en el artículo 78</option>
                                                         </select>
                                                     </td>
                                                     <td class="p-3 align-top"><input type="text" :name="`coves[${index}][numero_factura]`" x-model="cove.numero_factura" class="w-full text-xs border-slate-300 rounded-sm" required></td>
@@ -545,29 +546,34 @@
                                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1 required">Método de Valoración Global</label>
                                                 <select name="metodo_valoracion_global" x-model="general.metodo" required class="w-full text-sm border-slate-300 rounded-sm focus:ring-blue-900 focus:border-blue-900">
                                                     <option value="">Seleccione método...</option>
-                                                    <option value="1">Valor de transacción</option>
-                                                    <option value="2">Valor de transacción de mercancías idénticas</option>
-                                                    <option value="3">Valor de transacción de mercancías similares</option>
-                                                    <option value="4">Valor deductivo</option>
-                                                    <option value="5">Valor reconstruido</option>
-                                                    <option value="6">Valor de última instancia</option>
+                                                    <option value="VALADU.VTM">Valor de transacción</option>
+                                                    <option value="VALADU.VMI">Valor de transacción de las mercancías idénticas</option>
+                                                    <option value="VALADU.VMS">Valor de transacción de las mercancías similares</option>
+                                                    <option value="VALADU.VPU">Valor de precio unitario de venta</option>
+                                                    <option value="VALADU.VR">Valor reconstruido de las mercancías importadas</option>
+                                                    <option value="VALADU.A78">Valor determinado conforme a lo establecido en el artículo 78</option>
                                                 </select>
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1 required">INCOTERM</label>
                                                 <select name="incoterm" x-model="general.incoterm" required class="w-full text-sm border-slate-300 rounded-sm focus:ring-blue-900 focus:border-blue-900">
                                                     <option value="">Seleccione INCOTERM...</option>
-                                                    <option value="EXW">EXW - Ex Works</option>
-                                                    <option value="FCA">FCA - Free Carrier</option>
-                                                    <option value="CPT">CPT - Carriage Paid To</option>
-                                                    <option value="CIP">CIP - Carriage and Insurance Paid To</option>
-                                                    <option value="DAP">DAP - Delivered at Place</option>
-                                                    <option value="DPU">DPU - Delivered at Place Unloaded</option>
-                                                    <option value="DDP">DDP - Delivered Duty Paid</option>
-                                                    <option value="FAS">FAS - Free Alongside Ship</option>
-                                                    <option value="FOB">FOB - Free on Board</option>
-                                                    <option value="CFR">CFR - Cost and Freight</option>
-                                                    <option value="CIF">CIF - Cost, Insurance and Freight</option>
+                                                    <option value="TIPINC.CFR">CFR - COSTE Y FLETE (PUERTO DE DESTINO CONVENIDO)</option>
+                                                    <option value="TIPINC.CIF">CIF - COSTE, SEGURO Y FLETE (PUERTO DE DESTINO CONVENIDO)</option>
+                                                    <option value="TIPINC.CPT">CPT - TRANSPORTE PAGADO HASTA (EL LUGAR DE DESTINO CONVENIDO)</option>
+                                                    <option value="TIPINC.CIP">CIP - TRANSPORTE Y SEGURO PAGADOS HASTA (LUGAR DE DESTINO CONVENIDO)</option>
+                                                    <option value="TIPINC.DAP">DAP - ENTREGADA EN LUGAR</option>
+                                                    <option value="TIPINC.DDP">DDP - ENTREGADA DERECHOS PAGADOS (LUGAR DE DESTINO CONVENIDO)</option>
+                                                    <option value="TIPINC.DPU">DPU - ENTREGADA Y DESCARGADA EN EL LUGAR ACORDADO</option>
+                                                    <option value="TIPINC.EXW">EXW - EN FABRICA (LUGAR CONVENIDO)</option>
+                                                    <option value="TIPINC.FCA">FCA - FRANCO TRANSPORTISTA (LUGAR DESIGNADO)</option>
+                                                    <option value="TIPINC.FAS">FAS - FRANCO AL COSTADO DEL BUQUE (PUERTO DE CARGA CONVENIDO)</option>
+                                                    <option value="TIPINC.FOB">FOB - FRANCO A BORDO (PUERTO DE CARGA CONVENIDO)</option>
+                                                    <option value="TIPINC.DAF">DAF-ENTREGADA EN FRONTERA (LUGAR CONVENIDO)</option>
+                                                    <option value="TIPINC.DAT">DAT-ENTREGADA EN TERMINAL</option>
+                                                    <option value="TIPINC.DES">DES-ENTREGADA SOBRE BUQUE (PUERTO DE DESTINO CONVENIDO)</option>
+                                                    <option value="TIPINC.DEQ">DEQ-ENTREGADA EN MUELLE (PUERTO DE DESTINO CONVENIDO)</option>
+                                                    <option value="TIPINC.DDU">DDU-ENTREGADA DERECHOS NO PAGADOS (LUGAR DE DESTINO CONVENIDO)</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -658,12 +664,12 @@
                                         <div class="space-y-4">
                                             <template x-for="(inc, i) in incrementables" :key="i">
                                                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end bg-white p-4 rounded border border-slate-200 shadow-sm relative">
-                                                    <div class="md:col-span-3">
+                                                    <div class="md:col-span-2">
                                                         <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Concepto</label>
                                                         <select :name="`incrementables[${i}][concepto]`" x-model="inc.concepto" required class="w-full text-xs rounded-sm border-slate-300">
                                                             <option value="">Seleccione...</option>
                                                             @foreach($catalogs['incrementables'] ?? [] as $inc_cat)
-                                                                <option value="{{ $inc_cat['clave'] }}" title="{{ $inc_cat['descripcion'] }}">{{ Str::limit($inc_cat['descripcion'], 40) }}</option>
+                                                                <option value="{{ $inc_cat['clave'] }}">{{ $inc_cat['descripcion'] }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -684,9 +690,22 @@
                                                         <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Importe</label>
                                                         <input type="number" step="0.01" :name="`incrementables[${i}][importe]`" x-model="inc.importe" required class="w-full text-xs rounded-sm border-slate-300">
                                                     </div>
-                                                    <div class="md:col-span-2">
+                                                    <div class="md:col-span-1">
                                                         <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">T. Cambio</label>
                                                         <input type="number" step="0.0001" :name="`incrementables[${i}][tipo_cambio]`" x-model="inc.tipo_cambio" class="w-full text-xs rounded-sm border-slate-300 bg-slate-100" readonly>
+                                                    </div>
+                                                    <div class="md:col-span-2">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">¿A cargo del importador?</label>
+                                                        <div class="flex items-center gap-4 pt-2">
+                                                            <label class="inline-flex items-center">
+                                                                <input type="radio" :name="`incrementables[${i}][a_cargo_importador]`" value="1" x-model="inc.a_cargo_importador" class="text-green-600 focus:ring-green-500">
+                                                                <span class="ml-2 text-xs">Sí</span>
+                                                            </label>
+                                                            <label class="inline-flex items-center">
+                                                                <input type="radio" :name="`incrementables[${i}][a_cargo_importador]`" value="0" x-model="inc.a_cargo_importador" class="text-green-600 focus:ring-green-500">
+                                                                <span class="ml-2 text-xs">No</span>
+                                                            </label>
+                                                        </div>
                                                     </div>
                                                     <div class="md:col-span-1 flex justify-center pb-1">
                                                         <button type="button" @click="incrementables.splice(i,1)" class="text-slate-400 hover:text-red-600 p-2">✕</button>
@@ -699,8 +718,11 @@
                                     <!-- DECREMENTABLES -->
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center mb-4 border-b-2 border-red-600 pb-1">
-                                            <h3 class="text-xs font-bold text-red-700 uppercase">Decrementables</h3>
-                                            <button type="button" @click="addDecrementable()" class="text-xs bg-white border border-red-600 text-red-700 px-3 py-1 rounded-sm font-bold hover:bg-red-50 transition uppercase">
+                                            <div>
+                                                <h3 class="text-xs font-bold text-red-700 uppercase">Información que no integra el valor de transacción conforme al artículo 66 de la ley aduanera (DECREMENTABLES)</h3>
+                                                <p class="text-[10px] text-red-600 mt-1">(Se considera que se distinguen del precio pagado las cantidades que se mencionan, se detallan o especifican separadamente del precio pagado en el comprobante fiscal digital o en el documento equivalente)</p>
+                                            </div>
+                                            <button type="button" @click="addDecrementable()" class="text-xs bg-white border border-red-600 text-red-700 px-3 py-1 rounded-sm font-bold hover:bg-red-50 transition uppercase whitespace-nowrap">
                                                 + Agregar
                                             </button>
                                         </div>
@@ -712,7 +734,7 @@
                                                         <select :name="`decrementables[${i}][concepto]`" x-model="dec.concepto" required class="w-full text-xs rounded-sm border-slate-300">
                                                             <option value="">Seleccione...</option>
                                                             @foreach($catalogs['decrementables'] ?? [] as $dec_cat)
-                                                                <option value="{{ $dec_cat['clave'] }}" title="{{ $dec_cat['descripcion'] }}">{{ Str::limit($dec_cat['descripcion'], 40) }}</option>
+                                                                <option value="{{ $dec_cat['clave'] }}">{{ $dec_cat['descripcion'] }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -745,60 +767,163 @@
                                         </div>
                                     </div>
 
-                                    <!-- PAGOS -->
+                                    <!-- PRECIO PAGADO -->
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center mb-4 border-b-2 border-slate-800 pb-1">
-                                            <h3 class="text-xs font-bold text-slate-800 uppercase">Pagos</h3>
-                                            <button type="button" @click="addPago()" class="text-xs bg-white border border-slate-800 text-slate-800 px-3 py-1 rounded-sm font-bold hover:bg-slate-100 transition uppercase">
+                                            <h3 class="text-xs font-bold text-slate-800 uppercase">Precio pagado</h3>
+                                            <button type="button" @click="addPagoPagado()" class="text-xs bg-white border border-slate-800 text-slate-800 px-3 py-1 rounded-sm font-bold hover:bg-slate-100 transition uppercase">
                                                 + Agregar
                                             </button>
                                         </div>
-                                        <div class="overflow-x-auto border border-slate-200 rounded">
-                                            <table class="w-full text-sm border-collapse">
-                                                <thead class="bg-slate-100">
-                                                    <tr>
-                                                        <th class="p-2 text-left text-xs font-bold uppercase">Estatus</th>
-                                                        <th class="p-2 text-left text-xs font-bold uppercase">Fecha</th>
-                                                        <th class="p-2 text-left text-xs font-bold uppercase">Importe</th>
-                                                        <th class="p-2 text-left text-xs font-bold uppercase">Moneda</th>
-                                                        <th class="p-2 text-left text-xs font-bold uppercase">T.C.</th>
-                                                        <th class="p-2 text-left text-xs font-bold uppercase">Forma Pago</th>
-                                                        <th class="p-2 text-center text-xs font-bold uppercase">Acción</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <template x-for="(pago, i) in pagos" :key="i">
-                                                        <tr class="bg-white hover:bg-slate-50">
-                                                            <td class="p-2">
-                                                                <select :name="`pagos[${i}][status]`" x-model="pago.status" required class="w-full text-xs border-slate-300 rounded-sm">
-                                                                    <option value="paid">Pagado</option>
-                                                                    <option value="payable">Por Pagar</option>
-                                                                </select>
-                                                            </td>
-                                                            <td class="p-2"><input type="date" :name="`pagos[${i}][fecha]`" x-model="pago.fecha" @change="updateExchangeRate('pagos', i)" required class="w-full text-xs border-slate-300 rounded-sm"></td>
-                                                            <td class="p-2"><input type="number" step="0.01" :name="`pagos[${i}][importe]`" x-model="pago.importe" required class="w-full text-xs border-slate-300 rounded-sm"></td>
-                                                            <td class="p-2">
-                                                                <select :name="`pagos[${i}][moneda]`" x-model="pago.moneda" @change="updateExchangeRate('pagos', i)" required class="w-full text-xs border-slate-300 rounded-sm">
-                                                                    <option value="">Seleccione moneda...</option>
-                                                                    @foreach($currencies ?? [] as $currency)
-                                                                        <option value="{{ $currency['code'] }}">{{ $currency['code'] }} - {{ $currency['name'] }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </td>
-                                                            <td class="p-2"><input type="number" step="0.0001" :name="`pagos[${i}][tipo_cambio]`" x-model="pago.tipo_cambio" class="w-full text-xs border-slate-300 bg-slate-50 rounded-sm" readonly></td>
-                                                            <td class="p-2">
-                                                                <select :name="`pagos[${i}][forma_pago]`" x-model="pago.forma_pago" required class="w-full text-xs border-slate-300 rounded-sm">
-                                                                    <option value="">Seleccione...</option>
-                                                                    @foreach($catalogs['formas_de_pago'] ?? [] as $forma)
-                                                                        <option value="{{ $forma['clave'] }}">{{ $forma['descripcion'] }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </td>
-                                                            <td class="p-2 text-center"><button type="button" @click="pagos.splice(i,1)" class="text-slate-400 hover:text-red-600 font-bold">✕</button></td>
-                                                        </tr>
-                                                    </template>
-                                                </tbody>
-                                            </table>
+                                        <div class="space-y-4">
+                                            <template x-for="(pago, i) in pagosPagados" :key="i">
+                                                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end bg-white p-4 rounded border border-slate-200 shadow-sm relative">
+                                                    <div class="md:col-span-2">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
+                                                        <input type="date" :name="`pagos_pagados[${i}][fecha]`" x-model="pago.fecha" @change="updateExchangeRate('pagosPagados', i)" required class="w-full text-xs rounded-sm border-slate-300">
+                                                    </div>
+                                                    <div class="md:col-span-2">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Importe</label>
+                                                        <input type="number" step="0.01" :name="`pagos_pagados[${i}][importe]`" x-model="pago.importe" required class="w-full text-xs rounded-sm border-slate-300">
+                                                    </div>
+                                                    <div class="md:col-span-3">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Forma de Pago</label>
+                                                        <select :name="`pagos_pagados[${i}][forma_pago]`" x-model="pago.forma_pago" required class="w-full text-xs rounded-sm border-slate-300">
+                                                            <option value="">Seleccione un valor</option>
+                                                            @foreach($catalogs['formas_de_pago'] ?? [] as $forma)
+                                                                <option value="{{ $forma['clave'] }}">{{ $forma['descripcion'] }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="md:col-span-12" x-show="pago.forma_pago === 'FORPAG.OT'">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">Especifique</label>
+                                                        <input type="text" :name="`pagos_pagados[${i}][especifique]`" x-model="pago.especifique" maxlength="70" class="w-full text-xs rounded-sm border-slate-300" placeholder="Especifique el tipo de pago...">
+                                                    </div>
+                                                    <div class="md:col-span-2">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Tipo de moneda</label>
+                                                        <select :name="`pagos_pagados[${i}][moneda]`" x-model="pago.moneda" @change="updateExchangeRate('pagosPagados', i)" required class="w-full text-xs rounded-sm border-slate-300">
+                                                            <option value="">Seleccione un valor</option>
+                                                            @foreach($currencies ?? [] as $currency)
+                                                                <option value="{{ $currency['code'] }}">{{ $currency['code'] }} - {{ $currency['name'] }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="md:col-span-2">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">Tipo de cambio</label>
+                                                        <input type="number" step="0.001" :name="`pagos_pagados[${i}][tipo_cambio]`" x-model="pago.tipo_cambio" class="w-full text-xs rounded-sm border-slate-300 bg-slate-100" readonly>
+                                                    </div>
+                                                    <div class="md:col-span-1 flex justify-center pb-1">
+                                                        <button type="button" @click="pagosPagados.splice(i,1)" class="text-slate-400 hover:text-red-600 p-2">✕</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- PRECIO POR PAGAR -->
+                                    <div class="mb-8">
+                                        <div class="flex justify-between items-center mb-4 border-b-2 border-blue-600 pb-1">
+                                            <h3 class="text-xs font-bold text-blue-700 uppercase">Precio por pagar</h3>
+                                            <button type="button" @click="addPagoPorPagar()" class="text-xs bg-white border border-blue-600 text-blue-700 px-3 py-1 rounded-sm font-bold hover:bg-blue-50 transition uppercase">
+                                                + Agregar
+                                            </button>
+                                        </div>
+                                        <div class="space-y-4">
+                                            <template x-for="(pago, i) in pagosPorPagar" :key="i">
+                                                <div class="bg-white p-4 rounded border border-slate-200 shadow-sm">
+                                                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end mb-3">
+                                                        <div class="md:col-span-2">
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
+                                                            <input type="date" :name="`pagos_por_pagar[${i}][fecha]`" x-model="pago.fecha" @change="updateExchangeRate('pagosPorPagar', i)" required class="w-full text-xs rounded-sm border-slate-300">
+                                                        </div>
+                                                        <div class="md:col-span-2">
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Importe</label>
+                                                            <input type="number" step="0.01" :name="`pagos_por_pagar[${i}][importe]`" x-model="pago.importe" required class="w-full text-xs rounded-sm border-slate-300">
+                                                        </div>
+                                                        <div class="md:col-span-2">
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Forma de Pago</label>
+                                                            <select :name="`pagos_por_pagar[${i}][forma_pago]`" x-model="pago.forma_pago" required class="w-full text-xs rounded-sm border-slate-300">
+                                                                <option value="">Seleccione un valor</option>
+                                                                @foreach($catalogs['formas_de_pago'] ?? [] as $forma)
+                                                                    <option value="{{ $forma['clave'] }}">{{ $forma['descripcion'] }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="md:col-span-12" x-show="pago.forma_pago === 'FORPAG.OT'">
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">Especifique</label>
+                                                            <input type="text" :name="`pagos_por_pagar[${i}][especifique]`" x-model="pago.especifique" maxlength="70" class="w-full text-xs rounded-sm border-slate-300" placeholder="Especifique el tipo de pago...">
+                                                        </div>
+                                                        <div class="md:col-span-2">
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Tipo de moneda</label>
+                                                            <select :name="`pagos_por_pagar[${i}][moneda]`" x-model="pago.moneda" @change="updateExchangeRate('pagosPorPagar', i)" required class="w-full text-xs rounded-sm border-slate-300">
+                                                                <option value="">Seleccione un valor</option>
+                                                                @foreach($currencies ?? [] as $currency)
+                                                                    <option value="{{ $currency['code'] }}">{{ $currency['code'] }} - {{ $currency['name'] }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="md:col-span-2">
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">Tipo de cambio</label>
+                                                            <input type="number" step="0.001" :name="`pagos_por_pagar[${i}][tipo_cambio]`" x-model="pago.tipo_cambio" class="w-full text-xs rounded-sm border-slate-300 bg-slate-100" readonly>
+                                                        </div>
+                                                        <div class="md:col-span-1 flex justify-center pb-1">
+                                                            <button type="button" @click="pagosPorPagar.splice(i,1)" class="text-slate-400 hover:text-red-600 p-2">✕</button>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">Momento(s) o situación(es) cuando se realizará el pago:</label>
+                                                        <textarea :name="`pagos_por_pagar[${i}][situacion_pago]`" x-model="pago.situacion_pago" rows="2" class="w-full text-xs rounded-sm border-slate-300" placeholder="Describa el momento o situación..."></textarea>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- COMPENSO PAGO -->
+                                    <div class="mb-8">
+                                        <div class="flex justify-between items-center mb-4 border-b-2 border-purple-600 pb-1">
+                                            <h3 class="text-xs font-bold text-purple-700 uppercase">Compenso Pago</h3>
+                                            <button type="button" @click="addCompensoPago()" class="text-xs bg-white border border-purple-600 text-purple-700 px-3 py-1 rounded-sm font-bold hover:bg-purple-50 transition uppercase">
+                                                + Agregar
+                                            </button>
+                                        </div>
+                                        <div class="space-y-4">
+                                            <template x-for="(comp, i) in compensaciones" :key="i">
+                                                <div class="bg-white p-4 rounded border border-slate-200 shadow-sm">
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                                        <div>
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Fecha</label>
+                                                            <input type="date" :name="`compensaciones[${i}][fecha]`" x-model="comp.fecha" required class="w-full text-xs rounded-sm border-slate-300">
+                                                        </div>
+                                                        <div>
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase required">Forma de Pago</label>
+                                                            <select :name="`compensaciones[${i}][forma_pago]`" x-model="comp.forma_pago" required class="w-full text-xs rounded-sm border-slate-300">
+                                                                <option value="">Seleccione un valor</option>
+                                                                @foreach($catalogs['formas_de_pago'] ?? [] as $forma)
+                                                                    <option value="{{ $forma['clave'] }}">{{ $forma['descripcion'] }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3" x-show="comp.forma_pago === 'FORPAG.OT'">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">Especifique</label>
+                                                        <input type="text" :name="`compensaciones[${i}][especifique]`" x-model="comp.especifique" maxlength="70" class="w-full text-xs rounded-sm border-slate-300" placeholder="Especifique el tipo de pago...">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">Motivo por lo que se realizó:</label>
+                                                        <textarea :name="`compensaciones[${i}][motivo]`" x-model="comp.motivo" rows="2" maxlength="1000" class="w-full text-xs rounded-sm border-slate-300" placeholder="Describa el motivo..."></textarea>
+                                                    </div>
+                                                    <div class="flex items-start gap-3">
+                                                        <div class="flex-1">
+                                                            <label class="text-xs text-slate-500 font-bold block mb-1 uppercase">Prestación de la mercancía:</label>
+                                                            <textarea :name="`compensaciones[${i}][prestacion_mercancia]`" x-model="comp.prestacion_mercancia" rows="2" maxlength="1000" class="w-full text-xs rounded-sm border-slate-300" placeholder="Describa la prestación..."></textarea>
+                                                        </div>
+                                                        <div class="pt-6">
+                                                            <button type="button" @click="compensaciones.splice(i,1)" class="text-slate-400 hover:text-red-600 p-2">✕</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
                                         </div>
                                     </div>
 
@@ -943,6 +1068,7 @@
                 emeData: null, // Datos cargados del EME
                 tempRfc: '', // RFC temporal para consulta
                 showRfcForm: false,
+                showVucemPreview: false, // Mostrar/ocultar vista previa VUCEM
                 consultationRfcs: @if(isset($manifestation) && $manifestation->consultationRfcs->count() > 0) @json($manifestation->consultationRfcs) @else [] @endif,
                 coves: @if(isset($manifestation) && $manifestation->coves->count() > 0) @json($manifestation->coves) @else [] @endif,
                 selectedCoveIndex: null, // Índice del COVE seleccionado
@@ -956,7 +1082,8 @@
                 pedimentos: @if(isset($manifestation) && $manifestation->pedimentos && $manifestation->pedimentos->count() > 0) @json($manifestation->pedimentos) @else [{numero_pedimento: '', patente: '', aduana_clave: '430'}] @endif,
                 incrementables: @if(isset($incrementables) && $incrementables->count() > 0) @json($incrementables) @else [] @endif,
                 decrementables: @if(isset($decrementables) && $decrementables->count() > 0) @json($decrementables) @else [] @endif,
-                pagos: @if(isset($manifestation) && $manifestation->payments && $manifestation->payments->count() > 0) @json($manifestation->payments) @else [] @endif,
+                pagosPagados: @if(isset($manifestation) && $manifestation->payments && $manifestation->payments->where('status', 'paid')->count() > 0) @json($manifestation->payments->where('status', 'paid')->values()) @else [] @endif,
+                pagosPorPagar: @if(isset($manifestation) && $manifestation->payments && $manifestation->payments->where('status', 'payable')->count() > 0) @json($manifestation->payments->where('status', 'payable')->values()) @else [] @endif,
                 compensaciones: @if(isset($manifestation) && $manifestation->compensations && $manifestation->compensations->count() > 0) @json($manifestation->compensations) @else [] @endif,
                 form: {
                     rfc_solicitante: '{{ Auth::user()->rfc ?? "" }}',
@@ -1150,7 +1277,7 @@
                                 moneda: inc.moneda || 'USD',
                                 tipo_cambio: inc.tipo_cambio || 20.0000,
                                 fecha_erogacion: inc.fecha_erogacion || '',
-                                a_cargo_importador: true,
+                                a_cargo_importador: inc.a_cargo_importador ?? 1,
                                 fromEme: true,
                                 loading: false
                             }));
@@ -1175,17 +1302,46 @@
 
                     // Precargar pagos del archivo M
                     if (this.emeData.payments && this.emeData.payments.length > 0) {
-                        this.pagos = this.emeData.payments.map(pago => ({
-                            status: pago.status || 'paid',
-                            fecha: pago.fecha || '',
-                            importe: pago.importe || 0,
-                            moneda: pago.moneda || 'USD',
-                            tipo_cambio: pago.tipo_cambio || 20.0000,
-                            forma_pago: pago.forma_pago || '01',
-                            fromEme: true,
-                            loading: false
+                        // Separar pagos según su status
+                        this.pagosPagados = this.emeData.payments
+                            .filter(pago => pago.status === 'paid')
+                            .map(pago => ({
+                                fecha: pago.fecha || '',
+                                importe: pago.importe || 0,
+                                moneda: pago.moneda || 'USD',
+                                tipo_cambio: pago.tipo_cambio || 20.0000,
+                                forma_pago: pago.forma_pago || '01',
+                                fromEme: true,
+                                loading: false
+                            }));
+                        
+                        this.pagosPorPagar = this.emeData.payments
+                            .filter(pago => pago.status === 'payable')
+                            .map(pago => ({
+                                fecha: pago.fecha || '',
+                                importe: pago.importe || 0,
+                                moneda: pago.moneda || 'USD',
+                                tipo_cambio: pago.tipo_cambio || 20.0000,
+                                forma_pago: pago.forma_pago || '01',
+                                situacion_pago: pago.situacion_pago || '',
+                                fromEme: true,
+                                loading: false
+                            }));
+                        
+                        console.log('Pagos Pagados cargados del EME:', this.pagosPagados);
+                        console.log('Pagos Por Pagar cargados del EME:', this.pagosPorPagar);
+                    }
+
+                    // Precargar compensaciones del archivo M
+                    if (this.emeData.compensaciones && this.emeData.compensaciones.length > 0) {
+                        this.compensaciones = this.emeData.compensaciones.map(comp => ({
+                            fecha: comp.fecha || '',
+                            forma_pago: comp.forma_pago || '',
+                            motivo: comp.motivo || '',
+                            prestacion_mercancia: comp.prestacion_mercancia || '',
+                            fromEme: true
                         }));
-                        console.log('Pagos cargados del EME:', this.pagos);
+                        console.log('Compensaciones cargadas del EME:', this.compensaciones);
                     }
 
                     // Precargar valores de aduana del archivo M
@@ -1202,13 +1358,30 @@
                     if (this.emeData.incoterm) {
                         const incotermFromFile = this.emeData.incoterm.toUpperCase().trim();
                         
-                        // Lista de incoterms válidos para comparar
-                        const validIncoterms = ['EXW', 'FCA', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP', 'FAS', 'FOB', 'CFR', 'CIF'];
+                        // Mapeo de códigos cortos a claves VUCEM
+                        const incotermMap = {
+                            'EXW': 'TIPINC.EXW',
+                            'FCA': 'TIPINC.FCA',
+                            'CPT': 'TIPINC.CPT',
+                            'CIP': 'TIPINC.CIP',
+                            'DAP': 'TIPINC.DAP',
+                            'DPU': 'TIPINC.DPU',
+                            'DDP': 'TIPINC.DDP',
+                            'FAS': 'TIPINC.FAS',
+                            'FOB': 'TIPINC.FOB',
+                            'CFR': 'TIPINC.CFR',
+                            'CIF': 'TIPINC.CIF',
+                            'DAF': 'TIPINC.DAF',
+                            'DAT': 'TIPINC.DAT',
+                            'DES': 'TIPINC.DES',
+                            'DEQ': 'TIPINC.DEQ',
+                            'DDU': 'TIPINC.DDU'
+                        };
                         
                         // Verificar que el incoterm del archivo sea válido
-                        if (validIncoterms.includes(incotermFromFile)) {
-                            this.general.incoterm = incotermFromFile;
-                            console.log(`✅ INCOTERM autoseleccionado del archivo M: ${incotermFromFile}`);
+                        if (incotermMap[incotermFromFile]) {
+                            this.general.incoterm = incotermMap[incotermFromFile];
+                            console.log(`✅ INCOTERM autoseleccionado del archivo M: ${incotermFromFile} → ${incotermMap[incotermFromFile]}`);
                         } else {
                             console.warn(`⚠️ INCOTERM del archivo M no reconocido: ${incotermFromFile}`);
                         }
@@ -1550,7 +1723,7 @@
                         moneda: 'USD',
                         tipo_cambio: 20.0000,
                         fecha_erogacion: '',
-                        a_cargo_importador: true,
+                        a_cargo_importador: 1,
                         loading: false
                     });
                 },
@@ -1564,15 +1737,36 @@
                         loading: false
                     });
                 },
-                addPago() {
-                    this.pagos.push({
-                        status: 'paid',
+                addPagoPagado() {
+                    this.pagosPagados.push({
                         fecha: '',
                         importe: 0,
                         moneda: 'USD',
                         tipo_cambio: 20.0000,
                         forma_pago: '',
+                        especifique: '',
                         loading: false
+                    });
+                },
+                addPagoPorPagar() {
+                    this.pagosPorPagar.push({
+                        fecha: '',
+                        importe: 0,
+                        moneda: 'USD',
+                        tipo_cambio: 20.0000,
+                        forma_pago: '',
+                        especifique: '',
+                        situacion_pago: '',
+                        loading: false
+                    });
+                },
+                addCompensoPago() {
+                    this.compensaciones.push({
+                        fecha: '',
+                        forma_pago: '',
+                        especifique: '',
+                        motivo: '',
+                        prestacion_mercancia: ''
                     });
                 },
                 addRfc() {
@@ -1735,6 +1929,10 @@
                         item = this.decrementables[index];
                     } else if (type === 'pagos') {
                         item = this.pagos[index];
+                    } else if (type === 'pagosPagados') {
+                        item = this.pagosPagados[index];
+                    } else if (type === 'pagosPorPagar') {
+                        item = this.pagosPorPagar[index];
                     }
                     
                     if (!item || !item.moneda || (!item.fecha_erogacion && !item.fecha)) {
@@ -1746,6 +1944,136 @@
                     item.tipo_cambio = rate;
                     
                     console.log(`ℹ️ Tipo de cambio actualizado: ${item.moneda} (${fecha}) = ${rate}`);
+                },
+                
+                // Función de vista previa formato VUCEM (TEMPORAL - SOLO PRUEBA)
+                generateVucemPreview() {
+                    let cadena = '|';
+                    
+                    // RFC Importador
+                    cadena += (this.form.rfc_importador || 'N/A') + '|';
+                    
+                    // RFCs de consulta (primer RFC y tipo figura)
+                    if (this.consultationRfcs.length > 0) {
+                        cadena += (this.consultationRfcs[0].rfc_consulta || '') + '|';
+                        cadena += (this.consultationRfcs[0].tipo_figura || 'TIPFIG.OTR') + '|';
+                    } else {
+                        cadena += '|TIPFIG.OTR|';
+                    }
+                    
+                    // Pedimentos (primer pedimento)
+                    if (this.pedimentos.length > 0) {
+                        cadena += (this.pedimentos[0].numero_pedimento || '') + '|';
+                    } else {
+                        cadena += '|';
+                    }
+                    
+                    // COVEs (primer COVE)
+                    if (this.coves.length > 0) {
+                        cadena += (this.coves[0].edocument || '') + '|';
+                    } else {
+                        cadena += '|';
+                    }
+                    
+                    // INCOTERM
+                    cadena += (this.general.incoterm || 'TIPINC.FOB') + '|';
+                    
+                    // Vinculación
+                    cadena += (this.form.existe_vinculacion == '1' ? '1' : '0') + '|';
+                    
+                    // Patente y Aduana (primer pedimento)
+                    if (this.pedimentos.length > 0) {
+                        cadena += (this.pedimentos[0].patente || '') + '|';
+                        cadena += (this.pedimentos[0].aduana_clave || '') + '|';
+                    } else {
+                        cadena += '||';
+                    }
+                    
+                    // PAGOS PAGADOS (primer pago)
+                    if (this.pagosPagados.length > 0) {
+                        const pago = this.pagosPagados[0];
+                        cadena += (pago.fecha || '') + '|';
+                        cadena += (pago.importe || '0') + '|';
+                        cadena += (pago.forma_pago || 'FORPAG.EF') + '|';
+                        if (pago.forma_pago === 'FORPAG.OT') {
+                            cadena += (pago.especifique || '') + '|';
+                        }
+                        cadena += (pago.moneda || 'USD') + '|';
+                        cadena += (pago.tipo_cambio || '1') + '|';
+                    } else {
+                        cadena += '||FORPAG.EF||USD|1|';
+                    }
+                    
+                    // PAGOS POR PAGAR (primer pago)
+                    if (this.pagosPorPagar.length > 0) {
+                        const pago = this.pagosPorPagar[0];
+                        cadena += (pago.fecha || '') + '|';
+                        cadena += (pago.importe || '0') + '|';
+                        cadena += (pago.situacion_pago || '') + '|';
+                        cadena += (pago.forma_pago || 'FORPAG.EF') + '|';
+                        if (pago.forma_pago === 'FORPAG.OT') {
+                            cadena += (pago.especifique || '') + '|';
+                        }
+                        cadena += (pago.moneda || 'USD') + '|';
+                        cadena += (pago.tipo_cambio || '1') + '|';
+                    } else {
+                        cadena += '||SITUACIÓN|FORPAG.EF||USD|1|';
+                    }
+                    
+                    // COMPENSACIONES (primera compensación)
+                    if (this.compensaciones.length > 0) {
+                        const comp = this.compensaciones[0];
+                        cadena += (comp.fecha || '') + '|';
+                        cadena += (comp.motivo || '') + '|';
+                        cadena += (comp.prestacion_mercancia || '') + '|';
+                        cadena += (comp.forma_pago || 'FORPAG.EF') + '|';
+                        if (comp.forma_pago === 'FORPAG.OT') {
+                            cadena += (comp.especifique || '') + '|';
+                        }
+                    } else {
+                        cadena += '||MOTIVO|MERCANCIA|FORPAG.EF||';
+                    }
+                    
+                    // MÉTODO DE VALORACIÓN
+                    cadena += (this.general.metodo || 'VALADU.VTM') + '|';
+                    
+                    // INCREMENTABLES (primer incrementable)
+                    if (this.incrementables.length > 0) {
+                        const inc = this.incrementables[0];
+                        cadena += (inc.concepto || 'INCRE.CG') + '|';
+                        cadena += (inc.fecha_erogacion || '') + '|';
+                        cadena += (inc.importe || '0') + '|';
+                        cadena += (inc.moneda || 'USD') + '|';
+                        cadena += (inc.tipo_cambio || '1') + '|';
+                        cadena += (inc.a_cargo_importador ? '1' : '0') + '|';
+                    } else {
+                        cadena += 'INCRE.CG||0|USD|1|0|';
+                    }
+                    
+                    // DECREMENTABLES (primer decrementable)
+                    if (this.decrementables.length > 0) {
+                        const dec = this.decrementables[0];
+                        cadena += (dec.concepto || 'DECRE.GR') + '|';
+                        cadena += (dec.fecha_erogacion || '') + '|';
+                        cadena += (dec.importe || '0') + '|';
+                        cadena += (dec.moneda || 'USD') + '|';
+                        cadena += (dec.tipo_cambio || '1') + '|';
+                    } else {
+                        cadena += 'DECRE.GR||0|USD|1|';
+                    }
+                    
+                    // COVEs adicionales (segundo COVE si existe)
+                    if (this.coves.length > 1) {
+                        cadena += (this.coves[1].edocument || '') + '|';
+                        cadena += (this.coves[1].metodo_valoracion || 'VALADU.VTM') + '|';
+                    } else {
+                        cadena += '|VALADU.VTM|';
+                    }
+                    
+                    // Totales (ejemplo)
+                    cadena += '0|0|0|0|0|';
+                    
+                    return cadena;
                 }
             }
         }

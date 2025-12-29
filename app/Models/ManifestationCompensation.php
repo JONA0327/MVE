@@ -16,6 +16,7 @@ class ManifestationCompensation extends Model
         'manifestation_id',
         'fecha',
         'forma_pago',
+        'especifique', // Para cuando forma_pago = 'FORPAG.OT'
         'motivo',
         'prestacion_mercancia'
     ];
