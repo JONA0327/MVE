@@ -50,13 +50,18 @@ return [
     ],
 
     /*
+    /*
     |--------------------------------------------------------------------------
     | Configuración del Servicio ConsultarRespuestaCove  
     |--------------------------------------------------------------------------
-    | Servicio para consultar datos estructurados de COVE (no el PDF)
-    | Puerto 8110 es específico para este servicio según WSDL oficial
     */
-    'consultar_respuesta_cove' => [
+    /*
+    |--------------------------------------------------------------------------
+    | Configuración del Servicio ConsultarRespuestaCove  
+    |--------------------------------------------------------------------------
+    */
+    // [CAMBIO IMPORTANTE] El nombre debe ser 'consultar_cove' para coincidir con tu Service
+    'consultar_cove' => [ 
         'endpoint' => env('VUCEM_CONSULTAR_COVE_ENDPOINT', 'https://www.ventanillaunica.gob.mx:8110/ventanilla/ConsultarRespuestaCoveService'),
         'soap_action' => env('VUCEM_CONSULTAR_COVE_ACTION', 'http://www.ventanillaunica.gob.mx/ConsultarRespuestaCove'),
         'wsdl_path' => base_path('wsdl/vucem/COVE/ConsultarRespuestaCoveService.wsdl'),

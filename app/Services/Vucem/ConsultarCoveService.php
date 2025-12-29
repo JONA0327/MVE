@@ -66,13 +66,20 @@ class ConsultarCoveService
                 'exceptions' => true,
                 'trace' => true,
                 'cache_wsdl' => \WSDL_CACHE_NONE,
-                'connection_timeout' => 8, // Timeout más agresivo
+                'connection_timeout' => 20, // AUMENTA EL TIMEOUT A 20 SEGUNDOS
                 'user_agent' => config('vucem.consultar_cove.user_agent', 'MVE-Laravel-SOAP-Client/1.0'),
                 'stream_context' => stream_context_create([
                     'http' => [
-                        'timeout' => 8, // Timeout más agresivo
+                        'timeout' => 20, // Aumentamos timeout aquí también
                         'method' => 'POST',
-                        'header' => 'Connection: close\r\n' // Cerrar conexión rápidamente
+                        'header' => 'Connection: close\r\n' 
+                    ],
+                    // AGREGA ESTO: Configuración SSL permisiva
+                    'ssl' => [
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true,
+                        'ciphers' => 'DEFAULT:!DH' // A veces ayuda con servidores viejos
                     ]
                 ])
             ];

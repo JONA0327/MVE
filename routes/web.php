@@ -7,6 +7,8 @@ use App\Http\Controllers\AcuseController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Manifestation;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\CoveController; 
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,6 +28,9 @@ Route::get('/dashboard', function () {
 
 
 Route::middleware('auth')->group(function () {
+    Route::get('/cove/consultar', [CoveController::class, 'showByFolio'])
+        ->name('cove.consultar');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

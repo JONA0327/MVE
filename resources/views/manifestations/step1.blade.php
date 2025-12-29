@@ -465,17 +465,16 @@
                                                             class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
                                                     </td>
                                                     <td class="p-3 align-top relative">
-                                                        <div class="flex">
-                                                            <input type="text" :name="`coves[${index}][edocument]`" x-model="cove.edocument" 
-                                                                x-bind:class="cove.fromEme ? 'bg-blue-50 border-blue-300 text-blue-700 font-bold cursor-not-allowed' : 'bg-white border-slate-300'"
-                                                                x-bind:readonly="cove.fromEme"
-                                                                maxlength="20"
-                                                                class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-sm text-xs focus:ring-blue-900 focus:border-blue-900 font-mono uppercase text-slate-800" required placeholder="COVE...">
-                                                            <button type="button" @click="fetchCoveData(index)" :disabled="cove.fromEme" class="inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-600 text-xs rounded-r-sm hover:bg-slate-200 hover:text-blue-900 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                                            </button>
-                                                        </div>
-                                                        <p x-show="cove.loading" class="text-xs text-blue-600 mt-1 animate-pulse font-medium">Buscando...</p>
+                                                        <input type="text" 
+                                                            :name="`coves[${index}][edocument]`" 
+                                                            x-model="cove.edocument" 
+                                                            x-bind:class="cove.fromEme ? 'bg-blue-50 border-blue-300 text-blue-700 font-bold cursor-not-allowed' : 'bg-white border-slate-300'"
+                                                            x-bind:readonly="cove.fromEme"
+                                                            maxlength="20"
+                                                            class="block w-full px-3 py-2 rounded-sm text-xs focus:ring-blue-900 focus:border-blue-900 font-mono uppercase text-slate-800 shadow-sm" 
+                                                            required 
+                                                            placeholder="COVE...">
+
                                                         <div x-show="cove.fromEme" class="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-md" title="Del archivo M"></div>
                                                     </td>
                                                     <td class="p-3 align-top">
@@ -1651,8 +1650,8 @@
                         numero_factura: '',
                         fecha_expedicion: '',
                         emisor: '',
-                        loading: false,
-                        fromEme: false  // Marcado como manual
+                        // loading: false,  <-- ESTO YA NO SE NECESITA
+                        fromEme: false
                     });
                 },
                 removeCove(index) {

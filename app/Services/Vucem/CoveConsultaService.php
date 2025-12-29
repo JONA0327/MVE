@@ -32,7 +32,9 @@ class CoveConsultaService
                 throw new Exception("WSDL no encontrado: {$wsdl}");
             }
 
-            $endpoint = env('VUCEM_COVE_ENDPOINT', 'https://www2.ventanillaunica.gob.mx/ventanilla/ConsultarRespuestaCoveService');
+            // CORRECCIÓN (Opción A): Usar la configuración centralizada.
+            // Esto asegura que tome 'VUCEM_CONSULTAR_COVE_ENDPOINT' definido en config/vucem.php
+            $endpoint = config('vucem.consultar_cove.endpoint');
             
             $this->client = new SoapClient($wsdl, [
                 'trace' => true,
@@ -41,7 +43,7 @@ class CoveConsultaService
                 'soap_version' => SOAP_1_1,
                 'connection_timeout' => 30,
                 'user_agent' => 'Laravel-VUCEM-Client/1.0',
-                'location' => $endpoint, // Sobrescribir endpoint del WSDL
+                'location' => $endpoint, // Sobrescribir endpoint del WSDL con la URL correcta
                 'stream_context' => stream_context_create([
                     'ssl' => [
                         'verify_peer' => false,

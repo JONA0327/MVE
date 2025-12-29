@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class CoveController extends Controller
 {
@@ -20,8 +21,7 @@ class CoveController extends Controller
 
     /**
      * Consultar información de un COVE por su folio
-     * 
-     * @param Request $request
+     * * @param Request $request
      * @return JsonResponse
      */
     public function showByFolio(Request $request): JsonResponse
@@ -89,9 +89,10 @@ class CoveController extends Controller
 
             // Log del resultado
             if ($result['success']) {
-                Log::info('API: COVE encontrado exitosamente', [
+                // [DEBUG CRÍTICO] Logueamos qué devolvió exactamente VUCEM antes de procesarlo
+                Log::info('API: DATA REAL RECIBIDA DE VUCEM:', [
                     'folio' => $folioCove,
-                    'numero_factura' => $result['data']['numero_factura'] ?? 'N/A'
+                    'data_dump' => $result['data'] ?? 'DATA VACÍA'
                 ]);
             } else {
                 Log::warning('API: Error consultando COVE', [
@@ -103,19 +104,22 @@ class CoveController extends Controller
 
             // Preparar respuesta
             if ($result['success']) {
+                // [CORRECCIÓN PRINCIPAL]
+                // Eliminamos los defaults agresivos (?? 'N/A' o date('Y-m-d')).
+                // Ahora devolvemos NULL si el dato no existe, para que el front lo sepa.
                 return response()->json([
                     'success' => true,
                     'message' => 'COVE consultado exitosamente',
                     'data' => [
                         'cove' => $result['data']['folio'] ?? $folioCove,
-                        'metodo_valoracion' => $result['data']['metodo_valoracion'] ?? '1',
-                        'numero_factura' => $result['data']['numero_factura'] ?? 'N/A',
-                        'fecha_expedicion' => $result['data']['fecha_expedicion'] ?? date('Y-m-d'),
-                        'emisor' => $result['data']['emisor'] ?? 'N/A',
+                        'metodo_valoracion' => $result['data']['metodo_valoracion'] ?? null, 
+                        'numero_factura' => $result['data']['numero_factura'] ?? null,
+                        'fecha_expedicion' => $result['data']['fecha_expedicion'] ?? null, // IMPORTANTE: No inventar fecha
+                        'emisor' => $result['data']['emisor'] ?? null,
                         'edocument' => $result['data']['folio'] ?? $folioCove,
                         // Datos adicionales si están disponibles
                         'estatus' => $result['data']['estatus'] ?? 'Válido',
-                        'fecha_emision' => $result['data']['fecha_emision'] ?? date('Y-m-d'),
+                        'fecha_emision' => $result['data']['fecha_emision'] ?? null,
                         'rfc_solicitante' => $result['data']['rfc_solicitante'] ?? ''
                     ]
                 ]);
