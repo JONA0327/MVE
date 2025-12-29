@@ -925,27 +925,6 @@
                                             </template>
                                         </div>
                                     </div>
-
-                                    <!-- RFCs DE CONSULTA -->
-                                    <div class="mb-8">
-                                        <div class="flex justify-between items-center mb-4 border-b-2 border-green-600 pb-1">
-                                            <h3 class="text-xs font-bold text-slate-800 uppercase">RFCs Autorizados para Consulta</h3>
-                                            <button type="button" @click="addRfc()" class="text-xs bg-white border border-green-600 text-green-700 px-3 py-1 rounded-sm font-bold hover:bg-green-50 transition uppercase">
-                                                + Agregar RFC
-                                            </button>
-                                        </div>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            <template x-for="(rfc, i) in consultationRfcs" :key="i">
-                                                <div class="flex items-center bg-white border border-slate-200 rounded-sm p-2 shadow-sm">
-                                                    <div class="bg-green-100 p-2 rounded-sm mr-2">
-                                                        <svg class="w-4 h-4 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                                    </div>
-                                                    <input type="text" :name="`consultation_rfcs[${i}][rfc_consulta]`" x-model="rfc.rfc_consulta" class="flex-1 text-sm border-0 focus:ring-0 uppercase font-mono bg-transparent" placeholder="RFC..." minlength="12" maxlength="13" required>
-                                                    <button type="button" @click="consultationRfcs.splice(i,1)" class="text-slate-400 hover:text-red-500 font-bold ml-2 p-1">✕</button>
-                                                </div>
-                                            </template>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1224,14 +1203,18 @@
                         }
                     }
 
-                    // Precargar COVEs del archivo M
+                    // Precargar COVEs del archivo M (sin número de factura)
                     if (this.emeData.coves && this.emeData.coves.length > 0) {
                         this.coves = this.emeData.coves.map(cove => ({
-                            ...cove,
+                            edocument: cove.edocument || '',
+                            metodo_valoracion: cove.metodo_valoracion || '',
+                            numero_factura: '',  // Vacío - usuario debe completar manualmente
+                            fecha_expedicion: cove.fecha_expedicion || '',  // SÍ cargar del archivo M
+                            emisor: cove.emisor || '',  // SÍ cargar del archivo M
                             fromEme: true,  // Marcar como proveniente del EME
                             loading: false
                         }));
-                        console.log('COVEs cargados del EME:', this.coves);
+                        console.log('COVEs cargados del EME (sin número de factura):', this.coves);
                     }
 
                     // Precargar pedimentos del archivo M
@@ -1341,16 +1324,6 @@
                             fromEme: true
                         }));
                         console.log('Compensaciones cargadas del EME:', this.compensaciones);
-                    }
-
-                    // Precargar valores de aduana del archivo M
-                    if (this.emeData.total_precio_pagado) {
-                        const precioPagadoInput = document.querySelector('input[name="total_precio_pagado"]');
-                        if (precioPagadoInput) precioPagadoInput.value = this.emeData.total_precio_pagado;
-                    }
-                    if (this.emeData.total_valor_aduana) {
-                        const valorAduanaInput = document.querySelector('input[name="total_valor_aduana"]');
-                        if (valorAduanaInput) valorAduanaInput.value = this.emeData.total_valor_aduana;
                     }
 
                     // Autoseleccionar INCOTERM del archivo M (registro 505, campo 5)
@@ -1534,6 +1507,10 @@
                     }
                 },
                 isFromEme(field) {
+                    // No bloquear campos de valor en aduana - siempre permitir edición manual
+                    if (field === 'total_precio_pagado' || field === 'total_valor_aduana') {
+                        return false;
+                    }
                     return this.emeData && this.emeData[field];
                 },
                 limpiarDatosBD() {

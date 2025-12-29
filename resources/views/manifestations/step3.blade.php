@@ -90,8 +90,8 @@
                         </div>
                         @endif
 
-                        <!-- RFCs DE CONSULTA -->
-                        @if($manifestation->consultationRfcs->count() > 0)
+                        <!-- RFCs DE CONSULTA - OCULTO -->
+                        {{-- @if($manifestation->consultationRfcs->count() > 0)
                         <div class="mb-8">
                             <h3 class="text-sm font-bold text-slate-700 mb-3">RFCs Autorizados para Consulta</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

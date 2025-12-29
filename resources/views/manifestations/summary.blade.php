@@ -149,7 +149,7 @@
                                 <label class="block text-xs font-bold text-slate-400 print:text-black">Agente Aduanal Principal</label>
                                 <p class="uppercase font-bold text-slate-700 print:text-black">JUAN PÉREZ LÓPEZ (Patente 1624)</p>
                             </div>
-                            <div class="bg-slate-50 p-4 rounded print:bg-white print:border print:border-slate-300">
+                            {{-- <div class="bg-slate-50 p-4 rounded print:bg-white print:border print:border-slate-300">
                                 <label class="block text-xs font-bold text-slate-400 print:text-black">Otros RFCs Autorizados</label>
                                 <ul class="list-disc list-inside">
                                     @forelse($manifestation->consultationRfcs as $rfc)
@@ -158,7 +158,7 @@
                                         <li class="italic text-xs text-slate-400">Ninguno adicional.</li>
                                     @endforelse
                                 </ul>
-                            </div>
+                            </div> --}
                         </div>
                     </section>
 
