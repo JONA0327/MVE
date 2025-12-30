@@ -262,13 +262,17 @@ class ManifestationController extends Controller
             'domicilio_fiscal_importador' => 'nullable|string',
             // Campos de valores aduanales
             'total_precio_pagado' => 'nullable|numeric|min:0',
+            'moneda_precio_pagado' => 'nullable|string|size:3',
             'total_incrementables' => 'nullable|numeric|min:0',
+            'moneda_incrementables' => 'nullable|string|size:3',
             'total_decrementables' => 'nullable|numeric|min:0',
+            'moneda_decrementables' => 'nullable|string|size:3',
             'total_valor_aduana' => 'nullable|numeric|min:0',
             'total_precio_por_pagar' => 'nullable|numeric|min:0',
+            'moneda_precio_por_pagar' => 'nullable|string|size:3',
             // Campos de la sección MV
             'metodo_valoracion_global' => 'nullable|string',
-            'incoterm' => 'nullable|string|max:3',
+            'incoterm' => 'nullable|string|max:15',
             // COVEs
             'coves' => 'nullable|array',
             'coves.*.edocument' => 'nullable|string',
@@ -435,7 +439,7 @@ class ManifestationController extends Controller
      */
     public function editStep2($uuid)
     {
-        $manifestation = Manifestation::where('uuid', $uuid)->with('coves')->firstOrFail();
+        $manifestation = Manifestation::where('uuid', $uuid)->with(['coves', 'attachments'])->firstOrFail();
         $currencies = $this->getCurrencies(); // Cargar catálogo monedas
         $catalogs = $this->getCatalogs();     // Cargar resto de catálogos
         return view('manifestations.step2', compact('manifestation', 'currencies', 'catalogs'));
@@ -485,7 +489,7 @@ class ManifestationController extends Controller
     public function editStep3($uuid)
     {
         $manifestation = Manifestation::where('uuid', $uuid)
-            ->with(['pedimentos', 'payments', 'compensations', 'consultationRfcs'])
+            ->with(['coves', 'pedimentos', 'payments', 'compensations', 'consultationRfcs', 'adjustments', 'attachments'])
             ->firstOrFail();
         
         $incrementables = $manifestation->adjustments()->where('type', 'incrementable')->get();
@@ -766,8 +770,188 @@ class ManifestationController extends Controller
         }
     }
     
-    public function editStep4($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->with('attachments')->firstOrFail(); return view('manifestations.step4', compact('manifestation')); }
-    public function uploadFile(Request $request, $uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); $request->validate(['file' => 'required|file|max:3072']); $file = $request->file('file'); $path = $file->storeAs('manifestations/' . $uuid, 'anexo_' . time() . '.' . $file->getClientOriginalExtension()); $att = $manifestation->attachments()->create([ 'tipo_documento' => $request->tipo_documento, 'descripcion_complementaria' => $request->descripcion_complementaria, 'file_path' => $path, 'file_name' => $file->getClientOriginalName(), 'file_size' => $file->getSize(), 'mime_type' => $file->getMimeType(), ]); return response()->json(['success' => true, 'id' => $att->id]); }
+    public function editStep4($uuid) 
+    { 
+        $manifestation = Manifestation::where('uuid', $uuid)->with('attachments')->firstOrFail(); 
+        return view('manifestations.step4', compact('manifestation')); 
+    }
+    
+    public function uploadFile(Request $request, $uuid) 
+    { 
+        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); 
+        $request->validate(['file' => 'required|file|max:102400']); // Máx 100MB para input
+        
+        $file = $request->file('file');
+        $converted = false;
+        $originalSize = $file->getSize();
+        $finalFilePath = null;
+        
+        // Si es PDF, verificar y convertir automáticamente si es necesario
+        if ($file->getMimeType() === 'application/pdf') {
+            try {
+                $converter = app(\App\Services\VucemPdfConverter::class);
+                
+                // Crear directorio temp
+                $tempDir = storage_path('app/temp');
+                if (!file_exists($tempDir)) {
+                    mkdir($tempDir, 0755, true);
+                }
+                
+                $uniqueId = uniqid();
+                $inputPath = $tempDir . DIRECTORY_SEPARATOR . $uniqueId . '_input.pdf';
+                $outputPath = $tempDir . DIRECTORY_SEPARATOR . $uniqueId . '_output.pdf';
+                
+                // Copiar archivo a temp
+                copy($file->getRealPath(), $inputPath);
+                
+                // Verificar PDF
+                $isValid = $converter->verifyPdfCompliance($inputPath);
+                
+                if (!$isValid['valido']) {
+                    // Convertir automáticamente al formato VUCEM
+                    $converter->convertToVucem($inputPath, $outputPath);
+                    
+                    // Verificar que no exceda 3MB
+                    if (filesize($outputPath) > 3 * 1024 * 1024) {
+                        @unlink($inputPath);
+                        @unlink($outputPath);
+                        return response()->json([
+                            'success' => false, 
+                            'error' => 'El archivo convertido excede el límite de 3 MB de VUCEM. Por favor reduzca el número de páginas o la calidad de las imágenes del documento original.'
+                        ], 422);
+                    }
+                    
+                    // Usar el archivo convertido
+                    $finalFilePath = $outputPath;
+                    $converted = true;
+                    
+                    @unlink($inputPath);
+                } else {
+                    // Archivo válido, verificar tamaño antes de continuar
+                    if (filesize($inputPath) > 3 * 1024 * 1024) {
+                        @unlink($inputPath);
+                        return response()->json([
+                            'success' => false, 
+                            'error' => 'El archivo PDF excede el límite de 3 MB de VUCEM. Por favor reduzca el tamaño del documento.'
+                        ], 422);
+                    }
+                    $finalFilePath = $inputPath;
+                }
+                
+            } catch (\Exception $e) {
+                \Log::error('Error al procesar PDF: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Error al procesar el archivo PDF: ' . $e->getMessage()
+                ], 500);
+            }
+        } else {
+            // Para archivos no-PDF (imágenes), validar tamaño directamente
+            if ($originalSize > 3 * 1024 * 1024) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'El archivo excede el límite de 3 MB de VUCEM. Por favor reduzca el tamaño de la imagen.'
+                ], 422);
+            }
+        }
+        
+        // Guardar archivo (original o convertido)
+        $fileName = 'anexo_' . time() . '.' . $file->getClientOriginalExtension();
+        $destinationPath = 'manifestations/' . $uuid;
+        
+        if ($finalFilePath) {
+            // Guardar desde archivo temporal (PDF procesado)
+            $path = $destinationPath . '/' . $fileName;
+            Storage::put($path, file_get_contents($finalFilePath));
+            
+            // Limpiar temporal
+            @unlink($finalFilePath);
+        } else {
+            // Guardar archivo original (imágenes u otros)
+            $path = $file->storeAs($destinationPath, $fileName);
+        }
+        
+        $att = $manifestation->attachments()->create([
+            'tipo_documento' => $request->tipo_documento,
+            'descripcion_complementaria' => $request->descripcion_complementaria,
+            'file_path' => $path,
+            'file_name' => $file->getClientOriginalName(),
+            'file_size' => $finalFilePath ? filesize(storage_path('app/' . $path)) : $file->getSize(),
+            'mime_type' => $file->getMimeType(),
+        ]);
+        
+        return response()->json([
+            'success' => true, 
+            'id' => $att->id,
+            'converted' => $converted,
+            'message' => $converted ? 'Archivo convertido automáticamente al formato VUCEM (300 DPI, escala de grises)' : 'Archivo cargado correctamente'
+        ]); 
+    }
+    
+    /**
+     * Eliminar un archivo adjunto
+     */
+    public function deleteAttachment($uuid, $id)
+    {
+        try {
+            $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
+            $attachment = $manifestation->attachments()->findOrFail($id);
+            
+            // Eliminar archivo físico
+            if (Storage::exists($attachment->file_path)) {
+                Storage::delete($attachment->file_path);
+            }
+            
+            // Eliminar registro de base de datos
+            $attachment->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Documento eliminado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Error al eliminar el documento: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Visualizar un archivo adjunto
+     */
+    public function viewAttachment($uuid, $id)
+    {
+        try {
+            $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
+            $attachment = $manifestation->attachments()->findOrFail($id);
+            
+            $fullPath = storage_path('app/' . $attachment->file_path);
+            
+            if (!file_exists($fullPath)) {
+                \Log::error('Archivo no encontrado', [
+                    'file_path' => $attachment->file_path,
+                    'full_path' => $fullPath
+                ]);
+                abort(404, 'Archivo no encontrado');
+            }
+            
+            $file = file_get_contents($fullPath);
+            $mimeType = $attachment->mime_type ?? mime_content_type($fullPath);
+            
+            return response($file, 200)
+                ->header('Content-Type', $mimeType)
+                ->header('Content-Disposition', 'inline; filename="' . $attachment->file_name . '"');
+        } catch (\Exception $e) {
+            \Log::error('Error al visualizar archivo', [
+                'error' => $e->getMessage(),
+                'uuid' => $uuid,
+                'id' => $id
+            ]);
+            abort(404, 'Error: ' . $e->getMessage());
+        }
+    }
+    
     public function summary($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->with(['coves', 'pedimentos', 'adjustments', 'payments', 'compensations', 'attachments', 'consultationRfcs'])->firstOrFail(); return view('manifestations.summary', compact('manifestation')); }
     public function signManifestation(Request $request, $uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); $request->validate([ 'cer_file' => 'required|file', 'key_file' => 'required|file', 'password' => 'required|string', ]); try { $pathAcuse = 'manifestations/' . $uuid . '/SAT_ACUSE_' . time() . '.pdf'; $pathDetalle = 'manifestations/' . $uuid . '/SAT_DETALLE_' . time() . '.pdf'; Storage::put($pathAcuse, '%PDF-1.4 ... (Contenido Simulado Acuse) ...'); Storage::put($pathDetalle, '%PDF-1.4 ... (Contenido Simulado Detalle) ...'); $manifestation->update([ 'status' => 'signed', 'sello_digital' => 'SELLO_SAT_SIMULADO_XYZ_' . time(), 'cadena_original' => '||CADENA|ORIGINAL|SAT||', 'path_acuse_manifestacion' => $pathAcuse, 'path_detalle_manifestacion' => $pathDetalle, ]); return redirect()->route('dashboard')->with('status', 'Manifestación enviada y firmada correctamente. Acuses recibidos.'); } catch (Exception $e) { return back()->withErrors(['password' => 'Error: ' . $e->getMessage()]); } }
     public function downloadAcuse($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); if (!$manifestation->path_acuse_manifestacion || !Storage::exists($manifestation->path_acuse_manifestacion)) { $data = [ 'm' => $manifestation, 'fecha_impresion' => now()->format('d/m/Y H:i:s'), 'folio_sat' => 'M-' . substr($manifestation->uuid, 0, 8), ]; $pdf = Pdf::loadView('manifestations.pdf.acuse', $data); return $pdf->download('Acuse_' . $manifestation->uuid . '.pdf'); } return Storage::download($manifestation->path_acuse_manifestacion, 'Acuse_SAT_' . $manifestation->uuid . '.pdf'); }

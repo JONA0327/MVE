@@ -756,16 +756,19 @@ class VucemPdfConverter
         }
         
         // Verificar versión del PDF
-        if (!$this->checkPdfVersion($pdfPath)) {
-            $errores[] = 'El PDF no es versión 1.4 o compatible.';
+        $version = $this->getPdfVersion($pdfPath);
+        if ($version !== '1.4') {
+            $errores[] = "El PDF es versión {$version}, se requiere versión 1.4.";
             $valido = false;
         }
         
         // Verificar DPI de las imágenes
-        $dpiIssues = $this->checkImageDpi($pdfPath);
-        if (!empty($dpiIssues)) {
-            $errores[] = 'Imágenes con DPI incorrecto: ' . implode(', ', $dpiIssues);
-            $valido = false;
+        if ($this->pdfimagesPath) {
+            $dpiResult = $this->checkImagesDpi($pdfPath);
+            if (abs($dpiResult['average_dpi'] - 300) > 5) {
+                $errores[] = 'DPI promedio: ' . round($dpiResult['average_dpi']) . ', se requiere 300 DPI.';
+                $valido = false;
+            }
         }
         
         // Verificar que no tenga contraseña
@@ -774,8 +777,11 @@ class VucemPdfConverter
             $valido = false;
         }
         
-        // Verificar que las imágenes estén en escala de grises (opcional, más complejo)
-        // Se podría implementar si es necesario
+        // Verificar escala de grises
+        if (!$this->checkGrayscale($pdfPath)) {
+            $errores[] = 'El PDF contiene imágenes en color, se requiere escala de grises.';
+            $valido = false;
+        }
         
         return [
             'valido' => $valido,

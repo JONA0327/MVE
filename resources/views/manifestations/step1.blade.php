@@ -65,19 +65,6 @@
                         </nav>
                     </div>
 
-                    <!-- TAB: SOLICITANTE -->
-                    <form method="POST" action="{{ isset($manifestation) ? route('manifestations.updateStep1', $manifestation->uuid) : route('manifestations.store') }}">
-                        @csrf
-                        @if(isset($manifestation))
-                            @method('PUT')
-                        @endif
-
-                        <div x-show="activeTab === 'solicitante'" x-transition>
-                                Manifestación de Valor
-                            </button>
-                        </nav>
-                    </div>
-
                     <form method="POST" action="{{ isset($manifestation) ? route('manifestations.updateStep1', $manifestation->uuid) : route('manifestations.store') }}">
                         @csrf
                         @if(isset($manifestation))
@@ -402,10 +389,10 @@
                                                                     class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                                     required>
                                                                     <option value="">Seleccione un valor</option>
-                                                                    <option value="TIPFIG.AGE">Agente Aduanal</option>
-                                                                    <option value="TIPFIG.AAD">Agencia Aduanal</option>
-                                                                    <option value="TIPFIG.REP">Representante Legal</option>
-                                                                    <option value="TIPFIG.OTR">Otro</option>
+                                                                    <option value="Agente aduanal">Agente Aduanal</option>
+                                                                    <option value="Agencia Aduanal">Agencia Aduanal</option>
+                                                                    <option value="Representante Legal">Representante Legal</option>
+                                                                    <option value="Otro">Otro</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -450,7 +437,7 @@
                                             <tr>
                                                 <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase tracking-wider">Seleccionar</th>
                                                 <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">COVE</th>
-                                                <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Método</th>
+                                                <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Método de Valoración Aduanera</th>
                                                 <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider"># Factura</th>
                                                 <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Fecha</th>
                                                 <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Emisor</th>
@@ -542,7 +529,7 @@
                                         <h3 class="text-xs font-bold text-blue-900 uppercase border-b-2 border-blue-900 mb-4 pb-1">Método e Incoterm</h3>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1 required">Método de Valoración Global</label>
+                                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1 required">Método de Valoración Aduanera</label>
                                                 <select name="metodo_valoracion_global" x-model="general.metodo" required class="w-full text-sm border-slate-300 rounded-sm focus:ring-blue-900 focus:border-blue-900">
                                                     <option value="">Seleccione método...</option>
                                                     <option value="VALADU.VTM">Valor de transacción</option>
@@ -949,9 +936,9 @@
                                                 x-bind:readonly="isFromEme('total_precio_pagado')"
                                                 class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none focus:ring-blue-900 focus:border-blue-900 text-slate-800 text-sm font-bold" />
                                             <select name="moneda_precio_pagado" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-sm w-24">
-                                                <option value="MXN">MXN</option>
-                                                <option value="USD">USD</option>
-                                                <option value="EUR">EUR</option>
+                                                @foreach($currencies ?? [] as $currency)
+                                                    <option value="{{ $currency['code'] }}" {{ $currency['code'] === 'USD' ? 'selected' : '' }}>{{ $currency['code'] }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                         <div x-show="isFromEme('total_precio_pagado')" class="absolute top-6 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-md" title="Del archivo M"></div>
@@ -964,9 +951,9 @@
                                             <span class="inline-flex items-center px-3 rounded-l-sm border border-r-0 border-slate-300 bg-white text-slate-500 text-sm">$</span>
                                             <input name="total_incrementables" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800 text-sm font-bold" />
                                             <select name="moneda_incrementables" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-sm w-24">
-                                                <option value="MXN">MXN</option>
-                                                <option value="USD">USD</option>
-                                                <option value="EUR">EUR</option>
+                                                @foreach($currencies ?? [] as $currency)
+                                                    <option value="{{ $currency['code'] }}" {{ $currency['code'] === 'USD' ? 'selected' : '' }}>{{ $currency['code'] }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -978,9 +965,9 @@
                                             <span class="inline-flex items-center px-3 rounded-l-sm border border-r-0 border-slate-300 bg-white text-slate-500 text-sm">$</span>
                                             <input name="total_decrementables" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800 text-sm font-bold" />
                                             <select name="moneda_decrementables" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-sm w-24">
-                                                <option value="MXN">MXN</option>
-                                                <option value="USD">USD</option>
-                                                <option value="EUR">EUR</option>
+                                                @foreach($currencies ?? [] as $currency)
+                                                    <option value="{{ $currency['code'] }}" {{ $currency['code'] === 'USD' ? 'selected' : '' }}>{{ $currency['code'] }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -1006,9 +993,9 @@
                                             <span class="inline-flex items-center px-3 rounded-l-sm border border-r-0 border-slate-300 bg-white text-slate-500 text-sm">$</span>
                                             <input name="total_precio_por_pagar" type="number" step="0.01" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none border-slate-300 focus:ring-blue-900 focus:border-blue-900 text-slate-800 text-sm font-bold" />
                                             <select name="moneda_precio_por_pagar" class="inline-flex items-center px-2 py-2 border border-l-0 border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold rounded-r-sm w-24">
-                                                <option value="MXN">MXN</option>
-                                                <option value="USD">USD</option>
-                                                <option value="EUR">EUR</option>
+                                                @foreach($currencies ?? [] as $currency)
+                                                    <option value="{{ $currency['code'] }}" {{ $currency['code'] === 'USD' ? 'selected' : '' }}>{{ $currency['code'] }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -1073,6 +1060,80 @@
                 },
                 datosCompletos: false,
                 init() {
+                    // PRIMERO: Restaurar datos de localStorage si existen
+                    const STORAGE_KEY = 'manifestation_step1_{{ $manifestation->uuid ?? "new" }}';
+                    const savedData = localStorage.getItem(STORAGE_KEY);
+                    if (savedData) {
+                        try {
+                            const parsed = JSON.parse(savedData);
+                            console.log('📦 Restaurando datos guardados:', parsed);
+                            
+                            // Restaurar arrays de Alpine.js (tienen prioridad sobre datos del servidor)
+                            if (parsed.coves && parsed.coves.length > 0) {
+                                this.coves = parsed.coves;
+                                console.log(`✅ Restaurados ${parsed.coves.length} COVEs`);
+                            }
+                            if (parsed.incrementables && parsed.incrementables.length > 0) {
+                                this.incrementables = parsed.incrementables;
+                                console.log(`✅ Restaurados ${parsed.incrementables.length} incrementables`);
+                            }
+                            if (parsed.decrementables && parsed.decrementables.length > 0) {
+                                this.decrementables = parsed.decrementables;
+                                console.log(`✅ Restaurados ${parsed.decrementables.length} decrementables`);
+                            }
+                            if (parsed.pedimentos && parsed.pedimentos.length > 0) {
+                                this.pedimentos = parsed.pedimentos;
+                                console.log(`✅ Restaurados ${parsed.pedimentos.length} pedimentos`);
+                            }
+                            if (parsed.pagosPagados && parsed.pagosPagados.length > 0) this.pagosPagados = parsed.pagosPagados;
+                            if (parsed.pagosPorPagar && parsed.pagosPorPagar.length > 0) this.pagosPorPagar = parsed.pagosPorPagar;
+                            if (parsed.compensaciones && parsed.compensaciones.length > 0) this.compensaciones = parsed.compensaciones;
+                            if (parsed.consultationRfcs && parsed.consultationRfcs.length > 0) this.consultationRfcs = parsed.consultationRfcs;
+                            
+                            // Restaurar campos del formulario (text, select, textarea)
+                            if (parsed.formFields) {
+                                Object.entries(parsed.formFields).forEach(([name, value]) => {
+                                    // Buscar el campo en el DOM
+                                    const field = document.querySelector(`[name="${name}"]`);
+                                    if (field) {
+                                        if (field.type === 'checkbox') {
+                                            field.checked = value === 'true' || value === true || value === '1';
+                                        } else if (field.type === 'radio') {
+                                            if (field.value === value) field.checked = true;
+                                        } else {
+                                            field.value = value;
+                                        }
+                                        // Disparar evento para actualizar Alpine.js si está vinculado
+                                        field.dispatchEvent(new Event('input', { bubbles: true }));
+                                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                                    }
+                                });
+                            }
+                            
+                            // Restaurar objeto form de Alpine.js
+                            if (parsed.form) {
+                                Object.keys(parsed.form).forEach(key => {
+                                    if (parsed.form[key] !== undefined && parsed.form[key] !== null) {
+                                        this.form[key] = parsed.form[key];
+                                    }
+                                });
+                            }
+                            
+                            // Restaurar general (metodo, incoterm)
+                            if (parsed.general) {
+                                Object.keys(parsed.general).forEach(key => {
+                                    if (parsed.general[key] !== undefined && parsed.general[key] !== null) {
+                                        this.general[key] = parsed.general[key];
+                                    }
+                                });
+                            }
+                            
+                            console.log('Datos restaurados de localStorage:', parsed);
+                        } catch (e) {
+                            console.error('Error al restaurar datos:', e);
+                        }
+                    }
+                    
                     // Validar datos completos del usuario
                     this.validarDatosCompletos();
                     
@@ -1112,6 +1173,94 @@
                     if (!profileCompleted) {
                         // Si el perfil no está completo, quedarse en tab de solicitante
                         this.activeTab = 'solicitante';
+                    }
+                    
+                    // CONFIGURAR AUTOSAVE DESDE ALPINE.JS
+                    this.setupAutosave();
+                    
+                    // SINCRONIZAR MÉTODO: del COVE seleccionado al método global
+                    this.$watch('selectedCoveIndex', (newIndex) => {
+                        if (newIndex !== null && this.coves[newIndex]) {
+                            const metodo = this.coves[newIndex].metodo_valoracion;
+                            if (metodo) {
+                                this.general.metodo = metodo;
+                                console.log(`🔄 Método sincronizado: ${metodo}`);
+                            }
+                        }
+                    });
+                    
+                    // También sincronizar cuando cambia el método del COVE seleccionado
+                    this.$watch('coves', (newCoves) => {
+                        if (this.selectedCoveIndex !== null && newCoves[this.selectedCoveIndex]) {
+                            const metodo = newCoves[this.selectedCoveIndex].metodo_valoracion;
+                            if (metodo && metodo !== this.general.metodo) {
+                                this.general.metodo = metodo;
+                                console.log(`🔄 Método actualizado: ${metodo}`);
+                            }
+                        }
+                    }, { deep: true });
+                },
+                setupAutosave() {
+                    const STORAGE_KEY = 'manifestation_step1_{{ $manifestation->uuid ?? "new" }}';
+                    const self = this;
+                    
+                    const saveState = () => {
+                        try {
+                            // Capturar campos normales del formulario (sin x-model)
+                            const formFields = {};
+                            const form = document.querySelector('form');
+                            if (form) {
+                                // Campos de valor en aduana
+                                ['total_precio_pagado', 'moneda_precio_pagado', 'total_incrementables', 'moneda_incrementables', 
+                                 'total_decrementables', 'moneda_decrementables', 'total_valor_aduana', 
+                                 'total_precio_por_pagar', 'moneda_precio_por_pagar'].forEach(name => {
+                                    const field = form.querySelector(`[name="${name}"]`);
+                                    if (field) formFields[name] = field.value;
+                                });
+                                
+                                // Token CSRF
+                                const token = form.querySelector('[name="_token"]');
+                                if (token) formFields._token = token.value;
+                            }
+                            
+                            // Convertir Proxies de Alpine a objetos/arrays normales usando JSON
+                            const data = {
+                                formFields,
+                                form: JSON.parse(JSON.stringify(self.form)),
+                                general: JSON.parse(JSON.stringify(self.general)),
+                                coves: JSON.parse(JSON.stringify(self.coves)),
+                                incrementables: JSON.parse(JSON.stringify(self.incrementables)),
+                                decrementables: JSON.parse(JSON.stringify(self.decrementables)),
+                                pedimentos: JSON.parse(JSON.stringify(self.pedimentos)),
+                                pagosPagados: JSON.parse(JSON.stringify(self.pagosPagados)),
+                                pagosPorPagar: JSON.parse(JSON.stringify(self.pagosPorPagar)),
+                                compensaciones: JSON.parse(JSON.stringify(self.compensaciones)),
+                                consultationRfcs: JSON.parse(JSON.stringify(self.consultationRfcs))
+                            };
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                            console.log('✅ Guardado completo:', data);
+                        } catch (e) {
+                            console.error('❌ Error al guardar:', e);
+                        }
+                    };
+                    
+                    // Guardar cada 2 segundos
+                    setInterval(saveState, 2000);
+                    
+                    // Guardar inmediatamente
+                    setTimeout(saveState, 500);
+                    
+                    // Limpiar al enviar formulario exitosamente
+                    const form = document.querySelector('form');
+                    if (form) {
+                        form.addEventListener('submit', () => {
+                            setTimeout(() => {
+                                if (!window.location.href.includes('paso-1')) {
+                                    localStorage.removeItem(STORAGE_KEY);
+                                    console.log('🗑️ localStorage limpiado');
+                                }
+                            }, 1000);
+                        });
                     }
                 },
                 async uploadEme(event) {
@@ -1186,25 +1335,12 @@
                     this.form.rfc_importador = this.form.rfc_solicitante;
                     this.form.registro_nacional_contribuyentes = this.form.rfc_solicitante;
                     
-                    // RFC del EME va a consultables
-                    if (this.emeData.rfc_consultable_eme) {
-                        const rfcEme = this.emeData.rfc_consultable_eme;
-                        
-                        // Verificar que no esté duplicado
-                        const exists = this.consultationRfcs.find(item => item.rfc_consulta === rfcEme.rfc_consulta);
-                        if (!exists) {
-                            this.consultationRfcs.push({
-                                rfc_consulta: rfcEme.rfc_consulta,
-                                razon_social: rfcEme.razon_social,
-                                tipo_figura: '', // Se debe seleccionar manualmente
-                                fromDB: false,
-                                source: 'eme'
-                            });
-                        }
-                    }
-
+                    // RFC del EME NO se agrega automáticamente a consultables
+                    // El usuario debe agregarlo manualmente si lo desea
+                    
                     // Precargar COVEs del archivo M (sin número de factura)
-                    if (this.emeData.coves && this.emeData.coves.length > 0) {
+                    // SOLO si no hay COVEs ya cargados (para no sobrescribir datos del usuario)
+                    if (this.emeData.coves && this.emeData.coves.length > 0 && this.coves.length === 0) {
                         this.coves = this.emeData.coves.map(cove => ({
                             edocument: cove.edocument || '',
                             metodo_valoracion: cove.metodo_valoracion || '',
@@ -1215,10 +1351,14 @@
                             loading: false
                         }));
                         console.log('COVEs cargados del EME (sin número de factura):', this.coves);
+                    } else if (this.coves.length > 0) {
+                        console.log('⚠️ COVEs ya existentes, no se sobrescriben con datos del EME');
                     }
 
                     // Precargar pedimentos del archivo M
-                    if (this.emeData.pedimentos && this.emeData.pedimentos.length > 0) {
+                    // SOLO si no hay pedimentos ya cargados
+                    if (this.emeData.pedimentos && this.emeData.pedimentos.length > 0 && 
+                        (this.pedimentos.length === 0 || (this.pedimentos.length === 1 && !this.pedimentos[0].numero_pedimento))) {
                         this.pedimentos = this.emeData.pedimentos.map(ped => {
                             const pedimento = {
                                 numero_pedimento: ped.numero_pedimento || '',
@@ -1250,9 +1390,10 @@
                     }
 
                     // Precargar incrementables del archivo M
+                    // SOLO si no hay incrementables ya cargados
                     if (this.emeData.adjustments) {
                         const incrementablesEme = this.emeData.adjustments.filter(adj => adj.type === 'incrementable');
-                        if (incrementablesEme.length > 0) {
+                        if (incrementablesEme.length > 0 && this.incrementables.length === 0) {
                             this.incrementables = incrementablesEme.map(inc => ({
                                 concepto: inc.concepto || '',
                                 importe: inc.importe || 0,
@@ -1267,8 +1408,9 @@
                         }
 
                         // Precargar decrementables del archivo M
+                        // SOLO si no hay decrementables ya cargados
                         const decrementablesEme = this.emeData.adjustments.filter(adj => adj.type === 'decrementable');
-                        if (decrementablesEme.length > 0) {
+                        if (decrementablesEme.length > 0 && this.decrementables.length === 0) {
                             this.decrementables = decrementablesEme.map(dec => ({
                                 concepto: dec.concepto || '',
                                 importe: dec.importe || 0,
@@ -2046,8 +2188,26 @@
                         cadena += '|VALADU.VTM|';
                     }
                     
-                    // Totales (ejemplo)
-                    cadena += '0|0|0|0|0|';
+                    // TOTALES DE VALOR EN ADUANA
+                    const totalPrecioPagado = document.querySelector('input[name="total_precio_pagado"]')?.value || '0';
+                    const monedaPrecioPagado = document.querySelector('select[name="moneda_precio_pagado"]')?.value || 'USD';
+                    const totalIncrementables = document.querySelector('input[name="total_incrementables"]')?.value || '0';
+                    const monedaIncrementables = document.querySelector('select[name="moneda_incrementables"]')?.value || 'USD';
+                    const totalDecrementables = document.querySelector('input[name="total_decrementables"]')?.value || '0';
+                    const monedaDecrementables = document.querySelector('select[name="moneda_decrementables"]')?.value || 'USD';
+                    const totalValorAduana = document.querySelector('input[name="total_valor_aduana"]')?.value || '0';
+                    const totalPrecioPorPagar = document.querySelector('input[name="total_precio_por_pagar"]')?.value || '0';
+                    const monedaPrecioPorPagar = document.querySelector('select[name="moneda_precio_por_pagar"]')?.value || 'USD';
+                    
+                    cadena += totalPrecioPagado + '|';
+                    cadena += monedaPrecioPagado + '|';
+                    cadena += totalPrecioPorPagar + '|';
+                    cadena += monedaPrecioPorPagar + '|';
+                    cadena += totalIncrementables + '|';
+                    cadena += monedaIncrementables + '|';
+                    cadena += totalDecrementables + '|';
+                    cadena += monedaDecrementables + '|';
+                    cadena += totalValorAduana + '|';
                     
                     return cadena;
                 }
@@ -2107,4 +2267,8 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // El autosave ahora se maneja dentro de Alpine.js (método setupAutosave)
+    </script>
 </x-app-layout>

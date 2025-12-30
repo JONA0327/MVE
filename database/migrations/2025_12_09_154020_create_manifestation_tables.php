@@ -39,7 +39,7 @@ return new class extends Migration
             $table->boolean('existe_vinculacion')->default(false);
             $table->text('descripcion_vinculacion')->nullable();
             $table->string('metodo_valoracion_global')->nullable();
-            $table->string('incoterm', 3)->nullable();
+            $table->string('incoterm', 15)->nullable();
 
             // Estatus y Firma
             $table->string('status')->default('draft'); // draft, signed, submitted

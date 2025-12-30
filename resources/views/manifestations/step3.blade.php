@@ -91,7 +91,8 @@
                         @endif
 
                         <!-- RFCs DE CONSULTA - OCULTO -->
-                        {{-- @if($manifestation->consultationRfcs->count() > 0)
+                        {{-- 
+                        @if($manifestation->consultationRfcs->count() > 0)
                         <div class="mb-8">
                             <h3 class="text-sm font-bold text-slate-700 mb-3">RFCs Autorizados para Consulta</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -110,6 +111,7 @@
                             </div>
                         </div>
                         @endif
+                        --}}
                     </div>
 
                     <!-- FORMULARIO DE FIRMA -->
@@ -236,7 +238,83 @@
                                             } else {
                                                 $cadena .= '||FORPAG.EF||USD|1|';
                                             }
+                                            
+                                            // PAGOS POR PAGAR (primer pago)
+                                            if($manifestation->payments->where('tipo_pago', 'precio_por_pagar')->count() > 0) {
+                                                $pago = $manifestation->payments->where('tipo_pago', 'precio_por_pagar')->first();
+                                                $cadena .= ($pago->fecha ?? '') . '|';
+                                                $cadena .= ($pago->importe ?? '0') . '|';
+                                                $cadena .= ($pago->situacion_pago ?? '') . '|';
+                                                $cadena .= ($pago->forma_pago ?? 'FORPAG.EF') . '|';
+                                                if($pago->forma_pago === 'FORPAG.OT') {
+                                                    $cadena .= ($pago->especifique ?? '') . '|';
+                                                }
+                                                $cadena .= ($pago->moneda ?? 'USD') . '|';
+                                                $cadena .= ($pago->tipo_cambio ?? '1') . '|';
+                                            } else {
+                                                $cadena .= '||SITUACIÓN|FORPAG.EF||USD|1|';
+                                            }
+                                            
+                                            // COMPENSACIONES (primera compensación)
+                                            if($manifestation->compensations->count() > 0) {
+                                                $comp = $manifestation->compensations[0];
+                                                $cadena .= ($comp->fecha ?? '') . '|';
+                                                $cadena .= ($comp->motivo ?? '') . '|';
+                                                $cadena .= ($comp->prestacion_mercancia ?? '') . '|';
+                                                $cadena .= ($comp->forma_pago ?? 'FORPAG.EF') . '|';
+                                                if($comp->forma_pago === 'FORPAG.OT') {
+                                                    $cadena .= ($comp->especifique ?? '') . '|';
+                                                }
+                                            } else {
+                                                $cadena .= '||MOTIVO|MERCANCIA|FORPAG.EF||';
+                                            }
+                                            
+                                            // MÉTODO DE VALORACIÓN
                                             $cadena .= ($manifestation->metodo_valoracion ?? 'VALADU.VTM') . '|';
+                                            
+                                            // INCREMENTABLES (primer incrementable)
+                                            if($manifestation->adjustments->where('tipo', 'incrementable')->count() > 0) {
+                                                $inc = $manifestation->adjustments->where('tipo', 'incrementable')->first();
+                                                $cadena .= ($inc->concepto ?? 'INCRE.CG') . '|';
+                                                $cadena .= ($inc->fecha_erogacion ?? '') . '|';
+                                                $cadena .= ($inc->importe ?? '0') . '|';
+                                                $cadena .= ($inc->moneda ?? 'USD') . '|';
+                                                $cadena .= ($inc->tipo_cambio ?? '1') . '|';
+                                                $cadena .= ($inc->a_cargo_importador ? '1' : '0') . '|';
+                                            } else {
+                                                $cadena .= 'INCRE.CG||0|USD|1|0|';
+                                            }
+                                            
+                                            // DECREMENTABLES (primer decrementable)
+                                            if($manifestation->adjustments->where('tipo', 'decrementable')->count() > 0) {
+                                                $dec = $manifestation->adjustments->where('tipo', 'decrementable')->first();
+                                                $cadena .= ($dec->concepto ?? 'DECRE.GR') . '|';
+                                                $cadena .= ($dec->fecha_erogacion ?? '') . '|';
+                                                $cadena .= ($dec->importe ?? '0') . '|';
+                                                $cadena .= ($dec->moneda ?? 'USD') . '|';
+                                                $cadena .= ($dec->tipo_cambio ?? '1') . '|';
+                                            } else {
+                                                $cadena .= 'DECRE.GR||0|USD|1|';
+                                            }
+                                            
+                                            // COVEs adicionales (segundo COVE si existe)
+                                            if($manifestation->coves->count() > 1) {
+                                                $cadena .= ($manifestation->coves[1]->edocument ?? '') . '|';
+                                                $cadena .= ($manifestation->coves[1]->metodo_valoracion ?? 'VALADU.VTM') . '|';
+                                            } else {
+                                                $cadena .= '|VALADU.VTM|';
+                                            }
+                                            
+                                            // TOTALES DE VALOR EN ADUANA
+                                            $cadena .= ($manifestation->total_precio_pagado ?? '0') . '|';
+                                            $cadena .= ($manifestation->moneda_precio_pagado ?? 'USD') . '|';
+                                            $cadena .= ($manifestation->total_precio_por_pagar ?? '0') . '|';
+                                            $cadena .= ($manifestation->moneda_precio_por_pagar ?? 'USD') . '|';
+                                            $cadena .= ($manifestation->total_incrementables ?? '0') . '|';
+                                            $cadena .= ($manifestation->moneda_incrementables ?? 'USD') . '|';
+                                            $cadena .= ($manifestation->total_decrementables ?? '0') . '|';
+                                            $cadena .= ($manifestation->moneda_decrementables ?? 'USD') . '|';
+                                            $cadena .= ($manifestation->total_valor_aduana ?? '0') . '|';
                                         @endphp
                                         {{ $cadena }}
                                     </div>
@@ -256,8 +334,8 @@
                                         <div>
                                             <p class="text-xs font-bold text-slate-700 mb-2">Ajustes:</p>
                                             <ul class="text-xs space-y-1">
-                                                <li>✓ Incrementables: <span class="font-mono">{{ $manifestation->incrementables->count() }}</span></li>
-                                                <li>✓ Decrementables: <span class="font-mono">{{ $manifestation->decrementables->count() }}</span></li>
+                                                <li>✓ Incrementables: <span class="font-mono">{{ $manifestation->adjustments->where('type', 'incrementable')->count() }}</span></li>
+                                                <li>✓ Decrementables: <span class="font-mono">{{ $manifestation->adjustments->where('type', 'decrementable')->count() }}</span></li>
                                                 <li>✓ Pagos Pagados: <span class="font-mono">{{ $manifestation->payments->where('tipo_pago', 'precio_pagado')->count() }}</span></li>
                                                 <li>✓ Pagos Por Pagar: <span class="font-mono">{{ $manifestation->payments->where('tipo_pago', 'precio_por_pagar')->count() }}</span></li>
                                                 <li>✓ Compensaciones: <span class="font-mono">{{ $manifestation->compensations->count() }}</span></li>
@@ -286,7 +364,54 @@
     </div>
     
     <script>
-        // Script simplificado para paso 3 (solo previsualización y firma)
-        console.log('Step 3 - Preview and Sign loaded');
+        // Sistema de autoguardado en localStorage para paso 3
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORAGE_KEY = 'manifestation_step3_{{ $manifestation->uuid }}';
+            const form = document.querySelector('form');
+            
+            if (form) {
+                // Restaurar datos guardados
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    try {
+                        const parsed = JSON.parse(savedData);
+                        Object.keys(parsed).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input && !input.value) {
+                                input.value = parsed[key];
+                                if (input.type === 'checkbox') {
+                                    input.checked = parsed[key] === 'on' || parsed[key] === true;
+                                }
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Error al restaurar datos:', e);
+                    }
+                }
+
+                // Guardar automáticamente en cada cambio
+                form.addEventListener('input', (e) => {
+                    if (e.target.name) {
+                        const formData = new FormData(form);
+                        const data = {};
+                        for (let [key, value] of formData.entries()) {
+                            if (value) data[key] = value;
+                        }
+                        // Guardar checkboxes
+                        form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                            if (cb.name) data[cb.name] = cb.checked;
+                        });
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    }
+                });
+
+                // Limpiar al enviar exitosamente
+                form.addEventListener('submit', () => {
+                    setTimeout(() => {
+                        localStorage.removeItem(STORAGE_KEY);
+                    }, 1000);
+                });
+            }
+        });
     </script>
 </x-app-layout>

@@ -78,6 +78,8 @@ Route::middleware('auth')->group(function () {
     // Paso 4: Solo Archivos
     Route::get('/manifestacion/{uuid}/paso-4', [ManifestationController::class, 'editStep4'])->name('manifestations.step4');
     Route::post('/manifestacion/{uuid}/upload', [ManifestationController::class, 'uploadFile'])->name('manifestations.upload');
+    Route::delete('/manifestacion/{uuid}/attachment/{id}', [ManifestationController::class, 'deleteAttachment'])->name('manifestations.deleteAttachment');
+    Route::get('/manifestacion/{uuid}/attachment/{id}/view', [ManifestationController::class, 'viewAttachment'])->name('manifestations.viewAttachment');
     
     // Paso 5: Resumen y Firma (NUEVO)
     Route::get('/manifestacion/{uuid}/resumen', [ManifestationController::class, 'summary'])->name('manifestations.summary');
