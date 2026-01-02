@@ -86,7 +86,6 @@ class SatSignatureService
         // Iteramos ajustes ordenados si es necesario
         foreach ($manifestation->adjustments as $adj) {
             $data[] = $adj->type;
-            $data[] = $adj->concepto;
             $data[] = $this->formatDate($adj->fecha_erogacion);
             $data[] = $this->formatDecimal($adj->importe, 2);
             $data[] = $adj->moneda;
@@ -95,22 +94,21 @@ class SatSignatureService
         }
 
         foreach ($manifestation->payments as $payment) {
-            $data[] = $payment->status;
             $data[] = $this->formatDate($payment->fecha);
             $data[] = $this->formatDecimal($payment->importe, 2);
+            $data[] = $payment->situacion_pago;
             $data[] = $payment->forma_pago;
             $data[] = $payment->especifique;
             $data[] = $payment->moneda;
             $data[] = $this->formatDecimal($payment->tipo_cambio, 3);
-            $data[] = $payment->situacion_pago;
         }
 
         foreach ($manifestation->compensations as $compensation) {
-            $data[] = $this->formatDate($compensation->fecha);
             $data[] = $compensation->forma_pago;
-            $data[] = $compensation->especifique;
+            $data[] = $this->formatDate($compensation->fecha);
             $data[] = $compensation->motivo;
             $data[] = $compensation->prestacion_mercancia;
+            $data[] = $compensation->especifique;
         }
         
         // --- FINALIZAR CADENA ---
