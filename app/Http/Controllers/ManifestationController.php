@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\MFileParserService;
+use App\Services\SatSignatureService;
 use Exception;
 
 class ManifestationController extends Controller
@@ -952,10 +953,80 @@ class ManifestationController extends Controller
         }
     }
     
-    public function summary($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->with(['coves', 'pedimentos', 'adjustments', 'payments', 'compensations', 'attachments', 'consultationRfcs'])->firstOrFail(); return view('manifestations.summary', compact('manifestation')); }
-    public function signManifestation(Request $request, $uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); $request->validate([ 'cer_file' => 'required|file', 'key_file' => 'required|file', 'password' => 'required|string', ]); try { $pathAcuse = 'manifestations/' . $uuid . '/SAT_ACUSE_' . time() . '.pdf'; $pathDetalle = 'manifestations/' . $uuid . '/SAT_DETALLE_' . time() . '.pdf'; Storage::put($pathAcuse, '%PDF-1.4 ... (Contenido Simulado Acuse) ...'); Storage::put($pathDetalle, '%PDF-1.4 ... (Contenido Simulado Detalle) ...'); $manifestation->update([ 'status' => 'signed', 'sello_digital' => 'SELLO_SAT_SIMULADO_XYZ_' . time(), 'cadena_original' => '||CADENA|ORIGINAL|SAT||', 'path_acuse_manifestacion' => $pathAcuse, 'path_detalle_manifestacion' => $pathDetalle, ]); return redirect()->route('dashboard')->with('status', 'Manifestación enviada y firmada correctamente. Acuses recibidos.'); } catch (Exception $e) { return back()->withErrors(['password' => 'Error: ' . $e->getMessage()]); } }
-    public function downloadAcuse($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); if (!$manifestation->path_acuse_manifestacion || !Storage::exists($manifestation->path_acuse_manifestacion)) { $data = [ 'm' => $manifestation, 'fecha_impresion' => now()->format('d/m/Y H:i:s'), 'folio_sat' => 'M-' . substr($manifestation->uuid, 0, 8), ]; $pdf = Pdf::loadView('manifestations.pdf.acuse', $data); return $pdf->download('Acuse_' . $manifestation->uuid . '.pdf'); } return Storage::download($manifestation->path_acuse_manifestacion, 'Acuse_SAT_' . $manifestation->uuid . '.pdf'); }
-    public function destroy($uuid) { $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail(); if ($manifestation->status === 'signed') { return back()->with('error', 'No es posible eliminar una manifestación firmada.'); } Storage::deleteDirectory('manifestations/' . $uuid); $manifestation->delete(); return redirect()->route('dashboard')->with('status', 'Borrador eliminado correctamente.'); }
+    public function summary($uuid)
+    {
+        $manifestation = Manifestation::where('uuid', $uuid)
+            ->with(['coves', 'pedimentos', 'adjustments', 'payments', 'compensations', 'attachments', 'consultationRfcs'])
+            ->firstOrFail();
+
+        return view('manifestations.summary', compact('manifestation'));
+    }
+
+    public function signManifestation(Request $request, $uuid, SatSignatureService $satSignatureService)
+    {
+        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
+        $request->validate([
+            'cer_file' => 'required|file',
+            'key_file' => 'required|file',
+            'password' => 'required|string',
+        ]);
+
+        try {
+            $pathAcuse = 'manifestations/' . $uuid . '/SAT_ACUSE_' . time() . '.pdf';
+            $pathDetalle = 'manifestations/' . $uuid . '/SAT_DETALLE_' . time() . '.pdf';
+            Storage::put($pathAcuse, '%PDF-1.4 ... (Contenido Simulado Acuse) ...');
+            Storage::put($pathDetalle, '%PDF-1.4 ... (Contenido Simulado Detalle) ...');
+
+            $cadenaOriginal = $satSignatureService->buildOriginalString($manifestation);
+            $selloDigital = $satSignatureService->signString(
+                $cadenaOriginal,
+                $request->file('key_file'),
+                $request->input('password')
+            );
+
+            $manifestation->update([
+                'status' => 'signed',
+                'sello_digital' => $selloDigital,
+                'cadena_original' => $cadenaOriginal,
+                'path_acuse_manifestacion' => $pathAcuse,
+                'path_detalle_manifestacion' => $pathDetalle,
+            ]);
+
+            return redirect()->route('dashboard')
+                ->with('status', 'Manifestación enviada y firmada correctamente. Acuses recibidos.');
+        } catch (Exception $e) {
+            return back()->withErrors(['password' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    public function downloadAcuse($uuid)
+    {
+        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
+        if (!$manifestation->path_acuse_manifestacion || !Storage::exists($manifestation->path_acuse_manifestacion)) {
+            $data = [
+                'm' => $manifestation,
+                'fecha_impresion' => now()->format('d/m/Y H:i:s'),
+                'folio_sat' => 'M-' . substr($manifestation->uuid, 0, 8),
+            ];
+            $pdf = Pdf::loadView('manifestations.pdf.acuse', $data);
+
+            return $pdf->download('Acuse_' . $manifestation->uuid . '.pdf');
+        }
+
+        return Storage::download($manifestation->path_acuse_manifestacion, 'Acuse_SAT_' . $manifestation->uuid . '.pdf');
+    }
+
+    public function destroy($uuid)
+    {
+        $manifestation = Manifestation::where('uuid', $uuid)->firstOrFail();
+        if ($manifestation->status === 'signed') {
+            return back()->with('error', 'No es posible eliminar una manifestación firmada.');
+        }
+        Storage::deleteDirectory('manifestations/' . $uuid);
+        $manifestation->delete();
+
+        return redirect()->route('dashboard')->with('status', 'Borrador eliminado correctamente.');
+    }
 
     /**
      * Obtener tipo de cambio de una fecha específica

@@ -16,22 +16,63 @@ class SatSignatureService
     public function buildOriginalString(Manifestation $manifestation)
     {
         // Cargamos relaciones para asegurar que tenemos los datos
-        $manifestation->load(['coves', 'adjustments', 'payments', 'pedimentos']);
+        $manifestation->load([
+            'importador',
+            'coves',
+            'adjustments',
+            'payments',
+            'pedimentos',
+            'compensations',
+        ]);
 
         $data = [];
 
         // --- 1. CABECERA ---
         // Ejemplo de estructura: |RFC|TIPO_FIGURA|...
-        $data[] = $manifestation->rfc_importador;
-        $data[] = $manifestation->rfc_solicitante; 
-        $data[] = 'TIPFIG.IMP'; // Valor fijo ejemplo
+        $importador = $manifestation->importador;
+        $data[] = $manifestation->rfc_solicitante;
+        $data[] = $manifestation->razon_social_solicitante;
+        $data[] = $manifestation->actividad_economica_solicitante;
+        $data[] = $manifestation->pais_solicitante;
+        $data[] = $manifestation->codigo_postal_solicitante;
+        $data[] = $manifestation->estado_solicitante;
+        $data[] = $manifestation->municipio_solicitante;
+        $data[] = $manifestation->localidad_solicitante;
+        $data[] = $manifestation->colonia_solicitante;
+        $data[] = $manifestation->calle_solicitante;
+        $data[] = $manifestation->numero_exterior_solicitante;
+        $data[] = $manifestation->numero_interior_solicitante;
+        $data[] = $manifestation->lada_solicitante;
+        $data[] = $manifestation->telefono_solicitante;
+        $data[] = $manifestation->correo_solicitante;
+        $data[] = $importador?->rfc ?? $manifestation->rfc_importador;
+        $data[] = $importador?->razon_social ?? $manifestation->razon_social_importador;
+        $data[] = $importador?->registro_nacional_contribuyentes ?? $manifestation->registro_nacional_contribuyentes;
+        $data[] = $importador?->domicilio_fiscal;
+        $data[] = $this->formatDecimal($manifestation->total_precio_pagado, 2);
+        $data[] = $this->formatDecimal($manifestation->total_incrementables, 2);
+        $data[] = $this->formatDecimal($manifestation->total_decrementables, 2);
+        $data[] = $this->formatDecimal($manifestation->total_valor_aduana, 2);
+        $data[] = $this->formatDecimal($manifestation->total_precio_por_pagar, 2);
+        $data[] = $this->formatBoolean($manifestation->existe_vinculacion);
+        $data[] = $manifestation->descripcion_vinculacion;
+        $data[] = $manifestation->metodo_valoracion_global;
+        $data[] = $manifestation->incoterm;
+        $data[] = $this->formatDate($manifestation->fecha_factura);
+        $data[] = $this->formatDate($manifestation->fecha_entrada);
+        $data[] = $this->formatDate($manifestation->fecha_pago_pedimento);
+        $data[] = $this->formatDate($manifestation->fecha_presentacion);
+        $data[] = $manifestation->observaciones_pedimento;
+        $data[] = $manifestation->data_source;
 
         // --- 2. COVES ---
         foreach ($manifestation->coves as $cove) {
             $data[] = $cove->edocument;
             $data[] = $cove->metodo_valoracion;
             $data[] = $cove->numero_factura;
-            // ... resto de campos cove en orden estricto
+            $data[] = $this->formatDate($cove->fecha_expedicion);
+            $data[] = $cove->emisor;
+            $data[] = $cove->destinatario;
         }
 
         // --- 3. PEDIMENTOS ---
@@ -44,9 +85,32 @@ class SatSignatureService
         // --- 4. INCREMENTABLES / PAGOS ---
         // Iteramos ajustes ordenados si es necesario
         foreach ($manifestation->adjustments as $adj) {
-             $data[] = 'TIPINC.' . strtoupper(substr($adj->concepto, 0, 3)); // Ejemplo: TIPINC.FLE
-             $data[] = $adj->fecha_erogacion ? $adj->fecha_erogacion->format('d/m/Y') : '';
-             $data[] = number_format($adj->importe, 2, '.', ''); // Sin comas
+            $data[] = $adj->type;
+            $data[] = $adj->concepto;
+            $data[] = $this->formatDate($adj->fecha_erogacion);
+            $data[] = $this->formatDecimal($adj->importe, 2);
+            $data[] = $adj->moneda;
+            $data[] = $this->formatDecimal($adj->tipo_cambio, 6);
+            $data[] = $this->formatBoolean($adj->a_cargo_importador);
+        }
+
+        foreach ($manifestation->payments as $payment) {
+            $data[] = $payment->status;
+            $data[] = $this->formatDate($payment->fecha);
+            $data[] = $this->formatDecimal($payment->importe, 2);
+            $data[] = $payment->forma_pago;
+            $data[] = $payment->especifique;
+            $data[] = $payment->moneda;
+            $data[] = $this->formatDecimal($payment->tipo_cambio, 3);
+            $data[] = $payment->situacion_pago;
+        }
+
+        foreach ($manifestation->compensations as $compensation) {
+            $data[] = $this->formatDate($compensation->fecha);
+            $data[] = $compensation->forma_pago;
+            $data[] = $compensation->especifique;
+            $data[] = $compensation->motivo;
+            $data[] = $compensation->prestacion_mercancia;
         }
         
         // --- FINALIZAR CADENA ---
@@ -120,5 +184,32 @@ class SatSignatureService
         // o el uso de librerías como 'phpseclib'.
         // Para este ejemplo, lanzamos error si falla el método estándar.
         return false;
+    }
+
+    private function formatDate($date): string
+    {
+        if (!$date) {
+            return '';
+        }
+
+        return $date->format('d/m/Y');
+    }
+
+    private function formatDecimal($value, int $decimals): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        return number_format((float) $value, $decimals, '.', '');
+    }
+
+    private function formatBoolean($value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        return $value ? '1' : '0';
     }
 }
